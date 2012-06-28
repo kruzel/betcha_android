@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/editTextAddBet"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" android:layout_margin="10dp" android:hint="@string/my_bet_hint">
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/buttonAddBet"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/submit" android:layout_margin="10dp" android:onClick="onAddBet"/>
+
+</LinearLayout>

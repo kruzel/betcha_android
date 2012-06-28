@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+        android:id="@+id/tv_user_bet_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_user_bet_date"
+        android:layout_alignBottom="@+id/tv_user_bet_date"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@+id/tv_user_bet_date"
+        android:text="user"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/tv_user_bet_bet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_user_bet_user"
+        android:layout_alignBottom="@+id/tv_user_bet_user"
+        android:layout_margin="5dp"
+        android:layout_marginLeft="28dp"
+        android:layout_toLeftOf="@+id/checkBoxWin"
+        android:layout_toRightOf="@+id/tv_user_bet_user"
+        android:text="bet"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <CheckBox
+        android:id="@+id/cb_user_bet_win"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+         android:layout_margin="5dp"/>
+
+</RelativeLayout>

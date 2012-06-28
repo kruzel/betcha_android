@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, BetUActivity!</string>
+    <string name="app_name">Betcha</string>
+    <string name="bet_you_that">Betcha ...</string>
+    <string name="bet_subject_hint">Describe bet topic ...</string>
+    <string name="bet_you_on">Reward ...</string>
+    <string name="bet_you_on_hint">Describe the reward ...</string>
+    <string name="bet_due_time">Due on ...</string>
+    <string name="invite_friends">Invite Friends</string>
+    <string name="submit">Submit</string>
+    <string name="select_time">Select time</string>
+    <string name="who_is_betting">Who is betting</string>
+    <string name="select_friends">Add friends</string>
+    <string name="open_bet">Invite to bet</string>
+    <string name="close_bet">Close\n bet</string>
+    <string name="my_bet">My bet ...</string>
+    <string name="my_bet_hint">Enter your bet ...</string>
+	<string name="yes">Yes</string>
+	<string name="no">No</string>
+	<string name="pending">Pending</string>
+	<string name="set_bet_result">What was the bet result?</string>
+	<string name="publish_results">Publish results</string>
+	<string name="publishing_bet">Publishing bet...</string>
+
+	<string name="email_address">Email address</string>
+	<string name="email_address_hint">user@domain.com</string>
+	<string name="register">Register</string>
+	<string name="skip">Skip</string>
+	<string name="name">Nick name</string>
+	<string name="name_hint">user</string>
+	
+	<!-- messages -->
+	<string name="msg_bet_accepted">Bet accepted</string>
+	<string name="msg_bet_rejected">Bet rejected</string>
+	<string name="msg_bet_loading">Loading bet ...</string>
+			
+	<!-- error messages -->
+	<string name="error_missing_bet_subject">Missing bet subject</string>
+	<string name="error_missing_bet">Missing bet</string>
+	<string name="error_missing_bet_reward">Missing bet reward</string>
+	<string name="error_bad_date_format">Bad date format</string>
+	<string name="error_bad_time_format">Bad time format</string>
+	<string name="error_bad_email">Bad email address</string>
+	<string name="error_please_register">You need to register before placing bets</string>
+	<string name="error_bet_not_found">Bet not found</string>
+	
+	<!-- activities -->
+    <string name="bettabactivity">bettabactivity</string>
+	<string name="createbet">createbet</string>
+    <string name="betsrecordsgroup">betsrecordsgroup</string>
+    <string name="betsrecords">betsrecords</string>
+    <string name="betdetails">betdetails</string>
+    <string name="settingsactivity">settings</string>
+    
+    <!-- file names -->
+    <string name="prefs_name">betcha_prefs_name</string>
+    
+</resources>
