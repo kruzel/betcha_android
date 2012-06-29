@@ -40,7 +40,7 @@ public class BetchaApp extends Application {
 	private GetBetAndOwnerTask getBetAndOwnerTask;
 	private CreateUserBetTask createUserBetTask;
 	private GetUserBetTask getUserBetTask;
-	private GetThisUserBetsTask getUserBetsTask;
+	private GetThisUserBetsTask getThisUserBetsTask;
 	private CreateUserTask createUserTask;
 	private UpdateUserTask updateUsertask;
 	private UpdateUsersBetsTask updateUsersBetsTask;
@@ -162,13 +162,13 @@ public class BetchaApp extends Application {
 		return this.getUserBetTask;
 	}
 	
-	public GetThisUserBetsTask getGetUserBetsTask() {
-		return getUserBetsTask;
+	public GetThisUserBetsTask getGetThisUserBetsTask() {
+		return getThisUserBetsTask;
 	}
 
-	public GetThisUserBetsTask createGetUserBetsTask() {
-		this.getUserBetsTask = new GetThisUserBetsTask(this,getHelper());
-		return this.getUserBetsTask;
+	public GetThisUserBetsTask createGetThisUserBetsTask() {
+		this.getThisUserBetsTask = new GetThisUserBetsTask(this,getHelper());
+		return this.getThisUserBetsTask;
 	}
 
 	public CreateUserTask getCreateUserTask() {

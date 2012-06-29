@@ -1,17 +1,17 @@
 package com.betcha.model.tasks;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.betcha.api.RESTClientBet;
+import com.betcha.api.model.RESTBet;
 import com.betcha.das.DatabaseHelper;
 import com.betcha.model.Bet;
 import com.betcha.model.User;
-import com.betcha.model.UserBet;
 
 public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 	private User user;
@@ -41,12 +41,30 @@ public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 
 	@Override
 	protected Boolean doInBackground(Void... params) {
-		List<UserBet> usersBets;
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
-		//TODO fetch all UserBet for this user (server side api based on  User's server_id)
+		bets = new ArrayList<Bet>();
 		
-		//TODO fetch depended bets
+		RESTClientBet restClient = new RESTClientBet(context);
+		List<RESTBet> restbets = restClient.show_for_user_id(user.getId());
+		
+		for (RESTBet restBet : restbets) {
+			Bet bet = new Bet();
+			try {
+				bet.setOwner(dbHelper.getUserDao().queryForId(restBet.getUser_id()));
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			}
+			bet.setReward(restBet.getReward());
+			bet.setServer_id(restBet.getId());
+			bet.setState(restBet.getState());
+			bet.setSubject(restBet.getSubject());
+			bet.setUuid(restBet.getUuid());
+			
+			bets.add(bet);
+		}
+	
+				
 	       					
 		return true;
 	}

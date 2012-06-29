@@ -1,6 +1,7 @@
 package com.betcha.api;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,13 @@ public class RESTClientBet extends RESTClient {
 	}
 	
 	public RESTBet showUUID(String uuid) {
-		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}" , RESTBet.class, uuid);
+		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}.json" , RESTBet.class, uuid);
 		return res;
+	}
+	
+	public List<RESTBet> show_for_user_id(int id) {
+		RESTBet[] res = restTemplate.getForObject(url + "/show_for_user_id/{id}.json" , RESTBet[].class, id);
+		return new ArrayList<RESTBet>(Arrays.asList(res));
 	}
 
 	public RESTBet create(Map<String,String> arg) {

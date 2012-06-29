@@ -44,7 +44,8 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	        //getFromServer();
+    	        app.createGetThisUserBetsTask().setValues(app.getMe(), BetsListActivity.this);
+    	        app.getGetThisUserBetsTask().run();
     	    }
     	});
         
@@ -117,6 +118,7 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
 
 	public void OnGetUserBetsCompleted(Boolean success, List<Bet> bets) {
 		populate();
+		lvBets.onRefreshComplete();
 	}
 	
 }

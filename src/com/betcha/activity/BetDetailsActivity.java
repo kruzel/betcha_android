@@ -187,10 +187,11 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	//UserBet list OnClick
 	public void onClick(View v) {
 
-		for(int i=1;i<lvUsersBets.getCount()-1; i++) {
-			View vListItem = lvUsersBets.getChildAt(1);
+		for(int i=2;i<lvUsersBets.getCount()-1; i++) {
+			View vListItem = lvUsersBets.getChildAt(i);
 			CheckBox cb = (CheckBox) vListItem.findViewById(R.id.cb_user_bet_win);
-			usersBets.get(i-1).setResult(cb.isChecked());
+			if(cb!=null)
+				usersBets.get(i-2).setResult(cb.isChecked());
 		}
 		
 		app.createUpdateUsersBetsTask();
