@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.web.client.RestClientException;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -66,7 +67,13 @@ public class GetUserBetTask extends AsyncTask<Void, Void, Boolean> {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
 		RESTClientUserBet userBetClient = new RESTClientUserBet(context);
-		List<RESTUserBet> restUserBet = userBetClient.showBetId(betServerId);
+		List<RESTUserBet> restUserBet = null;
+		try {
+			restUserBet = userBetClient.showBetId(betServerId);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return false;
+		}
 		if(restUserBet==null || restUserBet.size()==0)
 			return false;
 		
@@ -76,7 +83,13 @@ public class GetUserBetTask extends AsyncTask<Void, Void, Boolean> {
 					user = dbHelper.getUserDao().queryForId(restUserBetIt.getUser_id());
 					if(user==null) {
 						RESTClientUser userClient = new RESTClientUser(context);
-						RESTUser restUser = userClient.show(restUserBetIt.getUser_id());
+						RESTUser restUser = null;
+						try {
+							restUser = userClient.show(restUserBetIt.getUser_id());
+						} catch (RestClientException e) {
+							e.printStackTrace();
+							continue;
+						}
 						if(restUser==null)
 							continue;
 						

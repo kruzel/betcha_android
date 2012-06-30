@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.client.RestClientException;
+
 import android.content.Context;
 
 import com.betcha.R;
@@ -16,37 +18,37 @@ public class RESTClientBet extends RESTClient {
 		super(context.getString(R.string.betcha_api) + "/bets");
 	}
 
-	public List<RESTBet> list() {
+	public List<RESTBet> list() throws RestClientException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
-	public RESTBet show(int id) {
+	public RESTBet show(int id) throws RestClientException {
 		RESTBet res = restTemplate.getForObject(url + "/" + id + ".json" , RESTBet.class);
 		return res;
 	}
 	
-	public RESTBet showUUID(String uuid) {
+	public RESTBet showUUID(String uuid) throws RestClientException {
 		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}" , RESTBet.class, uuid);
 		return res;
 	}
 	
-	public List<RESTBet> show_for_user_id(int id) {
+	public List<RESTBet> show_for_user_id(int id) throws RestClientException {
 		RESTBet[] res = restTemplate.getForObject(url + "/show_for_user_id/{id}.json" , RESTBet[].class, id);
 		return new ArrayList<RESTBet>(Arrays.asList(res));
 	}
 
-	public RESTBet create(Map<String,String> arg) {
+	public RESTBet create(Map<String,String> arg) throws RestClientException {
 		RESTBet res = restTemplate.postForObject(url + ".json" , arg, RESTBet.class);		
 		return res;
 	}
 
-	public void update(Map<String,String> arg, int id) {
+	public void update(Map<String,String> arg, int id) throws RestClientException {
 		restTemplate.put(url + "/" + id + ".json", arg);
 	}
 
-	public void delete(int id) {
+	public void delete(int id) throws RestClientException {
 		restTemplate.delete(url  + "/" + id + ".json");
 	}
 }

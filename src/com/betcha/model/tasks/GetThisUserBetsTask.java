@@ -4,11 +4,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.client.RestClientException;
+
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.betcha.api.RESTClientBet;
+import com.betcha.api.RESTClientUser;
 import com.betcha.api.model.RESTBet;
+import com.betcha.api.model.RESTUser;
 import com.betcha.das.DatabaseHelper;
 import com.betcha.model.Bet;
 import com.betcha.model.User;
@@ -43,18 +47,48 @@ public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 	protected Boolean doInBackground(Void... params) {
 		
 		bets = new ArrayList<Bet>();
+		User betOwner = null;
 		
 		RESTClientBet restClient = new RESTClientBet(context);
-		List<RESTBet> restbets = restClient.show_for_user_id(user.getId());
+		List<RESTBet> restbets = null;
+		try {
+			restbets = restClient.show_for_user_id(user.getServer_id());
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return false;
+		} 
 		
 		for (RESTBet restBet : restbets) {
 			Bet bet = new Bet();
+			betOwner = null;
 			try {
-				bet.setOwner(dbHelper.getUserDao().queryForId(restBet.getUser_id()));
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
+				betOwner = dbHelper.getUserDao().queryForId(restBet.getUser_id());
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			} 
+			if(betOwner==null) {
+				RESTClientUser restUserClient = new RESTClientUser(context);
+				RESTUser restUser = null;
+				try {
+					restUser = restUserClient.show(restBet.getUser_id());
+				} catch (RestClientException e) {
+					e.printStackTrace();
+					return false;
+				} 
+				betOwner = new User();
+				betOwner.setEmail(restUser.getEmail());
+				betOwner.setName(restUser.getName());
+				betOwner.setServer_id(restUser.getId());
+				
+				try {
+					betOwner.setDao(dbHelper.getUserDao());
+					betOwner.create();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}		
 			}
+			bet.setOwner(betOwner);
 			bet.setReward(restBet.getReward());
 			bet.setServer_id(restBet.getId());
 			bet.setState(restBet.getState());

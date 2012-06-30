@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.web.client.RestClientException;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -64,7 +65,13 @@ public class GetBetAndOwnerTask extends AsyncTask<Void, Void, Boolean> {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
 		RESTClientBet betClient = new RESTClientBet(context);
-		RESTBet restBet = betClient.showUUID(uuid);
+		RESTBet restBet = null;
+		try {
+			restBet = betClient.showUUID(uuid);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return false;
+		}
 		if(restBet==null)
 			return false;
 		
@@ -81,7 +88,13 @@ public class GetBetAndOwnerTask extends AsyncTask<Void, Void, Boolean> {
 
 		if(owner == null) { //then create it
 			RESTClientUser userClient = new RESTClientUser(context);
-			RESTUser restOwner = userClient.show(restBet.getUser_id());
+			RESTUser restOwner = null;
+			try {
+				restOwner = userClient.show(restBet.getUser_id());
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				return false;
+			}
 			if(restOwner==null)
 				return false;
 			
