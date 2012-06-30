@@ -32,7 +32,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		}
 		
 		Bet bet = items.get(position);
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/mm HH:mm");
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
 		
 		TextView tvBetState = (TextView) v.findViewById(R.id.tv_bet_state);
 		TextView tvBetDate = (TextView) v.findViewById(R.id.tv_bet_date);

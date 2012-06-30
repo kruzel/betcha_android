@@ -137,7 +137,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
     	
     	getFromServer();
 		  	
-    	DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/mm/yy HH:mm");
+    	DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/yy HH:mm");
     	
     	tvState.setText(bet.getState());
     	tvDate.setText(fmt.print(bet.getDate()));
