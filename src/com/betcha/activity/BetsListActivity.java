@@ -4,13 +4,13 @@ import java.sql.SQLException;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.betcha.BetchaApp;
@@ -30,6 +30,8 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
 	private List<Bet> bets;
 	
 	private PullToRefreshListView lvBets;
+	
+	private ProgressDialog dialog;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -61,7 +63,8 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
     
 	protected void onResume() {
 		if(app.getBetUUID() != null) {
-			//TODO start progress dialog
+			dialog = ProgressDialog.show(BetsListActivity.this.getParent(), "", 
+	                getString(R.string.msg_bet_loading), true);
 			
 			app.createGetBetAndOwnerTaks();
 			app.getGetBetAndOwnerTaks().setValues(app.getBetUUID(), this);
@@ -107,13 +110,17 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
 	}
 
 	public void OnGetBetCompleted(Boolean success, Bet bet) {
+		if(dialog!=null && dialog.isShowing()) {
+			dialog.dismiss();
+			dialog = null;
+		}
+		
 		if(success && bet!=null) {
 			openDetailedActivity(bet,true);
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}
 		
-		//TODO close progress dialog
 	}
 
 	public void OnGetUserBetsCompleted(Boolean success, List<Bet> bets) {

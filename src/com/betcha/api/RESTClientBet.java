@@ -28,7 +28,7 @@ public class RESTClientBet extends RESTClient {
 	}
 	
 	public RESTBet showUUID(String uuid) {
-		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}.json" , RESTBet.class, uuid);
+		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}" , RESTBet.class, uuid);
 		return res;
 	}
 	

@@ -54,8 +54,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	private View footerView;
 	private EditText etMyBet;
 	
-	Runnable runnable;
-	ProgressDialog dialog;
+	private ProgressDialog dialog;
 		
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -207,16 +206,20 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	
 	protected void getFromServer() {
 		if(bet.getServer_id() == -1) { //TODO this should not happen
-			if(dialog!=null)
+			if(dialog!=null && dialog.isShowing()) {
 				dialog.dismiss();
+				dialog = null;
+			}
 			return;
 		}
 			
 		
 		app.createGetUserBetTask().setValues(bet.getServer_id(), this);
 		if(!app.getGetUserBetTask().run()){
-			if(dialog!=null)
+			if(dialog!=null && dialog.isShowing()) {
 				dialog.dismiss();
+				dialog = null;
+			}
 		}
 	}
 
@@ -279,7 +282,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 			this.usersBets = usersbets;
 		}
 		populateList();
-		if(dialog!=null) {
+		if(dialog!=null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
