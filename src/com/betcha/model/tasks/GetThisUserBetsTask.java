@@ -58,11 +58,14 @@ public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 			return false;
 		} 
 		
-		for (RESTBet restBet : restbets) {
+		for (RESTBet restBet : restbets) {						
 			Bet bet = new Bet();
 			betOwner = null;
 			try {
-				betOwner = dbHelper.getUserDao().queryForId(restBet.getUser_id());
+				List<User> users = dbHelper.getUserDao().queryForEq("server_id",restBet.getUser_id());
+				if(user!=null && users.size()>0) {
+					betOwner = users.get(0);
+				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			} 
@@ -88,12 +91,33 @@ public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 					e.printStackTrace();
 				}		
 			}
-			bet.setOwner(betOwner);
+			
 			bet.setReward(restBet.getReward());
 			bet.setServer_id(restBet.getId());
 			bet.setState(restBet.getState());
 			bet.setSubject(restBet.getSubject());
 			bet.setUuid(restBet.getUuid());
+			bet.setOwner(betOwner);
+			
+			Bet tmpBet = null;
+			try {
+				List<Bet> tmpBets = dbHelper.getBetDao().queryForEq("server_id", restBet.getUser_id());
+				if(tmpBets!=null && tmpBets.size()>0) { 
+					tmpBet = tmpBets.get(0);
+				}
+			} catch (SQLException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			if(tmpBet==null) {
+				try {
+					bet.setDao(dbHelper.getBetDao());
+					bet.create();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			
 			bets.add(bet);
 		}

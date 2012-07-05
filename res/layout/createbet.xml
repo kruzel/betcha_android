@@ -1,94 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical" android:clickable="true">
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:layout_marginTop="10dp" android:text="@string/bet_you_that"/>
-
-    <EditText
-        android:id="@+id/bet_subject"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" android:layout_margin="10dp" android:layout_gravity="center_horizontal" android:typeface="normal" android:hint="@string/bet_subject_hint">
-
-        <requestFocus />
-    </EditText>    
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bet_you_on"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/bet_on"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" android:layout_margin="10dp" android:hint="@string/bet_you_on_hint"/>
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bet_due_time"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
-
-        <EditText
-            android:id="@+id/bet_due_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="none" android:layout_margin="10dp" 
-            android:editable="false"/>
-
-        <EditText
-            android:id="@+id/bet_due_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:inputType="none" android:layout_margin="10dp" 
-            android:editable="false"/>
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/my_bet"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/bet_my_bet"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="@string/my_bet_hint" />
-
-    <Button
-            android:id="@+id/button1"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="@string/open_bet" android:onClick="onCreateBet"/>
-    <LinearLayout
-        android:id="@+id/LinearLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:orientation="horizontal">
-
-        
-
-    </LinearLayout>
-
-</LinearLayout >
+	<LinearLayout android:id="@+id/linearLayout1"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:gravity="center_horizontal"
+	    android:orientation="vertical" android:clickable="true">
+	
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:layout_marginTop="10dp" android:text="@string/bet_you_that"/>
+	
+	    <EditText
+	        android:id="@+id/bet_subject"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" android:layout_margin="10dp" android:layout_gravity="center_horizontal" android:typeface="normal" android:hint="@string/bet_subject_hint">
+	
+	        <requestFocus />
+	    </EditText>    
+	
+	    <TextView
+	        android:id="@+id/textView3"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/bet_you_on"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/bet_on"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" android:layout_margin="10dp" android:hint="@string/bet_you_on_hint"/>
+	
+	    <TextView
+	        android:id="@+id/textView4"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/bet_due_time"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <LinearLayout
+	        android:id="@+id/linearLayout3"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content" >
+	
+	        <EditText
+	            android:id="@+id/bet_due_date"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:inputType="none" android:layout_margin="10dp" 
+	            android:editable="false"/>
+	
+	        <EditText
+	            android:id="@+id/bet_due_time"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="1"
+	            android:inputType="none" android:layout_margin="10dp" 
+	            android:editable="false"/>
+	
+	    </LinearLayout>
+	
+	    <TextView
+	        android:id="@+id/textView2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/my_bet"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <EditText
+	        android:id="@+id/bet_my_bet"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="10dp"
+	        android:hint="@string/my_bet_hint" />
+	
+	</LinearLayout >
+	
+	<SlidingDrawer
+	     android:id="@+id/drawer"
+	     android:layout_width="fill_parent"
+	     android:layout_height="fill_parent"
+		 android:layout_alignParentBottom="true"
+	     android:handle="@+id/handle_invite"
+	     android:content="@+id/invites_layout">
+	
+	     <Button
+	        android:id="@+id/handle_invite"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="10dp"
+	        android:text="@string/open_bet"  
+	        />
+	     
+			<RelativeLayout android:id="@+id/invites_layout"
+			    android:layout_width="fill_parent"
+			    android:layout_height="fill_parent"
+			    android:background="#000000">
+		        
+			     <ListView android:id="@+id/invites_list"
+			         android:layout_width="fill_parent"
+			         android:layout_height="wrap_content" 
+			         android:layout_margin="10dp"
+			         android:layout_above="@+id/submit_button">
+			     </ListView>
+			     
+			     <Button
+			        android:id="@+id/submit_button"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_margin="10dp"
+			        android:layout_alignParentBottom="true"
+			        android:text="@string/submit"  
+			        />
+			     
+			</RelativeLayout>
+	 </SlidingDrawer>
+	
+</RelativeLayout>

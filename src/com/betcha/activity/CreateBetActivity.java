@@ -1,6 +1,8 @@
 package com.betcha.activity;
 
+import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -19,6 +21,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.SlidingDrawer;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -26,11 +30,12 @@ import android.widget.Toast;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.adapter.InviteAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.User;
 import com.betcha.model.UserBet;
 
-public class CreateBetActivity extends Activity {
+public class CreateBetActivity extends Activity implements OnClickListener {
 	private BetchaApp app;
 	private TabHost tabHost;
 	
@@ -40,7 +45,12 @@ public class CreateBetActivity extends Activity {
 	private EditText betDueDate;
 	private EditText betDueTime;
 	private EditText betMyBet;
-	private Button submitButton;
+	
+	SlidingDrawer sliding;
+	private InviteAdapter inviteAdapter;
+    private ListView invitesList;  
+    private List<User> inviteUsers;
+    private Button submitButton;
 	
 	DatePickerDialog dateDialog;
 	TimePickerDialog timeDialog;
@@ -58,7 +68,6 @@ public class CreateBetActivity extends Activity {
         betDueDate = (EditText) findViewById(R.id.bet_due_date);
         betDueTime = (EditText) findViewById(R.id.bet_due_time);
         betMyBet = (EditText) findViewById(R.id.bet_my_bet);
-        submitButton = (Button) findViewById(R.id.button1);
         
         betDueDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 			public void onFocusChange(View v, boolean hasFocus) {
@@ -76,6 +85,10 @@ public class CreateBetActivity extends Activity {
 			}
 		});
         
+        submitButton = (Button) findViewById(R.id.submit_button);
+        submitButton.setOnClickListener(this);
+        
+                
         TabActivity act = (TabActivity) getParent();
         if(act==null)
         	return;
@@ -96,12 +109,20 @@ public class CreateBetActivity extends Activity {
         betMyBet.setText("");
         
         submitButton.setText(R.string.invite_friends);
-        submitButton.setOnClickListener(new OnClickListener() {
-			
-			public void onClick(View v) {
-				onCreateBet(v);
-			}
-		});
+        
+        //inviteUsers = fetch all users from DB and contacts list, later from FB
+        try {
+			inviteUsers = app.getHelper().getUserDao().queryBuilder().orderBy("name", true).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+        
+        if(inviteUsers!=null) {
+        	sliding=(SlidingDrawer) findViewById(R.id.drawer);
+	        invitesList = (ListView) sliding.findViewById(R.id.invites_list);
+	        inviteAdapter = new InviteAdapter(this, R.layout.invite_list_item, inviteUsers);
+	        invitesList.setAdapter(inviteAdapter);
+        }
 				
 		super.onResume();		
 	}
@@ -126,7 +147,9 @@ public class CreateBetActivity extends Activity {
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
         DateTime betDueDateAndTime = null;
     	      
-        if(errorFound == false) {
+        if(errorFound == true) {
+        	sliding.close();
+        } else {
         	betDueDateAndTime = DateTime.parse(betDueDate.getText().toString() + " " + betDueTime.getText().toString(), fmt);
         	       
         	//create a new bet and userBet
@@ -163,10 +186,17 @@ public class CreateBetActivity extends Activity {
 			String subject = "Betcha";
 			String emailtext = me.getName() + " is inviting you to bet on " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
 			emailtext += "\n\nLink to bet: http://betcha.com/" + bet.getUuid();
-			emailtext += "\n\nLink to app on Goole Play ...";
+			emailtext += "\n\nLink to app on Google Play ...";
+			emailtext += "\n\nLink to app on AppStore ...";
 			final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
 	        emailIntent.setType("text/html");
-	        //emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{ address});
+	        String [] receipiants = new String[inviteUsers.size()];
+	        int i=0;
+	        for (User user : inviteUsers) {
+	        	receipiants[i++] = user.getEmail();
+			}
+	        
+	        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, receipiants);
 	        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
 	        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
 	        Intent chooserIntent = Intent.createChooser(emailIntent, "Send mail...");
@@ -225,5 +255,9 @@ public class CreateBetActivity extends Activity {
 		   return String.valueOf(c);
 		else
 		   return "0" + String.valueOf(c);
+	}
+
+	public void onClick(View v) {
+		onCreateBet(v);
 	}
 }

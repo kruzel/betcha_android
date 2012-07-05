@@ -80,7 +80,10 @@ public class GetUserBetTask extends AsyncTask<Void, Void, Boolean> {
 		User user = null;
 		for (RESTUserBet restUserBetIt : restUserBet) {
 			try {
-					user = dbHelper.getUserDao().queryForId(restUserBetIt.getUser_id());
+					List<User> tmpUsers = dbHelper.getUserDao().queryForEq("server_id",restUserBetIt.getUser_id());
+					if(tmpUsers!=null && tmpUsers.size()>0) {
+						user = tmpUsers.get(0);
+					}
 					if(user==null) {
 						RESTClientUser userClient = new RESTClientUser(context);
 						RESTUser restUser = null;
