@@ -112,7 +112,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         
         //inviteUsers = fetch all users from DB and contacts list, later from FB
         try {
-			inviteUsers = app.getHelper().getUserDao().queryBuilder().orderBy("name", true).query();
+			inviteUsers = app.getHelper().getUserDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
