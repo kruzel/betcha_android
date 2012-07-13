@@ -101,7 +101,7 @@ public class GetThisUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 			
 			Bet tmpBet = null;
 			try {
-				List<Bet> tmpBets = dbHelper.getBetDao().queryForEq("server_id", restBet.getUser_id());
+				List<Bet> tmpBets = dbHelper.getBetDao().queryForEq("server_id", restBet.getId());
 				if(tmpBets!=null && tmpBets.size()>0) { 
 					tmpBet = tmpBets.get(0);
 				}

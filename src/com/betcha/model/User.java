@@ -15,6 +15,10 @@ public class User extends BaseDaoEnabled  {
 	private String name;
 	@DatabaseField
 	private String email;
+	@DatabaseField
+	private String pass;
+	@DatabaseField
+	private String fbID;
 	
 	public User() {
 		
@@ -57,6 +61,22 @@ public class User extends BaseDaoEnabled  {
 
 	public void setServer_id(int server_id) {
 		this.server_id = server_id;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	public String getFbID() {
+		return fbID;
+	}
+
+	public void setFbID(String fbID) {
+		this.fbID = fbID;
 	}
 
 	

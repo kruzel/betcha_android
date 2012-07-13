@@ -23,20 +23,23 @@ public class RESTClientUser extends RESTClient {
 	}
 
 	public RESTUser show(int id) throws RestClientException {
-		RESTUser res = restTemplate.getForObject(url + "/" + id + ".json" , RESTUser.class);
+		RESTUser res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , RESTUser.class);
 		return res;
 	}
 	
 	public RESTUser create(Map<String,String> arg) throws RestClientException {
+		arg.put("auth_token", GetToken());
 		RESTUser res = restTemplate.postForObject(url + ".json" , arg, RESTUser.class);		
 		return res;
 	}
 
 	public void update(Map<String,String> arg, int id) throws RestClientException {
+		arg.put("auth_token", GetToken());
+		
 		restTemplate.put(url + "/" + id + ".json", arg);
 	}
 
 	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json");
+		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
 	}
 }

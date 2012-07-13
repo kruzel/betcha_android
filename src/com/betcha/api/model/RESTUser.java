@@ -5,6 +5,8 @@ public class RESTUser  {
 	private int id;
 	private String name;
 	private String email;
+	private String pass;
+	private String fbID;
 	
 	public RESTUser() {
 		
@@ -39,6 +41,22 @@ public class RESTUser  {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getPass() {
+		return pass;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+
+	public String getFbID() {
+		return fbID;
+	}
+
+	public void setFbID(String fbID) {
+		this.fbID = fbID;
 	}
 
 }

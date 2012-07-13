@@ -1,4 +1,4 @@
-package com.betcha.api;
+package com.betcha.api.model;
 
 public class RESTUserBetUpdate {
 	int id;

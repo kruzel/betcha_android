@@ -12,7 +12,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.betcha.api.RESTClientUserBet;
-import com.betcha.api.RESTUserBetUpdate;
+import com.betcha.api.model.RESTUserBetUpdate;
 import com.betcha.das.DatabaseHelper;
 import com.betcha.model.UserBet;
 

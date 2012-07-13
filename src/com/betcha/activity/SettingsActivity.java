@@ -19,9 +19,10 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
 import com.betcha.model.tasks.CreateUserTask;
+import com.betcha.model.tasks.ICreateUserCB;
 import com.betcha.model.tasks.UpdateUserTask;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends Activity implements ICreateUserCB {
 	public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
 	          "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 	          "\\@" +
@@ -34,6 +35,7 @@ public class SettingsActivity extends Activity {
 	
 	private BetchaApp app;
 	EditText etEmail;
+	EditText etPass;
 	EditText etName;
 	
     /** Called when the activity is first created. */
@@ -48,12 +50,18 @@ public class SettingsActivity extends Activity {
         
         etEmail = (EditText) findViewById(R.id.editTextEmail);
         etName = (EditText) findViewById(R.id.editTextName);
+        etPass = (EditText) findViewById(R.id.editTextPass);
         
         if(me!=null) {
 	        String myEmail = app.getMe().getEmail();
 	        
 	        if(myEmail!= null && myEmail.length()!=0) {
 		        etEmail.setText(myEmail);
+	        }
+	        
+	        String myPass = app.getMe().getPass();
+	        if(myPass!=null && myPass.length()!=0) {
+	        	etPass.setText(myPass);
 	        }
 	        
 	        String myName = app.getMe().getName();
@@ -89,7 +97,12 @@ public class SettingsActivity extends Activity {
         	errorFound = true;
         }
     	
-    	if(etName.length()==0) {
+    	if(etPass.getText().length() < 6) {
+    		etEmail.setError(getString(R.string.error_pass_short));
+			errorFound = true;
+    	}
+    	
+    	if(etName.getText().length()==0) {
     		etName.setText(etEmail.getText().toString());
     	}
 		
@@ -98,31 +111,27 @@ public class SettingsActivity extends Activity {
         	
         	if(me==null) {
         		me = new User();
+        	}
+        	
 	        	me.setEmail(etEmail.getText().toString());
 	        	me.setName(etName.getText().toString());
+	        	me.setPass(etPass.getText().toString());
     		
     			app.createCreateUserTask();
-            	app.getCreateUserTask().setValues(me);
+            	app.getCreateUserTask().setValues(me, this);
             	app.getCreateUserTask().run();
-    		} else {
-    			me.setEmail(etEmail.getText().toString());
-	        	me.setName(etName.getText().toString());
-	        	
-    			app.createUpdateUsertask();
-        		app.getUpdateUsertask().setValues(me);
-        		app.getUpdateUsertask().run();
-    		}
+//    		} else {
+//    			me.setEmail(etEmail.getText().toString());
+//	        	me.setName(etName.getText().toString());
+//	        	me.setPass(etPass.getText().toString());
+//	        	
+//    			app.createUpdateUsertask();
+//        		app.getUpdateUsertask().setValues(me);
+//        		app.getUpdateUsertask().run();
+//    		}
     		
     		app.setMe(me);
         	
-        	TabActivity act = (TabActivity) getParent();
-            if(act==null)
-            	return;
-            
-    	    TabHost tabHost = act.getTabHost();  // The activity TabHost
-    	    if(tabHost != null){
-            	tabHost.setCurrentTab(0);
-            }
         }
 	}
 	
@@ -131,7 +140,7 @@ public class SettingsActivity extends Activity {
 		
 		//we create a user without details anyhow for the user id
 		app.createCreateUserTask();
-    	app.getCreateUserTask().setValues(me);
+    	app.getCreateUserTask().setValues(me, this);
     	app.getCreateUserTask().run();
 		
 		app.setMe(me);
@@ -139,10 +148,27 @@ public class SettingsActivity extends Activity {
     	TabActivity act = (TabActivity) getParent();
         if(act==null)
         	return;
-        
-	    TabHost tabHost = act.getTabHost();  // The activity TabHost
-	    if(tabHost != null){
-        	tabHost.setCurrentTab(0);
-        }
+	}
+	
+	public void OnFBConnect(View v) {
+		//TODO
+		
+	}
+
+
+	public void OnRegistrationComplete(String token) {
+		app.setToken(token);
+		
+		if(token!=null) {
+			TabActivity act = (TabActivity) getParent();
+	        if(act==null)
+	        	return;
+	        
+		    TabHost tabHost = act.getTabHost();  // The activity TabHost
+		    if(tabHost != null){
+	        	tabHost.setCurrentTab(0);
+	        }
+		}
+		
 	}
 }

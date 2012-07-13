@@ -23,6 +23,7 @@
 	<string name="set_bet_result">What was the bet result?</string>
 	<string name="publish_results">Publish results</string>
 	<string name="publishing_bet">Publishing bet...</string>
+	<string name="send">Send</string>
 
 	<string name="email_address">Email address</string>
 	<string name="email_address_hint">user@domain.com</string>
@@ -30,11 +31,15 @@
 	<string name="skip">Skip</string>
 	<string name="name">Nick name</string>
 	<string name="name_hint">user</string>
+	<string name="password">Password</string>
+	<string name="password_hint">password</string>
+	<string name="fb_Connect">FB Connect</string>
 	
 	<!-- messages -->
 	<string name="msg_bet_accepted">Bet accepted</string>
 	<string name="msg_bet_rejected">Bet rejected</string>
 	<string name="msg_bet_loading">Loading bet ...</string>
+	<string name="error_registration_succeeded">Registration succeeded</string>
 			
 	<!-- error messages -->
 	<string name="error_missing_bet_subject">Missing bet subject</string>
@@ -45,6 +50,8 @@
 	<string name="error_bad_email">Bad email address</string>
 	<string name="error_please_register">You need to register before placing bets</string>
 	<string name="error_bet_not_found">Bet not found</string>
+	<string name="error_registration_failed">Registration failed</string>
+	<string name="error_pass_short">Password to short</string>
 	
 	<!-- activities -->
     <string name="bettabactivity">bettabactivity</string>

@@ -1,24 +1,25 @@
 package com.betcha.model.tasks;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.web.client.RestClientException;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
-import com.betcha.api.RESTClientUser;
-import com.betcha.api.model.RESTUser;
+import com.betcha.R;
+import com.betcha.api.RESTClientToken;
+import com.betcha.api.model.RESTToken;
 import com.betcha.das.DatabaseHelper;
 import com.betcha.model.User;
 
-public class CreateUserTask extends AsyncTask<Void, Void, Boolean> {
+public class CreateUserTask extends AsyncTask<Void, Void, String> {
 	
 	private User user;
 	private Context context;
 	private DatabaseHelper dbHelper;	
+	private ICreateUserCB cb;
 
 	public CreateUserTask(Context context, DatabaseHelper dbHelper) {
 		super();
@@ -26,8 +27,9 @@ public class CreateUserTask extends AsyncTask<Void, Void, Boolean> {
 		this.dbHelper = dbHelper;
 	}
 
-	public void setValues(User user) {
+	public void setValues(User user, ICreateUserCB cb) {
 		this.user = user;
+		this.cb = cb;
 	}
 	
 	public void run() {
@@ -45,40 +47,41 @@ public class CreateUserTask extends AsyncTask<Void, Void, Boolean> {
 	}
 
 	@Override
-	protected Boolean doInBackground(Void... args) {
+	protected String doInBackground(Void... args) {
     	
-		RESTClientUser userClient = new RESTClientUser(context);
-		Map<String,String> paramsUser = new HashMap<String,String>();
-		paramsUser.put("name", user.getName());
-		paramsUser.put("email", user.getEmail());
+		RESTClientToken tokenClient = new RESTClientToken(context);
 				
-		RESTUser restUser = null;
+		RESTToken restToken = null;
 		try {
-			restUser = userClient.create(paramsUser);
+			restToken = tokenClient.create(user.getEmail(), user.getPass(), user.getName());
 		} catch (RestClientException e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-		user.setServer_id(restUser.getId());
+		
+		user.setServer_id(restToken.getId());
+		
 		try {
 			user.update();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+			return null;
 		}
 	       					
-		return true;
+		return restToken.getToken();
 	}
 
 	@Override
-	protected void onPostExecute(Boolean result) {
-//		if(result) {	    	
-//	    	Toast.makeText(context, R.string.msg_bet_accepted, Toast.LENGTH_LONG);
-//		} else {
-//			Toast.makeText(context, R.string.msg_bet_rejected, Toast.LENGTH_LONG);
-//		}
+	protected void onPostExecute(String token) {
+		if(token==null) {	    	
+	    	Toast.makeText(context, R.string.error_registration_failed, Toast.LENGTH_LONG);
+		}
 		
-		super.onPostExecute(result);
+		if(cb!=null) {
+			cb.OnRegistrationComplete(token);
+		}
+		
+		super.onPostExecute(token);
 	}
 	
 }

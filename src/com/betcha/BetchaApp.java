@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
+import com.betcha.api.RESTClient;
 import com.betcha.das.DatabaseHelper;
 import com.betcha.model.User;
 import com.betcha.model.tasks.CreateBetTask;
@@ -101,6 +102,9 @@ public class BetchaApp extends Application {
 				e.printStackTrace();
 			}
 		}
+		
+		String authToken = prefs.getString("auth_token", null);
+		RESTClient.SetToken(authToken);
 	}
 	
 	public SharedPreferences getPrefs() {
@@ -115,6 +119,12 @@ public class BetchaApp extends Application {
 		this.me = me;	
 		Editor editor = prefs.edit();
 		editor.putInt("my_user_id", me.getId());
+		editor.commit();
+	}
+	
+	public void setToken(String token) {
+		Editor editor = prefs.edit();
+		editor.putString("auth_token", token);
 		editor.commit();
 	}
 

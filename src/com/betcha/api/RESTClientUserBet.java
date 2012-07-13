@@ -11,6 +11,7 @@ import android.content.Context;
 
 import com.betcha.R;
 import com.betcha.api.model.RESTUserBet;
+import com.betcha.api.model.RESTUserBetUpdate;
 
 
 public class RESTClientUserBet extends RESTClient {
@@ -25,31 +26,33 @@ public class RESTClientUserBet extends RESTClient {
 	}
 
 	public RESTUserBet show(int id) throws RestClientException {
-		RESTUserBet res = restTemplate.getForObject(url + "/" + id + ".json" , RESTUserBet.class);
+		RESTUserBet res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , RESTUserBet.class);
 		return res;
 	}
 	
 	public List<RESTUserBet> showBetId(int id) throws RestClientException {
 		
-		RESTUserBet[] res = restTemplate.getForObject(url + "/show_bet_id.json?bet_id={id}" , RESTUserBet[].class, id);
+		RESTUserBet[] res = restTemplate.getForObject(url + "/show_bet_id.json?bet_id={id}&"+ GetURLTokenParam() , RESTUserBet[].class, id);
 		return new ArrayList<RESTUserBet>(Arrays.asList(res));
 	}
 
 	public RESTUserBet create(Map<String,String> arg) throws RestClientException {
+		arg.put("auth_token", GetToken());
 		RESTUserBet res = restTemplate.postForObject(url + ".json" , arg, RESTUserBet.class);		
 		return res;
 	}
 
 	public void update(Map<String,String> arg, int id) throws RestClientException {
+		arg.put("auth_token", GetToken());
 		restTemplate.put(url + "/" + id + ".json", arg);
 	}
 	
 	public void update(List<RESTUserBetUpdate> arg) throws RestClientException {
-		restTemplate.put(url + "/update_list.json", arg);
+		restTemplate.put(url + "/update_list.json?"+ GetURLTokenParam(), arg);
 	}
 
 	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json");
+		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
 	}
 
 

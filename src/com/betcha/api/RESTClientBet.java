@@ -25,30 +25,32 @@ public class RESTClientBet extends RESTClient {
 
 
 	public RESTBet show(int id) throws RestClientException {
-		RESTBet res = restTemplate.getForObject(url + "/" + id + ".json" , RESTBet.class);
+		RESTBet res = restTemplate.getForObject(url + "/" + id  + ".json?"+ GetURLTokenParam() , RESTBet.class);
 		return res;
 	}
 	
 	public RESTBet showUUID(String uuid) throws RestClientException {
-		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}" , RESTBet.class, uuid);
+		RESTBet res = restTemplate.getForObject(url + "/show_uuid.json?uuid={uuid}&" + GetURLTokenParam()  , RESTBet.class, uuid);
 		return res;
 	}
 	
 	public List<RESTBet> show_for_user_id(int id) throws RestClientException {
-		RESTBet[] res = restTemplate.getForObject(url + "/show_for_user_id/{id}.json" , RESTBet[].class, id);
+		RESTBet[] res = restTemplate.getForObject(url + "/show_for_user_id/{id}.json?"+ GetURLTokenParam() , RESTBet[].class, id);
 		return new ArrayList<RESTBet>(Arrays.asList(res));
 	}
 
 	public RESTBet create(Map<String,String> arg) throws RestClientException {
+		arg.put("auth_token", GetToken());
 		RESTBet res = restTemplate.postForObject(url + ".json" , arg, RESTBet.class);		
 		return res;
 	}
 
 	public void update(Map<String,String> arg, int id) throws RestClientException {
+		arg.put("auth_token", GetToken());
 		restTemplate.put(url + "/" + id + ".json", arg);
 	}
 
 	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json");
+		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
 	}
 }
