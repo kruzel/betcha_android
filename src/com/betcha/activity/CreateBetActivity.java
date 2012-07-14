@@ -7,6 +7,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.util.StringUtils;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -14,8 +15,11 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TabActivity;
 import android.app.TimePickerDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -116,6 +120,28 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+        
+        ContentResolver cr = getContentResolver();
+        Cursor emailCur = cr.query( 
+    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+    		new String[] {
+    		        ContactsContract.Data.DISPLAY_NAME,
+    		        ContactsContract.CommonDataKinds.Email.DATA }
+    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
+    	while (emailCur.moveToNext()) { 
+    	    // This would allow you get several email addresses
+                // if the email addresses were stored in an array
+    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+     	
+     	    if(name!=null || email!=null) {
+     	    	User tmpUser = new User();
+     	    	tmpUser.setName(name);
+          	   	tmpUser.setEmail(email);
+     	    	inviteUsers.add(tmpUser);
+    		}  
+     	} 
+     	emailCur.close();
         
         if(inviteUsers!=null) {
         	sliding=(SlidingDrawer) findViewById(R.id.drawer);

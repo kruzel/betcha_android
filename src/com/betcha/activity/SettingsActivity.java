@@ -144,17 +144,12 @@ public class SettingsActivity extends Activity implements ICreateUserCB {
     	app.getCreateUserTask().run();
 		
 		app.setMe(me);
-    	
-    	TabActivity act = (TabActivity) getParent();
-        if(act==null)
-        	return;
 	}
 	
 	public void OnFBConnect(View v) {
 		//TODO
 		
 	}
-
 
 	public void OnRegistrationComplete(String token) {
 		app.setToken(token);
@@ -166,9 +161,9 @@ public class SettingsActivity extends Activity implements ICreateUserCB {
 	        
 		    TabHost tabHost = act.getTabHost();  // The activity TabHost
 		    if(tabHost != null){
+		    	tabHost.getTabWidget().setEnabled(true);
 	        	tabHost.setCurrentTab(0);
 	        }
 		}
-		
 	}
 }

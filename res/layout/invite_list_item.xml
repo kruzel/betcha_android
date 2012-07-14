@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_margin="5dp" />
+        android:layout_margin="5dp"/>
 
     <TextView
         android:id="@+id/tv_invite_user"
@@ -22,15 +22,15 @@
         android:layout_alignBottom="@+id/cb_is_invited"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-<!--     <TextView -->
-<!--         android:id="@+id/tv_invite_user_contact" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_alignBaseline="@+id/cb_is_invited" -->
-<!--         android:layout_alignBottom="@+id/cb_is_invited" -->
-<!--         android:layout_margin="5dp" -->
-<!--         android:layout_toRightOf="@+id/tv_invite_user" -->
-<!--         android:text="contact" -->
-<!--         android:textAppearance="?android:attr/textAppearanceMedium" /> -->
+    <TextView
+        android:id="@+id/tv_invite_user_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/cb_is_invited"
+        android:layout_alignBottom="@+id/cb_is_invited"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@+id/tv_invite_user"
+        android:text="contact"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

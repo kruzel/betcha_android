@@ -20,6 +20,8 @@ public class User extends BaseDaoEnabled  {
 	@DatabaseField
 	private String fbID;
 	
+	private Boolean isInvitedToBet;
+	
 	public User() {
 		
 	}
@@ -79,5 +81,11 @@ public class User extends BaseDaoEnabled  {
 		this.fbID = fbID;
 	}
 
-	
+	public Boolean getIsInvitedToBet() {
+		return isInvitedToBet;
+	}
+
+	public void setIsInvitedToBet(Boolean isInvitedToBet) {
+		this.isInvitedToBet = isInvitedToBet;
+	}
 }

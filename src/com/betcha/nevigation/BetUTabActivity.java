@@ -65,6 +65,7 @@ public class BetUTabActivity extends TabActivity {
 	    tabHost.addTab(spec);
 	    
 	    if(app.getMe()==null) {
+	    	tabHost.getTabWidget().setEnabled(false);
 	    	tabHost.setCurrentTab(2);
 	    } else if(app.getBetUUID() != null) {
 	    	tabHost.setCurrentTab(1);
