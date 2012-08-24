@@ -7,7 +7,6 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.springframework.util.StringUtils;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
@@ -16,10 +15,10 @@ import android.app.Dialog;
 import android.app.TabActivity;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -36,8 +35,8 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.InviteAdapter;
 import com.betcha.model.Bet;
+import com.betcha.model.Prediction;
 import com.betcha.model.User;
-import com.betcha.model.UserBet;
 
 public class CreateBetActivity extends Activity implements OnClickListener {
 	private BetchaApp app;
@@ -114,34 +113,44 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         
         //inviteUsers = fetch all users from DB and contacts list, later from FB
         try {
-        		inviteUsers = app.getHelper().getUserDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
+        	//TODO add distinct email 
+        		inviteUsers = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
         
-        ContentResolver cr = getContentResolver();
-        Cursor emailCur = cr.query( 
-    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
-    		new String[] {
-    		        ContactsContract.Data.DISPLAY_NAME,
-    		        ContactsContract.CommonDataKinds.Email.DATA }
-    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
-    	while (emailCur.moveToNext()) { 
-    	    // This would allow you get several email addresses
-                // if the email addresses were stored in an array
-    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-     	
-     	    if(name!=null || email!=null) {
-     	    	User tmpUser = new User();
-     	    	tmpUser.setName(name);
-          	   	tmpUser.setEmail(email);
-     	    	inviteUsers.add(tmpUser);
-    		}  
-     	} 
-     	emailCur.close();
+        //invite users only from pre-loaded friend list should be loaded ad registration)
+//        ContentResolver cr = getContentResolver();
+//        Cursor emailCur = cr.query( 
+//    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+//    		new String[] {
+//    		        ContactsContract.Data.DISPLAY_NAME,
+//    		        ContactsContract.CommonDataKinds.Email.DATA }
+//    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
+//    	while (emailCur.moveToNext()) { 
+//    	    // This would allow you get several email addresses
+//                // if the email addresses were stored in an array
+//    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+//     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+//     	
+//     	    //verify this user is not a known user and already included
+//     	    List<User> foundUsers = null;
+//     	    try {
+//				foundUsers = User.getModelDao().queryForEq("email", email);
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//     	    
+//     	    if((name!=null || email!=null) && (foundUsers.size()==0)) {
+//     	    	User tmpUser = new User();
+//     	    	tmpUser.setName(name);
+//          	   	tmpUser.setEmail(email);
+//     	    	inviteUsers.add(tmpUser);
+//    		}  
+//     	} 
+//     	emailCur.close();
         
         if(inviteUsers!=null) {
         	sliding=(SlidingDrawer) findViewById(R.id.drawer);
@@ -196,38 +205,24 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         	
         	bet.setOwner(me);
         	
-        	UserBet userBet = new UserBet();
-        	userBet.setBet(bet);
-        	userBet.setUser(me);
-        	userBet.setDate(new DateTime()); //current betting time
-        	userBet.setMyBet(betMyBet.getText().toString());
-        	userBet.setMyAck(getString(R.string.pending));
+        	Prediction prediction = new Prediction(bet);
+        	prediction.setUser(me);
+        	prediction.setDate(new DateTime()); //current betting time
+        	prediction.setPrediction(betMyBet.getText().toString());
+        	prediction.setMyAck(getString(R.string.pending));
     		       	
+        	bet.setOwnerPrediction(prediction);
+        	
         	Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
         	
-        	app.createCreateBetTask().setValues(bet, userBet, me);
-        	app.getCreateBetTask().run();
-        	
-        	//TODO - set selected friends and send invite
-			String subject = "Betcha";
-			String emailtext = me.getName() + " is inviting you to bet on " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
-			emailtext += "\n\nLink to bet: http://betcha.com/" + bet.getUuid();
-			emailtext += "\n\nLink to app on Google Play ...";
-			emailtext += "\n\nLink to app on AppStore ...";
-			final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-	        emailIntent.setType("text/html");
-	        String [] receipiants = new String[inviteUsers.size()];
-	        int i=0;
-	        for (User user : inviteUsers) {
-	        	receipiants[i++] = user.getEmail();
+        	try {
+				bet.create();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-	        
-	        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, receipiants);
-	        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-	        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
-	        Intent chooserIntent = Intent.createChooser(emailIntent, "Send mail...");
-	        chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        startActivity(chooserIntent);
+        	
+        	//prediction will be create inside bet after bet is created
 	        
         	// When clicked, move back to records tab
             if(tabHost != null){
@@ -286,4 +281,5 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		onCreateBet(v);
 	}
+	
 }

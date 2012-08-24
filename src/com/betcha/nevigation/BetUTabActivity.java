@@ -27,12 +27,15 @@ public class BetUTabActivity extends TabActivity {
 		
 		app = (BetchaApp) getApplication();
 		
-		String betUUID=null;
 		Intent launchIntent = getIntent();
 		Uri data = launchIntent.getData();
 		if(data!=null) {
 			List<String> params = data.getPathSegments();
-			app.setBetUUID(params.get(0)); // "bet uuid"
+			try {
+				app.setBetId(Integer.parseInt(params.get(0)));
+			} catch (NumberFormatException e) {
+				// TODO: handle exception
+			}
 		}
 
 	    Resources res = getResources(); // Resource object to get Drawables
@@ -42,9 +45,6 @@ public class BetUTabActivity extends TabActivity {
 
 	    // Create an Intent to launch an Activity for the tab (to be reused)
 	    intent = new Intent().setClass(this, CreateBetActivity.class);
-	    intent.putExtra("betUUID", betUUID);
-
-	    // Initialize a TabSpec for each tab and add it to the TabHost
 	    spec = tabHost.newTabSpec("bet").setIndicator("Bet",
 	                      res.getDrawable(R.drawable.ic_tab_createbet))
 	                  .setContent(intent);
@@ -67,10 +67,10 @@ public class BetUTabActivity extends TabActivity {
 	    if(app.getMe()==null) {
 	    	tabHost.getTabWidget().setEnabled(false);
 	    	tabHost.setCurrentTab(2);
-	    } else if(app.getBetUUID() != null) {
+	    } else if(app.getBetId() != -1) {
 	    	tabHost.setCurrentTab(1);
 	    } else {
-	    	tabHost.setCurrentTab(0);
+	    	tabHost.setCurrentTab(1);
 	    }
 	    
 	    tabHost.setOnTabChangedListener(new OnTabChangeListener() {

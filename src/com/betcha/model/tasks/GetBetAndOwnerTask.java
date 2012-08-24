@@ -5,45 +5,35 @@ import java.util.List;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
-import com.betcha.api.RESTClientBet;
-import com.betcha.api.RESTClientUser;
-import com.betcha.api.model.RESTBet;
-import com.betcha.api.model.RESTUser;
-import com.betcha.das.DatabaseHelper;
 import com.betcha.model.Bet;
 import com.betcha.model.User;
+import com.betcha.model.server.api.BetRestClient;
+import com.betcha.model.server.api.UserRestClient;
 
 public class GetBetAndOwnerTask extends AsyncTask<Void, Void, Boolean> {
 	private Bet bet = null;
 	private User owner = null;
-	private String uuid;
-	private Context context;
-	private DatabaseHelper dbHelper;	
+	private int bet_server_id;
 	private IGetBetAndOwnerCB cb;
 
-	public GetBetAndOwnerTask(Context context, DatabaseHelper dbHelper) {
-		super();
-		this.context = context;
-		this.dbHelper = dbHelper;
-	}
-
-	public void setValues(String uuid, IGetBetAndOwnerCB cb) {
-		this.uuid = uuid;
+	public void setValues(int bet_server_id, IGetBetAndOwnerCB cb) {
+		this.bet_server_id = bet_server_id;
 		this.cb = cb;
 	}
 	
 	public void run() {
 		
 		try {
-			List<Bet> bets = dbHelper.getBetDao().queryForEq("uuid", uuid);
+			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", bet_server_id);
 			if(bets.size()>0) {
 				bet = bets.get(0);
-				List<User> owners = dbHelper.getUserDao().queryForEq("id", bet.getOwner().getId());
+				List<User> owners = User.getModelDao().queryForEq("id", bet.getOwner().getId());
 				if(owners.size()>0) {
 					owner = owners.get(0);
 					bet.setOwner(owner);
@@ -64,47 +54,67 @@ public class GetBetAndOwnerTask extends AsyncTask<Void, Void, Boolean> {
 	protected Boolean doInBackground(Void... params) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
-		RESTClientBet betClient = new RESTClientBet(context);
-		RESTBet restBet = null;
+		BetRestClient betClient = new BetRestClient();
+		JSONObject jsonBet = null;
 		try {
-			restBet = betClient.showUUID(uuid);
+			jsonBet = betClient.show(bet_server_id);
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return false;
 		}
-		if(restBet==null)
+		if(jsonBet==null)
 			return false;
 		
 		try {
 			List<User> listUser = null;
-			listUser = dbHelper.getUserDao().queryForEq("server_id", restBet.getUser_id());
+			listUser = User.getModelDao().queryForEq("server_id", jsonBet.getInt("user_id"));
 			if(listUser!=null && listUser.size()>0) {
 				owner = listUser.get(0);
 			}
 		} catch (SQLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		if(owner == null) { //then create it
-			RESTClientUser userClient = new RESTClientUser(context);
-			RESTUser restOwner = null;
+			UserRestClient userClient = new UserRestClient();
+			JSONObject jsonOwner = null;
 			try {
-				restOwner = userClient.show(restBet.getUser_id());
+				jsonOwner = userClient.show(jsonBet.getInt("user_id"));
 			} catch (RestClientException e) {
 				e.printStackTrace();
 				return false;
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			if(restOwner==null)
+			if(jsonOwner==null)
 				return false;
 			
 			owner = new User();
-			owner.setEmail(restOwner.getEmail());
-			owner.setName(restOwner.getName());
-			owner.setServer_id(restOwner.getId());
+			try {
+				owner.setEmail(jsonOwner.getString("email"));
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				owner.setName(jsonOwner.getString("full_name"));
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			try {
+				owner.setServer_id(jsonOwner.getInt("id"));
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			
 			try {
-				owner.setDao(dbHelper.getUserDao());
 				owner.create();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -114,15 +124,30 @@ public class GetBetAndOwnerTask extends AsyncTask<Void, Void, Boolean> {
 		
 		try {
 			bet = new Bet();
-			bet.setReward(restBet.getReward());
-			bet.setSubject(restBet.getSubject());
-			bet.setDate(formatter.parseDateTime(restBet.getDate()));
-			bet.setDueDate(formatter.parseDateTime(restBet.getDueDate()));
+			bet.setServer_id(jsonBet.getInt("id"));
 			bet.setOwner(owner);
-			bet.setServer_id(restBet.getId());
-			bet.setState(restBet.getState());
-			bet.setUuid(uuid);
-			bet.setDao(dbHelper.getBetDao());
+			
+			bet.create();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			bet.setReward(jsonBet.getString("reward"));
+			bet.setSubject(jsonBet.getString("subject"));
+			bet.setDate(formatter.parseDateTime(jsonBet.getString("created_at")));
+			bet.setDueDate(formatter.parseDateTime(jsonBet.getString("due_date")));
+			bet.setState(jsonBet.getString("state"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
 			bet.create();
 		} catch (SQLException e) {
 			e.printStackTrace();

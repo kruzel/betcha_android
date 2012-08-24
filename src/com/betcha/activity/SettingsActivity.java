@@ -1,12 +1,7 @@
 package com.betcha.activity;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.SQLException;
 import java.util.regex.Pattern;
-
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.GsonHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 
 import android.app.Activity;
 import android.app.TabActivity;
@@ -14,15 +9,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
-import com.betcha.model.tasks.CreateUserTask;
-import com.betcha.model.tasks.ICreateUserCB;
-import com.betcha.model.tasks.UpdateUserTask;
 
-public class SettingsActivity extends Activity implements ICreateUserCB {
+public class SettingsActivity extends Activity {
 	public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
 	          "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 	          "\\@" +
@@ -59,7 +52,7 @@ public class SettingsActivity extends Activity implements ICreateUserCB {
 		        etEmail.setText(myEmail);
 	        }
 	        
-	        String myPass = app.getMe().getPass();
+	        String myPass = app.getMe().getPassword();
 	        if(myPass!=null && myPass.length()!=0) {
 	        	etPass.setText(myPass);
 	        }
@@ -111,51 +104,38 @@ public class SettingsActivity extends Activity implements ICreateUserCB {
         	
         	if(me==null) {
         		me = new User();
-        	}
-        	
+        		        
+        		me.setProvider("email");
 	        	me.setEmail(etEmail.getText().toString());
 	        	me.setName(etName.getText().toString());
-	        	me.setPass(etPass.getText().toString());
+	        	me.setPassword(etPass.getText().toString());
     		
-    			app.createCreateUserTask();
-            	app.getCreateUserTask().setValues(me, this);
-            	app.getCreateUserTask().run();
-//    		} else {
-//    			me.setEmail(etEmail.getText().toString());
-//	        	me.setName(etName.getText().toString());
-//	        	me.setPass(etPass.getText().toString());
-//	        	
-//    			app.createUpdateUsertask();
-//        		app.getUpdateUsertask().setValues(me);
-//        		app.getUpdateUsertask().run();
-//    		}
+	        	try {
+					me.create();
+				} catch (SQLException e) {
+					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+					e.printStackTrace();
+					return;
+				}
+	        	
+    		} else {
+    			
+    			me.setEmail(etEmail.getText().toString());
+	        	me.setName(etName.getText().toString());
+	        	me.setPassword(etPass.getText().toString());
+	        	
+    			try {
+					me.update();
+				} catch (SQLException e) {
+					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+					e.printStackTrace();
+					return;
+				}
+    		}
     		
     		app.setMe(me);
-        	
-        }
-	}
-	
-	public void onSkip(View v) {
-		User me = new User();
-		
-		//we create a user without details anyhow for the user id
-		app.createCreateUserTask();
-    	app.getCreateUserTask().setValues(me, this);
-    	app.getCreateUserTask().run();
-		
-		app.setMe(me);
-	}
-	
-	public void OnFBConnect(View v) {
-		//TODO
-		
-	}
-
-	public void OnRegistrationComplete(String token) {
-		app.setToken(token);
-		
-		if(token!=null) {
-			TabActivity act = (TabActivity) getParent();
+    		
+    		TabActivity act = (TabActivity) getParent();
 	        if(act==null)
 	        	return;
 	        
@@ -164,6 +144,39 @@ public class SettingsActivity extends Activity implements ICreateUserCB {
 		    	tabHost.getTabWidget().setEnabled(true);
 	        	tabHost.setCurrentTab(0);
 	        }
-		}
+        	
+        }
 	}
+	
+	public void onSkip(View v) {
+		User me = new User();
+		me.setProvider("email");
+		
+		try {
+			me.create();
+		} catch (SQLException e) {
+			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+			e.printStackTrace();
+			return;
+		}
+		
+		app.setMe(me);
+		
+		TabActivity act = (TabActivity) getParent();
+        if(act==null)
+        	return;
+        
+	    TabHost tabHost = act.getTabHost();  // The activity TabHost
+	    if(tabHost != null){
+	    	tabHost.getTabWidget().setEnabled(true);
+        	tabHost.setCurrentTab(0);
+        }
+	}
+	
+	public void OnFBConnect(View v) {
+		//TODO run FB connect flow
+		
+	}
+	
+	//TODO on registration - load contacts to friends list
 }

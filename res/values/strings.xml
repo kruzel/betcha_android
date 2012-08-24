@@ -2,7 +2,7 @@
 <resources>
 
     <string name="hello">Hello World, BetUActivity!</string>
-    <string name="app_name">Betcha</string>
+    <string name="app_name">DropaBet</string>
     <string name="bet_you_that">Betcha ...</string>
     <string name="bet_subject_hint">Describe bet topic ...</string>
     <string name="bet_you_on">Reward ...</string>
@@ -53,6 +53,7 @@
 	<string name="error_bet_not_found">Bet not found</string>
 	<string name="error_registration_failed">Registration failed</string>
 	<string name="error_pass_short">Password to short</string>
+	<string name="error_failed_publishing_bet">Failed creatign bet</string>
 	
 	<!-- activities -->
     <string name="bettabactivity">bettabactivity</string>

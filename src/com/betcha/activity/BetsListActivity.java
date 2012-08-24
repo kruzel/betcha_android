@@ -24,7 +24,11 @@ import com.betcha.nevigation.BetListGroupActivity;
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IGetThisUserBetsCB {
+/**
+ * @author ofer
+ *
+ */
+public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IGetBetAndOwnerCB {
 	private BetchaApp app;
 	private BetAdapter betAdapter;
 	private List<Bet> bets;
@@ -46,8 +50,7 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	        app.createGetThisUserBetsTask().setValues(app.getMe(), BetsListActivity.this);
-    	        app.getGetThisUserBetsTask().run();
+    	    	Bet.refreshForUser(app.getMe(), BetsListActivity.this);
     	    }
     	});
         
@@ -62,15 +65,13 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
     }
     
 	protected void onResume() {
-		if(app.getBetUUID() != null) {
+		if(app.getBetId()!=-1) {
 			dialog = ProgressDialog.show(BetsListActivity.this.getParent(), "", 
 	                getString(R.string.msg_bet_loading), true);
 			
-			app.createGetBetAndOwnerTaks();
-			app.getGetBetAndOwnerTaks().setValues(app.getBetUUID(), this);
-			app.getGetBetAndOwnerTaks().run();
+			Bet.fetchBetAndOwner(app.getBetId(), this);		
 			
-			app.setBetUUID(null); //avoid going here on next resume
+			app.setBetId(-1); //avoid going here on next resume
 			
 		} 
 		
@@ -99,7 +100,7 @@ public class BetsListActivity extends Activity implements IGetBetAndOwnerCB , IG
 	public void populate() {
 		// query for all of the bets objects in the database
  		try {
- 			bets = app.getHelper().getBetDao().queryForAll();
+ 			bets = Bet.getModelDao().queryForAll();
  		} catch (SQLException e) {
  			Log.e(getClass().getSimpleName(), ".onCreate() - failed getting bet list");
  			e.printStackTrace();
