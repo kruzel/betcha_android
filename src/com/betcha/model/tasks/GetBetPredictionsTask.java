@@ -50,7 +50,9 @@ public class GetBetPredictionsTask extends AsyncTask<Void, Void, Boolean> {
 		}
 				
 		//get the rest from the server
-		execute();
+		if(getStatus()!=Status.RUNNING)
+			execute();
+		
 		return true;
 	}
 
@@ -58,10 +60,10 @@ public class GetBetPredictionsTask extends AsyncTask<Void, Void, Boolean> {
 	protected Boolean doInBackground(Void... params) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
-		PredictionRestClient userBetClient = new PredictionRestClient(bet.getServer_id());
+		PredictionRestClient predictionClient = new PredictionRestClient(bet.getServer_id());
 		JSONArray jsonPredictions = null;
 		try {
-			jsonPredictions = userBetClient.showPredictionsForBet(betServerId);
+			jsonPredictions = predictionClient.showPredictionsForBet(bet.getServer_id());
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return false;

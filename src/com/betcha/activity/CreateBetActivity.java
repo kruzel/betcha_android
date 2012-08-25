@@ -91,12 +91,64 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(this);
         
+        initFriendList();
+        
                 
         TabActivity act = (TabActivity) getParent();
         if(act==null)
         	return;
         
 	    tabHost = act.getTabHost();  // The activity TabHost
+    }
+    
+    private void initFriendList() {
+        //inviteUsers = fetch all users from DB and contacts list, later from FB
+        try {
+        	//TODO add distinct email 
+        		inviteUsers = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+        
+        //invite users only from pre-loaded friend list should be loaded ad registration)
+        ContentResolver cr = getContentResolver();
+        Cursor emailCur = cr.query( 
+    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+    		new String[] {
+    		        ContactsContract.Data.DISPLAY_NAME,
+    		        ContactsContract.CommonDataKinds.Email.DATA }
+    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
+    	while (emailCur.moveToNext()) { 
+    	    // This would allow you get several email addresses
+                // if the email addresses were stored in an array
+    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+     	
+     	    //verify this user is not a known user and already included
+     	    List<User> foundUsers = null;
+     	    try {
+				foundUsers = User.getModelDao().queryForEq("email", email);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+     	    
+     	    if((name!=null || email!=null) && (foundUsers.size()==0)) {
+     	    	User tmpUser = new User();
+     	    	tmpUser.setName(name);
+          	   	tmpUser.setEmail(email);
+     	    	inviteUsers.add(tmpUser);
+    		}  
+     	} 
+     	emailCur.close();
+        
+        if(inviteUsers!=null) {
+        	sliding=(SlidingDrawer) findViewById(R.id.drawer);
+	        invitesList = (ListView) sliding.findViewById(R.id.invites_list);
+	        inviteAdapter = new InviteAdapter(this, R.layout.invite_list_item, inviteUsers);
+	        invitesList.setAdapter(inviteAdapter);
+        }
     }
 
 	@Override
@@ -110,54 +162,6 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	    betSubject.setText("");
         betReward.setText("");
         betMyBet.setText("");
-        
-        //inviteUsers = fetch all users from DB and contacts list, later from FB
-        try {
-        	//TODO add distinct email 
-        		inviteUsers = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-        
-        //invite users only from pre-loaded friend list should be loaded ad registration)
-//        ContentResolver cr = getContentResolver();
-//        Cursor emailCur = cr.query( 
-//    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
-//    		new String[] {
-//    		        ContactsContract.Data.DISPLAY_NAME,
-//    		        ContactsContract.CommonDataKinds.Email.DATA }
-//    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
-//    	while (emailCur.moveToNext()) { 
-//    	    // This would allow you get several email addresses
-//                // if the email addresses were stored in an array
-//    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-//     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-//     	
-//     	    //verify this user is not a known user and already included
-//     	    List<User> foundUsers = null;
-//     	    try {
-//				foundUsers = User.getModelDao().queryForEq("email", email);
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//     	    
-//     	    if((name!=null || email!=null) && (foundUsers.size()==0)) {
-//     	    	User tmpUser = new User();
-//     	    	tmpUser.setName(name);
-//          	   	tmpUser.setEmail(email);
-//     	    	inviteUsers.add(tmpUser);
-//    		}  
-//     	} 
-//     	emailCur.close();
-        
-        if(inviteUsers!=null) {
-        	sliding=(SlidingDrawer) findViewById(R.id.drawer);
-	        invitesList = (ListView) sliding.findViewById(R.id.invites_list);
-	        inviteAdapter = new InviteAdapter(this, R.layout.invite_list_item, inviteUsers);
-	        invitesList.setAdapter(inviteAdapter);
-        }
 				
 		super.onResume();		
 	}
@@ -280,6 +284,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 
 	public void onClick(View v) {
 		onCreateBet(v);
+		sliding.close();
 	}
 	
 }

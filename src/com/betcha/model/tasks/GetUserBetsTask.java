@@ -10,8 +10,10 @@ import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 
 import com.betcha.model.Bet;
+import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.UserRestClient;
@@ -25,6 +27,15 @@ public class GetUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 	public void setValues(User user, IGetThisUserBetsCB cb) {
 		this.user = user;
 		this.cb = cb;
+	}
+	
+	public Boolean run() {
+				
+		//get the rest from the server
+		if(getStatus()!=Status.RUNNING)
+			execute();
+		
+		return true;
 	}
 
 	@Override

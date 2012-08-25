@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.web.client.RestClientException;
 
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 
 import com.betcha.model.Prediction;
 import com.betcha.model.server.api.PredictionRestClient;
@@ -44,7 +45,8 @@ public class UpdatePredictionsTask extends AsyncTask<Void, Void, Boolean> {
 			}
 		}
 		
-		execute();
+		if(getStatus()!=Status.RUNNING)
+			execute();
 	}
 
 	@Override

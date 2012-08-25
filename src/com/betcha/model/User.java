@@ -35,8 +35,17 @@ public class User extends ModelCache<User,Integer> {
 	private String access_token;
 	
 	private Boolean isInvitedToBet;
-	private UserRestClient userClient = new UserRestClient();
 	
+	// TODO change to static to save memory
+	private UserRestClient userClient;
+	
+	public UserRestClient getUserClient() {
+		if(userClient==null)
+			userClient = new UserRestClient();
+		
+		return userClient;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -123,9 +132,9 @@ public class User extends ModelCache<User,Integer> {
 		JSONObject jsonUser = null;
 		
 		if (provider == "email") {
-			jsonUser = userClient.create(name, email, password);
+			jsonUser = getUserClient().create(name, email, password);
 		} else if (provider == "facebook") {
-			jsonUser = userClient.createOAuth(provider, uid, access_token);
+			jsonUser = getUserClient().createOAuth(provider, uid, access_token);
 		}
 		
 		setServer_id(jsonUser.optInt("id",-1));
@@ -158,18 +167,18 @@ public class User extends ModelCache<User,Integer> {
 		arg.put("uid", uid);
 		arg.put("access_token", access_token);
 		
-		userClient.update(arg, server_id);
+		getUserClient().update(arg, server_id);
 		
 		return getServer_id();
 	}
 
 	public int onRestDelete() {
-		userClient.delete(getServer_id());
+		getUserClient().delete(getServer_id());
 		return 1;
 	}
 
 	public int onRestSync() {
-		JSONObject json = userClient.show(getServer_id());
+		JSONObject json = getUserClient().show(getServer_id());
 		try {
 			name = json.getString("name");
 		} catch (JSONException e) {

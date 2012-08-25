@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
+import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.misc.BaseDaoEnabled;
 
@@ -27,7 +28,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	
-	private RestTask restTask = new RestTask();
+	private RestTask restTask;
 	IModelListener listener;
 	
 	protected Boolean authenticateCreate() {
@@ -86,6 +87,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		// run task to update server
 		last_rest_call = RestMethod.CREATE;
+		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.CREATE);
@@ -93,8 +95,14 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return res;
 	}
 	
-	protected int createLocal() throws SQLException {
+	public int createLocal() throws SQLException {
 		return super.create();
+	}
+	
+	public int createOrUpdateLocal() throws SQLException {
+		CreateOrUpdateStatus status = getDao().createOrUpdate((T) this);
+		return status.getNumLinesChanged();
+		//return super.create();
 	}
 
 	@Override
@@ -108,6 +116,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		// run task to update server
 		last_rest_call = RestMethod.DELETE;
+		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.DELETE);
@@ -115,7 +124,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return res;
 	}
 	
-	protected int deleteLocal() throws SQLException {
+	public int deleteLocal() throws SQLException {
 		return super.delete();
 	}
 
@@ -130,6 +139,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		// run task to update server
 		last_rest_call = RestMethod.UPDATE;
+		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.UPDATE);
@@ -137,7 +147,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return res;
 	}
 	
-	protected int updateLocal() throws SQLException {
+	public int updateLocal() throws SQLException {
 		return super.update();
 	}
 	
@@ -149,6 +159,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		// run task to update server
 		last_rest_call = RestMethod.SYNC;
+		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.SYNC);

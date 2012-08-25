@@ -29,15 +29,13 @@ import com.betcha.adapter.PredictionAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
-import com.betcha.model.tasks.IGetBetAndOwnerCB;
-import com.betcha.model.tasks.IGetPredictionCB;
-import com.betcha.model.tasks.IGetPredictionsCB;
+import com.betcha.model.tasks.IGetBetAndDependantCB;
 import com.betcha.nevigation.BetListGroupActivity;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetDetailsActivity extends Activity implements OnClickListener, IGetPredictionsCB, IGetPredictionCB, IGetBetAndOwnerCB {
+public class BetDetailsActivity extends Activity implements OnClickListener, IGetBetAndDependantCB {
 	private BetchaApp app;
 	private PredictionAdapter predictionAdapter;
 	private List<Prediction> predictions;
@@ -148,7 +146,9 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	}
 
 	protected void populateList() {
-		// TODO change to foreign collection
+		// TODO update bet details
+		
+		// update predictions
 		try {
 			predictions = Prediction.getModelDao().queryForEq("bet_id",
 					bet.getId());
@@ -213,13 +213,13 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	}
 
 	protected void getFromServer() {
-		if (bet.getServer_id() == -1) { // TODO this should not happen
-			if (dialog != null && dialog.isShowing()) {
-				dialog.dismiss();
-				dialog = null;
-			}
-			return;
-		}
+//		if (bet.getServer_id() == -1) { // TODO this should not happen
+//			if (dialog != null && dialog.isShowing()) {
+//				dialog.dismiss();
+//				dialog = null;
+//			}
+//			return;
+//		}
 
 		Bet.fetchBetAndOwner(bet.getServer_id(), this);
 		
@@ -285,28 +285,14 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 		}
 	}
 
-	public void OnGetPredictionCompleted(Boolean success, Prediction prediction) {
-		populateList();
-	}
-
-	public void OnGetPredictionsCompleted(Boolean success,
-			List<Prediction> predictions) {
-		if (predictions != null && predictions.size() > 0) {
-			this.predictions = predictions;
-		}
-		populateList();
-		if (dialog != null && dialog.isShowing()) {
-			dialog.dismiss();
-			dialog = null;
-		}
-		lvPredictionss.onRefreshComplete();
-	}
-
 	public void OnGetBetCompleted(Boolean success, Bet bet) {
+		lvPredictionss.onRefreshComplete();
 		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
+		
+		populateList();
 	}
 
 }

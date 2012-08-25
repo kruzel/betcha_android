@@ -57,7 +57,7 @@ public class PredictionRestClient extends RestClient {
 	
 	public JSONArray showPredictionsForBet(int id) throws RestClientException {
 		//nested url = bets/:bet_id/predictions
-		String res = restTemplate.getForObject(url + "/show_bet_id.json?bet_id={id}&"+ GetURLTokenParam() , String.class, getServerBet_id(), id);
+		String res = restTemplate.getForObject(url + "/show_bet_id.json?"+ GetURLTokenParam() , String.class, id);
 		JSONArray json = null;
 		try {
 			json = new JSONArray(res);

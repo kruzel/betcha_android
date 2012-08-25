@@ -7,14 +7,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.betcha.R;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
-import com.betcha.model.tasks.GetBetAndOwnerTask;
+import com.betcha.model.tasks.GetBetAndDependantsTask;
 import com.betcha.model.tasks.GetUserBetsTask;
-import com.betcha.model.tasks.IGetBetAndOwnerCB;
+import com.betcha.model.tasks.IGetBetAndDependantCB;
 import com.betcha.model.tasks.IGetThisUserBetsCB;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -27,8 +25,8 @@ import com.j256.ormlite.table.DatabaseTable;
 @DatabaseTable(tableName = "bets")
 public class Bet extends ModelCache<Bet,Integer>  {
 	
-	static private GetUserBetsTask getUserBetsTask = new GetUserBetsTask();
-	static private GetBetAndOwnerTask getBetAndOwnerTask = new GetBetAndOwnerTask();
+	static private GetUserBetsTask getUserBetsTask;
+	static private GetBetAndDependantsTask getBetAndDependantTask;
 	//non persistent
 	private Prediction ownerPrediction;
 
@@ -52,7 +50,15 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	@DatabaseField
 	private String state; // open/due/closed
 	
-	private BetRestClient betClient = new BetRestClient();
+	// TODO change to static to save memory
+	private BetRestClient betClient;
+
+	public BetRestClient getBetClient() {
+		if(betClient==null)
+			betClient = new BetRestClient();
+		
+		return betClient;
+	}
 
 	public int getId() {
 		return id;
@@ -143,7 +149,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	public int onRestCreate() {
 		int res = 0;
 		JSONObject json = null;
-		json = betClient.create(this);
+		json = getBetClient().create(this);
 		
 		setServer_id(json.optInt("id", -1));
 		try {
@@ -165,17 +171,17 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	}
 
 	public int onRestUpdate() {
-		betClient.update(this, getServer_id());
+		getBetClient().update(this, getServer_id());
 		return 1;
 	}
 
 	public int onRestDelete() {
-		betClient.delete(getServer_id());
+		getBetClient().delete(getServer_id());
 		return 1;
 	}
 
 	public int onRestSync() {
-		JSONObject json = betClient.show(getServer_id());
+		JSONObject json = getBetClient().show(getServer_id());
 	
 		try {
 			user = User.getModelDao().queryForId(json.getInt("user_id"));
@@ -229,14 +235,15 @@ public class Bet extends ModelCache<Bet,Integer>  {
 
 	/** bulk sync per user */
 	static public void refreshForUser(User user, IGetThisUserBetsCB cb) {
+		getUserBetsTask = new GetUserBetsTask();
 		getUserBetsTask.setValues(user, cb);
-		getUserBetsTask.
-		getUserBetsTask.execute();
+		getUserBetsTask.run();
 	}
 	
 	/** get a new bet via bet id on server, to be used for joining bets invites */
-	static public void fetchBetAndOwner(int bet_server_id, IGetBetAndOwnerCB cb) {
-		getBetAndOwnerTask.setValues(bet_server_id, cb);
-		getBetAndOwnerTask.run();
+	static public void fetchBetAndOwner(int bet_server_id, IGetBetAndDependantCB cb) {
+		getBetAndDependantTask = new GetBetAndDependantsTask();
+		getBetAndDependantTask.setValues(bet_server_id, cb);
+		getBetAndDependantTask.run();
 	}
 }

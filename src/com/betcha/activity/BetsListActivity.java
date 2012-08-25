@@ -17,7 +17,7 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
-import com.betcha.model.tasks.IGetBetAndOwnerCB;
+import com.betcha.model.tasks.IGetBetAndDependantCB;
 import com.betcha.model.tasks.IGetThisUserBetsCB;
 import com.betcha.nevigation.BetListGroupActivity;
 
@@ -28,7 +28,7 @@ import eu.erikw.PullToRefreshListView.OnRefreshListener;
  * @author ofer
  *
  */
-public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IGetBetAndOwnerCB {
+public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IGetBetAndDependantCB {
 	private BetchaApp app;
 	private BetAdapter betAdapter;
 	private List<Bet> bets;

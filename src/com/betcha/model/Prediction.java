@@ -33,6 +33,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	@DatabaseField
 	private String user_ack; // Yes/No/Pending
 	
+	// TODO change to static to save memory
 	private PredictionRestClient predictionRestClient;
 	private UpdatePredictionsTask updatePredictionsTask;
 	
@@ -42,10 +43,15 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 
 	public Prediction(Bet bet) {
 		super();
-		//nested url = bets/:bet_id/predictions
-		predictionRestClient = new PredictionRestClient(bet.getServer_id());
-		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
 		setBet(bet);
+	}
+	
+	public PredictionRestClient getPredictionRestClient() {
+		if(predictionRestClient==null)
+			//nested url = bets/:bet_id/predictions
+			predictionRestClient = new PredictionRestClient(bet.getServer_id());
+			
+		return predictionRestClient;
 	}
 
 	public int getId() {
@@ -78,8 +84,6 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 
 	public void setBet(Bet bet) {
 		this.bet = bet;
-		predictionRestClient.setServerBet_id(getServer_id());
-		updatePredictionsTask.setBet_server_id(getServer_id());
 	}
 
 	public DateTime getDate() {
@@ -134,7 +138,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	public int onRestCreate() {		
 		int res = 0;
 		JSONObject json = null;
-		json = predictionRestClient.create(this);
+		json = getPredictionRestClient().create(this);
 		
 		setServer_id(json.optInt("id", -1));
 		try {
@@ -148,17 +152,17 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public int onRestUpdate() {
-		predictionRestClient.update(this, getServer_id());
+		getPredictionRestClient().update(this, getServer_id());
 		return 1;
 	}
 
 	public int onRestDelete() {
-		predictionRestClient.delete(getServer_id());
+		getPredictionRestClient().delete(getServer_id());
 		return 1;
 	}
 
 	public int onRestSync() {
-		JSONObject json = predictionRestClient.show(getServer_id());
+		JSONObject json = getPredictionRestClient().show(getServer_id());
 		try {
 			user = User.getModelDao().queryForId(json.getInt("user_id"));
 		} catch (SQLException e) {
@@ -213,6 +217,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public void update(List<Prediction> predictions) {
+		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
 		updatePredictionsTask.setValues(predictions);
 		updatePredictionsTask.run();
 	}
