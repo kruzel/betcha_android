@@ -140,6 +140,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
      	    	User tmpUser = new User();
      	    	tmpUser.setName(name);
           	   	tmpUser.setEmail(email);
+          	   	tmpUser.setProvider("email");
      	    	friends.add(tmpUser);
     		}  
      	} 
@@ -219,6 +220,23 @@ public class CreateBetActivity extends Activity implements OnClickListener {
     		       	
         	bet.setOwnerPrediction(prediction);
         	
+        	//set selected friends and send invite
+        	List<User> participants = new ArrayList<User>();
+        	for (int i = 0; i < lvFriends.getCount(); i++) {
+    			View vListItem = lvFriends.getChildAt(i);
+    			if(vListItem!=null) {
+	    			CheckBox cb = (CheckBox) vListItem
+	    					.findViewById(R.id.cb_is_invited);
+	    			if (cb != null && cb.isChecked()) {
+	    				User tmpEmail = friends.get(i);
+	    				participants.add(tmpEmail);
+	    			}
+    			}
+    		}
+        	
+        	//create predictions place holders and send invites (after be created)
+        	bet.setParticipants(participants);
+        	
         	Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
         	
         	try {
@@ -228,37 +246,8 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 				e1.printStackTrace();
 			}
         	
-        	//prediction will be create inside bet after bet is created
-	        
-        	//TODO - set selected friends and send invite
-        	List<String> receipiants = new ArrayList<String>();
-        	for (int i = 1; i < lvFriends.getCount(); i++) {
-    			View vListItem = lvFriends.getChildAt(i);
-    			if(vListItem!=null) {
-	    			CheckBox cb = (CheckBox) vListItem
-	    					.findViewById(R.id.cb_is_invited);
-	    			if (cb != null && cb.isChecked()) {
-	    				String tmpEmail = friends.get(i-1).getEmail();
-	    				receipiants.add(tmpEmail);
-	    			}
-    			}
-    		}
-        	
-			String subject = "Betcha";
-			String emailtext = me.getName() + " is inviting you to bet on " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
-			emailtext += "\n\nLink to bet: http://betcha.com/" + bet.getServer_id();
-			emailtext += "\n\nLink to app on Google Play ...";
-			emailtext += "\n\nLink to app on AppStore ...";
-			final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
-	        emailIntent.setType("text/html");
+        	//prediction is create after bet is created as part of bet creation
 	        	        
-	        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, receipiants.toArray());
-	        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
-	        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
-	        Intent chooserIntent = Intent.createChooser(emailIntent, "Send mail...");
-	        chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	        startActivity(chooserIntent);
-	        
         	// When clicked, move back to records tab
             if(tabHost != null){
             	tabHost.setCurrentTab(1);

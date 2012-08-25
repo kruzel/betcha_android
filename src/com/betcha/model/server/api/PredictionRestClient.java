@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.Prediction;
+import com.betcha.model.User;
 
 
 public class PredictionRestClient extends RestClient {
@@ -145,8 +146,50 @@ public class PredictionRestClient extends RestClient {
 	}
 
 	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam(), getServerBet_id());
+		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam(), getServerBet_id(), id);
 	}
 
+	public void sendInvites(List<User> users) throws RestClientException {
+		
+		JSONArray jsonUsers = new JSONArray();
+		JSONObject jsonUser = new JSONObject();
+		
+		for (User user : users) {
+			try {
+				if(user.getServer_id()!=-1) {
+					jsonUser.put("id", user.getServer_id());
+				}
+				jsonUser.put("provider", user.getProvider());
+				if(user.getProvider()=="email") {
+					jsonUser.put("email", user.getEmail());
+					jsonUser.put("full_name", user.getName());
+				} else {
+					jsonUser.put("uid", user.getUid());
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				continue;
+			}
+			jsonUsers.put(jsonUser);
+			
+		}
+		
+		JSONObject jsonParent = new JSONObject();
+		
+		try {
+			jsonParent.put("users", jsonUsers);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return;
+		}
+		
+		//nested url = bets/:bet_id/predictions
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
+        headers.set("X-AUTH-TOKEN", GetToken());
+        HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
+		restTemplate.postForObject(url + "/send_invites" + ".json" , request, String.class, getServerBet_id());	
+			
+	}
 
 }

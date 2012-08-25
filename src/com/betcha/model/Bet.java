@@ -1,6 +1,7 @@
 package com.betcha.model;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -52,12 +53,17 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	
 	// TODO change to static to save memory
 	private BetRestClient betClient;
+	private List<User> participants;
 
 	public BetRestClient getBetClient() {
 		if(betClient==null)
 			betClient = new BetRestClient();
 		
 		return betClient;
+	}
+
+	public void setParticipants(List<User> participants) {
+		this.participants = participants;
 	}
 
 	public int getId() {
@@ -166,6 +172,9 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			Log.e("CreateBetActivity", "Failed creating prediction!");
 			e.printStackTrace();
 		}
+		
+		//create predictions place holders and send invites
+		ownerPrediction.send_invites(participants);
 		
 		return res;
 	}

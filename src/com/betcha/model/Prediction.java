@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.PredictionRestClient;
+import com.betcha.model.tasks.PredictionsSendInvitesTask;
 import com.betcha.model.tasks.UpdatePredictionsTask;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -36,6 +37,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	// TODO change to static to save memory
 	private PredictionRestClient predictionRestClient;
 	private UpdatePredictionsTask updatePredictionsTask;
+	private PredictionsSendInvitesTask sendInvitesTask;
 	
 	public Prediction() {
 		super();
@@ -220,5 +222,11 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
 		updatePredictionsTask.setValues(predictions);
 		updatePredictionsTask.run();
+	}
+	
+	public void send_invites(List<User> users) {
+		sendInvitesTask = new PredictionsSendInvitesTask(bet.getServer_id());
+		sendInvitesTask.setValues(users);
+		sendInvitesTask.run();
 	}
 }
