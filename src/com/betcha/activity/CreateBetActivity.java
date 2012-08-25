@@ -1,6 +1,7 @@
 package com.betcha.activity;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -15,13 +16,14 @@ import android.app.Dialog;
 import android.app.TabActivity;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -33,7 +35,7 @@ import android.widget.Toast;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.adapter.InviteAdapter;
+import com.betcha.adapter.FriendAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
@@ -50,9 +52,9 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	private EditText betMyBet;
 	
 	SlidingDrawer sliding;
-	private InviteAdapter inviteAdapter;
-    private ListView invitesList;  
-    private List<User> inviteUsers;
+	private FriendAdapter friendAdapter;
+    private ListView lvFriends;  
+    private List<User> friends;
     private Button submitButton;
 	
 	DatePickerDialog dateDialog;
@@ -105,7 +107,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         //inviteUsers = fetch all users from DB and contacts list, later from FB
         try {
         	//TODO add distinct email 
-        		inviteUsers = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
+        		friends = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (Throwable e) {
@@ -138,16 +140,16 @@ public class CreateBetActivity extends Activity implements OnClickListener {
      	    	User tmpUser = new User();
      	    	tmpUser.setName(name);
           	   	tmpUser.setEmail(email);
-     	    	inviteUsers.add(tmpUser);
+     	    	friends.add(tmpUser);
     		}  
      	} 
      	emailCur.close();
         
-        if(inviteUsers!=null) {
+        if(friends!=null) {
         	sliding=(SlidingDrawer) findViewById(R.id.drawer);
-	        invitesList = (ListView) sliding.findViewById(R.id.invites_list);
-	        inviteAdapter = new InviteAdapter(this, R.layout.invite_list_item, inviteUsers);
-	        invitesList.setAdapter(inviteAdapter);
+	        lvFriends = (ListView) sliding.findViewById(R.id.invites_list);
+	        friendAdapter = new FriendAdapter(this, R.layout.invite_list_item, friends);
+	        lvFriends.setAdapter(friendAdapter);
         }
     }
 
@@ -227,6 +229,35 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 			}
         	
         	//prediction will be create inside bet after bet is created
+	        
+        	//TODO - set selected friends and send invite
+        	List<String> receipiants = new ArrayList<String>();
+        	for (int i = 1; i < lvFriends.getCount(); i++) {
+    			View vListItem = lvFriends.getChildAt(i);
+    			if(vListItem!=null) {
+	    			CheckBox cb = (CheckBox) vListItem
+	    					.findViewById(R.id.cb_is_invited);
+	    			if (cb != null && cb.isChecked()) {
+	    				String tmpEmail = friends.get(i-1).getEmail();
+	    				receipiants.add(tmpEmail);
+	    			}
+    			}
+    		}
+        	
+			String subject = "Betcha";
+			String emailtext = me.getName() + " is inviting you to bet on " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
+			emailtext += "\n\nLink to bet: http://betcha.com/" + bet.getServer_id();
+			emailtext += "\n\nLink to app on Google Play ...";
+			emailtext += "\n\nLink to app on AppStore ...";
+			final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+	        emailIntent.setType("text/html");
+	        	        
+	        emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, receipiants.toArray());
+	        emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+	        emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, emailtext);
+	        Intent chooserIntent = Intent.createChooser(emailIntent, "Send mail...");
+	        chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	        startActivity(chooserIntent);
 	        
         	// When clicked, move back to records tab
             if(tabHost != null){

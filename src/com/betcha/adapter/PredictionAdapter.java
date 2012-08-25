@@ -34,21 +34,21 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 			v = vi.inflate((R.layout.user_bet_list_item), null);
 		}
 		
-		Prediction userBet = items.get(position);
+		Prediction prediction = items.get(position);
 		
 		TextView tvBetUser = (TextView) v.findViewById(R.id.tv_user_bet_user);
 		TextView tvBetBet = (TextView) v.findViewById(R.id.tv_user_bet_bet);
 		CheckBox cbResult = (CheckBox) v.findViewById(R.id.cb_user_bet_win);
 		
-		if(app.getMe().getId() == userBet.getBet().getOwner().getId()) {
+		if(app.getMe().getId() == prediction.getBet().getOwner().getId()) {
 			cbResult.setClickable(true);
 		} else {
 			cbResult.setClickable(false);
 		}
 		
-		tvBetUser.setText(userBet.getUser().getName());
-		tvBetBet.setText(userBet.getPrediction());
-		Boolean res = userBet.getResult();
+		tvBetUser.setText(prediction.getUser().getName());
+		tvBetBet.setText(prediction.getPrediction());
+		Boolean res = prediction.getResult();
 		if(res!=null)
 			cbResult.setChecked(res); //true = win
 		

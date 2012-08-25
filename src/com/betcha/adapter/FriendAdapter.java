@@ -16,11 +16,11 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
 
-public class InviteAdapter extends ArrayAdapter<User> {
+public class FriendAdapter extends ArrayAdapter<User> {
 	BetchaApp app;
 	private List<User> items;
 	
-	public InviteAdapter(Context context, int textViewResourceId,
+	public FriendAdapter(Context context, int textViewResourceId,
 			List<User> objects) {
 		super(context, textViewResourceId,objects);
 		this.items = objects;

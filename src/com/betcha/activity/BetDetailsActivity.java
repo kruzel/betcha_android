@@ -213,13 +213,6 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	}
 
 	protected void getFromServer() {
-//		if (bet.getServer_id() == -1) { // TODO this should not happen
-//			if (dialog != null && dialog.isShowing()) {
-//				dialog.dismiss();
-//				dialog = null;
-//			}
-//			return;
-//		}
 
 		Bet.fetchBetAndOwner(bet.getServer_id(), this);
 		

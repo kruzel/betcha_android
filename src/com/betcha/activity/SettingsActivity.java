@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.TabActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -39,13 +40,20 @@ public class SettingsActivity extends Activity {
         
         app = (BetchaApp) getApplication();
         
-        User me = app.getMe();
-        
         etEmail = (EditText) findViewById(R.id.editTextEmail);
         etName = (EditText) findViewById(R.id.editTextName);
         etPass = (EditText) findViewById(R.id.editTextPass);
         
-        if(me!=null) {
+    }
+
+	@Override
+	protected void onResume() {
+		User me = app.getMe();
+		Button btEmailReg = (Button) findViewById(R.id.buttonEmailReg);
+		
+		if(me!=null) {
+			btEmailReg.setText(getString(R.string.update));
+			
 	        String myEmail = app.getMe().getEmail();
 	        
 	        if(myEmail!= null && myEmail.length()!=0) {
@@ -61,12 +69,9 @@ public class SettingsActivity extends Activity {
 	        if(myName!=null && myName.length()!=0) {
 		        etName.setText(myName);
 	        }
+        } else {
+        	btEmailReg.setText(getString(R.string.register));
         }
-    }
-
-	@Override
-	protected void onResume() {
-		
 		
 		super.onResume();		
 	}

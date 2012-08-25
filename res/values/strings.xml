@@ -29,6 +29,7 @@
 	<string name="email_address_hint">user@domain.com</string>
 	<string name="register">Register</string>
 	<string name="login">Login</string>
+	<string name="update">Update</string>
 	<string name="skip">Skip</string>
 	<string name="name">Nick name</string>
 	<string name="name_hint">user</string>
