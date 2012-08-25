@@ -37,8 +37,8 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONArray show_for_user_id(int id) throws RestClientException {
-		String res = restTemplate.getForObject(url + "/show_for_user_id/{id}.json?"+ GetURLTokenParam() , String.class, id);
+	public JSONArray show_for_user() throws RestClientException {
+		String res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
 		JSONArray json = null;
 		try {
 			json = new JSONArray(res);

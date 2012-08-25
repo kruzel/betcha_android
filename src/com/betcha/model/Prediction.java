@@ -132,15 +132,19 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	/** inherited ModelCache methods */
 	
 	public int onRestCreate() {		
+		int res = 0;
 		JSONObject json = null;
 		json = predictionRestClient.create(this);
 		
-		setServer_id(json.optInt("server_id", -1));
+		setServer_id(json.optInt("id", -1));
+		try {
+			res = updateLocal();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
-		if(getServer_id()!=0)
-			return 1;
-		else
-			return 0;
+		return res;
 	}
 
 	public int onRestUpdate() {
@@ -198,14 +202,14 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 			e1.printStackTrace();
 		}
 		
+		int res = 0;
 		try {
-			super.update();
+			res = updateLocal();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return 1;
+		return res;
 	}
 
 	public void update(List<Prediction> predictions) {

@@ -21,11 +21,11 @@ import com.j256.ormlite.misc.BaseDaoEnabled;
 
 public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements IModel {
 	@DatabaseField
-	protected int serverId = -1;
+	protected int server_id = -1;
 	@DatabaseField
 	protected Boolean synced = false;
 	@DatabaseField
-	protected RestMethod lastRestCall; //use this to know what server operation need to be completed
+	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	
 	private RestTask restTask = new RestTask();
 	IModelListener listener;
@@ -78,55 +78,67 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@Override
 	public int create() throws SQLException {
 		// create on local model
-		int res = super.create();
+		int res = createLocal();
 		
 		setSynced(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return res;
 		
 		// run task to update server
-		lastRestCall = RestMethod.CREATE;
+		last_rest_call = RestMethod.CREATE;
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.CREATE);
 		
 		return res;
 	}
+	
+	protected int createLocal() throws SQLException {
+		return super.create();
+	}
 
 	@Override
 	public int delete() throws SQLException {
 		// delete from local model
-		int res =  super.delete();
+		int res =  deleteLocal();
 		
 		setSynced(false);
 		if(authenticateDelete() && RestClient.GetToken()==null)
 			return res;
 		
 		// run task to update server
-		lastRestCall = RestMethod.DELETE;
+		last_rest_call = RestMethod.DELETE;
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.DELETE);
 		
 		return res;
 	}
+	
+	protected int deleteLocal() throws SQLException {
+		return super.delete();
+	}
 
 	@Override
 	public int update() throws SQLException {
 		// update local model
-		int res =  super.update();
+		int res =  updateLocal();
 		
 		setSynced(false);
 		if(authenticateUpdate() && RestClient.GetToken()==null)
 			return res;
 		
 		// run task to update server
-		lastRestCall = RestMethod.UPDATE;
+		last_rest_call = RestMethod.UPDATE;
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.UPDATE);
 		
 		return res;
+	}
+	
+	protected int updateLocal() throws SQLException {
+		return super.update();
 	}
 	
 	@Override
@@ -136,7 +148,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			return -1;
 		
 		// run task to update server
-		lastRestCall = RestMethod.SYNC;
+		last_rest_call = RestMethod.SYNC;
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.execute(RestMethod.SYNC);
@@ -145,13 +157,13 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 
 	public void setServer_id(int serverId) {
-		this.serverId = serverId;
+		this.server_id = serverId;
 		setSynced(true);
 		
 	}
 	
 	public int getServer_id() {
-		return serverId;
+		return server_id;
 	}
 
 	public void setSynced(Boolean synced) {

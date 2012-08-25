@@ -119,6 +119,7 @@ public class User extends ModelCache<User,Integer> {
 
 	/** inherited ModelCache methods */
 	public int onRestCreate() {
+		int res = 0;
 		JSONObject jsonUser = null;
 		
 		if (provider == "email") {
@@ -127,7 +128,13 @@ public class User extends ModelCache<User,Integer> {
 			jsonUser = userClient.createOAuth(provider, uid, access_token);
 		}
 		
-		setServer_id(jsonUser.optInt("server_id",-1));
+		setServer_id(jsonUser.optInt("id",-1));
+		try {
+			res = updateLocal();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 				
 		TokenRestClient tokenClient = new TokenRestClient();
 		String jsonToken = null;
@@ -139,10 +146,7 @@ public class User extends ModelCache<User,Integer> {
 					
 		BetchaApp.setToken(jsonToken);
 		
-		if(getServer_id()!=0)
-			return 1;
-		else
-			return 0;
+		return res;
 	}
 
 	public int onRestUpdate() {
@@ -154,7 +158,7 @@ public class User extends ModelCache<User,Integer> {
 		arg.put("uid", uid);
 		arg.put("access_token", access_token);
 		
-		userClient.update(arg, serverId);
+		userClient.update(arg, server_id);
 		
 		return getServer_id();
 	}
@@ -198,14 +202,14 @@ public class User extends ModelCache<User,Integer> {
 			e.printStackTrace();
 		}
 		
+		int res = 0;
 		try {
-			super.update();
+			res = updateLocal();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return 1;
+		return res;
 	}
 	
 }

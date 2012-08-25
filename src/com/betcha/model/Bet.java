@@ -141,10 +141,17 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	/** inherited ModelCache methods */
 	
 	public int onRestCreate() {
+		int res = 0;
 		JSONObject json = null;
 		json = betClient.create(this);
 		
 		setServer_id(json.optInt("id", -1));
+		try {
+			res = updateLocal();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			if(ownerPrediction!=null)
@@ -154,10 +161,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 		}
 		
-		if(getServer_id()!=0)
-			return 1;
-		else
-			return 0;
+		return res;
 	}
 
 	public int onRestUpdate() {
@@ -213,19 +217,20 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 		} 
 		
+		int res = 0;
 		try {
-			super.update();
+			res = updateLocal();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return 1;
+		return res;
 	}
 
 	/** bulk sync per user */
 	static public void refreshForUser(User user, IGetThisUserBetsCB cb) {
 		getUserBetsTask.setValues(user, cb);
+		getUserBetsTask.
 		getUserBetsTask.execute();
 	}
 	

@@ -36,7 +36,7 @@ public class GetUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 		BetRestClient restClient = new BetRestClient();
 		JSONArray jsonBets = null;
 		try {
-			jsonBets = restClient.show_for_user_id(user.getServer_id());
+			jsonBets = restClient.show_for_user();
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return false;
@@ -44,30 +44,51 @@ public class GetUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 		
 		for (int i = 0; i < jsonBets.length(); i++) {
 			JSONObject jsonBet;
-			int user_server_id = -1;
+			int owner_server_id = -1;
 			try {
 				jsonBet = jsonBets.getJSONObject(i);
-				user_server_id = jsonBet.getInt("user_id");
+				owner_server_id = jsonBet.getInt("user_id");
 			} catch (JSONException e3) {
 				e3.printStackTrace();
 				continue;
 			}
+			
+			Bet tmpBet = null;
+			try {
+				List<Bet> tmpBets = Bet.getModelDao().queryForEq("server_id", jsonBet.getInt("id"));
+				if(tmpBets!=null && tmpBets.size()>0) { 
+					tmpBet = tmpBets.get(0);
+				}
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+				continue;
+			} catch (JSONException e) {
+				e.printStackTrace();
+				continue; 
+			}
+			
+			// if exist in local cache
+			if(tmpBet!=null) {
+				bets.add(tmpBet);
+				continue;
+			}
 							
-			Bet bet = new Bet();
+			//not found locally, create it
 			betOwner = null;
 			try {
-				List<User> users = User.getModelDao().queryForEq("server_id",user_server_id);
+				List<User> users = User.getModelDao().queryForEq("server_id",owner_server_id);
 				if(user!=null && users.size()>0) {
 					betOwner = users.get(0);
 				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			} 
+			
 			if(betOwner==null) {
 				UserRestClient restUserClient = new UserRestClient();
 				JSONObject jsonUser = null;
 				try {
-					jsonUser = restUserClient.show(user_server_id);
+					jsonUser = restUserClient.show(owner_server_id);
 				} catch (RestClientException e) {
 					e.printStackTrace();
 					return false;
@@ -103,11 +124,12 @@ public class GetUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 				try {
 					betOwner.create();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					continue;
 				}		
 			}
 			
+			Bet bet = new Bet();
 			try {
 				bet.setReward(jsonBet.getString("reward"));
 			} catch (JSONException e1) {
@@ -134,29 +156,16 @@ public class GetUserBetsTask extends AsyncTask<Void, Void, Boolean> {
 			}
 			bet.setOwner(betOwner);
 			
-			Bet tmpBet = null;
 			try {
-				List<Bet> tmpBets = Bet.getModelDao().queryForEq("server_id", jsonBet.getInt("id"));
-				if(tmpBets!=null && tmpBets.size()>0) { 
-					tmpBet = tmpBets.get(0);
-				}
-			} catch (SQLException e2) {
-				// TODO Auto-generated catch block
-				e2.printStackTrace();
-			} catch (JSONException e) {
+				bet.create();
+			} catch (SQLException e) {
 				e.printStackTrace();
-				continue; //this shouldn't happen
-			}
-			if(tmpBet==null) {
-				try {
-					bet.create();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				continue;
 			}
 			
 			bets.add(bet);
+			
+			// TODO fetch bet predictions...
 		}
 	       					
 		return true;
