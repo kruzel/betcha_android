@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -18,13 +19,11 @@ import com.betcha.model.User;
 
 public class FriendAdapter extends ArrayAdapter<User> {
 	BetchaApp app;
-	private List<User> items;
 	
 	public FriendAdapter(Context context, int textViewResourceId,
 			List<User> objects) {
 		super(context, textViewResourceId,objects);
-		this.items = objects;
-		
+	
 		app = (BetchaApp) context.getApplicationContext();
 	}
 
@@ -35,8 +34,8 @@ public class FriendAdapter extends ArrayAdapter<User> {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			v = vi.inflate((R.layout.invite_list_item), null);
 		}
-		
-		User user = items.get(position);
+	
+		User user = getItem(position);
 		
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_invite_user);
 		TextView tvContact = (TextView) v.findViewById(R.id.tv_invite_user_contact);
@@ -48,12 +47,25 @@ public class FriendAdapter extends ArrayAdapter<User> {
  	    	if (splitEmail!=null && splitEmail.length>1)
  	    		domain = splitEmail[1];
  	    	if(domain!=null) {
- 	    		tvUserName.setText(user.getName());
- 	    		tvContact.setText("@"+domain);
+ 	    		//tvUserName.setText(user.getName());
+ 	    		//tvContact.setText("@"+domain);
+ 	    		tvUserName.setText(user.getEmail());
  	    	}
 		}  
 		
-		cbIsInvited.setChecked(false); //true = send bet
+		cbIsInvited.setChecked(user.getIsInvitedToBet());
+		cbIsInvited.setTag(user);
+		
+		cbIsInvited.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				CheckBox cb = (CheckBox) v ;  
+	            User user = (User) cb.getTag();  
+	            user.setIsInvitedToBet(cb.isChecked() );  
+				
+			}
+		});
 		
 		return v;		
 	}

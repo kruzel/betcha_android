@@ -34,7 +34,7 @@ public class User extends ModelCache<User,Integer> {
 	@DatabaseField
 	private String access_token;
 	
-	private Boolean isInvitedToBet;
+	private Boolean isInvitedToBet = false;
 	
 	// TODO change to static to save memory
 	private UserRestClient userClient;

@@ -22,6 +22,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -103,7 +105,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	    tabHost = act.getTabHost();  // The activity TabHost
     }
     
-    private void initFriendList() {
+    private void initFriendList() {    	
         //inviteUsers = fetch all users from DB and contacts list, later from FB
         try {
         	//TODO add distinct email 
@@ -113,6 +115,12 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+        
+        User ofer = new User();
+    	ofer.setName("ofer");
+    	ofer.setEmail("okruzel@gmail.com");
+    	ofer.setProvider("email");
+	    friends.add(ofer);
         
         //invite users only from pre-loaded friend list should be loaded ad registration)
         ContentResolver cr = getContentResolver();
@@ -146,11 +154,36 @@ public class CreateBetActivity extends Activity implements OnClickListener {
      	} 
      	emailCur.close();
         
-        if(friends!=null) {
+    }
+    
+    private void initFriendListAdapter() {
+    	if(friends!=null) {
+    		for (User friend : friends) {
+				friend.setIsInvitedToBet(false);
+			}
         	sliding=(SlidingDrawer) findViewById(R.id.drawer);
 	        lvFriends = (ListView) sliding.findViewById(R.id.invites_list);
 	        friendAdapter = new FriendAdapter(this, R.layout.invite_list_item, friends);
 	        lvFriends.setAdapter(friendAdapter);
+	        lvFriends.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+	        
+//	        lvFriends.setOnItemClickListener(new OnItemClickListener() {
+//
+//				@Override
+//				public void onItemClick(AdapterView<?> arg0, View view,
+//						int position, long id) {
+//					
+//					friends.get(position).setIsInvitedToBet(!friends.get(position).getIsInvitedToBet());
+//					
+//	    			if(view!=null) {
+//		    			CheckBox cb = (CheckBox) view.findViewById(R.id.cb_is_invited);
+//		    			if (cb != null) {
+//		    					cb.setChecked(friends.get(position).getIsInvitedToBet());
+//		    			}
+//	    			}
+//				}
+//	        	
+//			});
         }
     }
 
@@ -166,6 +199,8 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         betReward.setText("");
         betMyBet.setText("");
 				
+        initFriendListAdapter();
+        
 		super.onResume();		
 	}
 	
@@ -222,17 +257,11 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         	
         	//set selected friends and send invite
         	List<User> participants = new ArrayList<User>();
-        	for (int i = 0; i < lvFriends.getCount(); i++) {
-    			View vListItem = lvFriends.getChildAt(i);
-    			if(vListItem!=null) {
-	    			CheckBox cb = (CheckBox) vListItem
-	    					.findViewById(R.id.cb_is_invited);
-	    			if (cb != null && cb.isChecked()) {
-	    				User tmpEmail = friends.get(i);
-	    				participants.add(tmpEmail);
-	    			}
-    			}
-    		}
+        	for (User friend : friends) {
+				if(friend.getIsInvitedToBet()) {
+					participants.add(friend);
+				}
+			}
         	
         	//create predictions place holders and send invites (after be created)
         	bet.setParticipants(participants);
