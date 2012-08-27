@@ -34,10 +34,9 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	@DatabaseField
 	private String user_ack; // Yes/No/Pending
 	
-	// TODO change to static to save memory
-	private PredictionRestClient predictionRestClient;
-	private UpdatePredictionsTask updatePredictionsTask;
-	private PredictionsSendInvitesTask sendInvitesTask;
+	private static PredictionRestClient predictionRestClient;
+	private static UpdatePredictionsTask updatePredictionsTask;
+	private static PredictionsSendInvitesTask sendInvitesTask;
 	
 	public Prediction() {
 		super();

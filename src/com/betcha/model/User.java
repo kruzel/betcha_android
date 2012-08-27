@@ -34,10 +34,10 @@ public class User extends ModelCache<User,Integer> {
 	@DatabaseField
 	private String access_token;
 	
-	private Boolean isInvitedToBet = false;
+	//non persistent
+	private static UserRestClient userClient;
 	
-	// TODO change to static to save memory
-	private UserRestClient userClient;
+	private Boolean isInvitedToBet = false;
 	
 	public UserRestClient getUserClient() {
 		if(userClient==null)

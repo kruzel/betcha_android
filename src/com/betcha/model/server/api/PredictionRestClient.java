@@ -149,12 +149,13 @@ public class PredictionRestClient extends RestClient {
 		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam(), getServerBet_id(), id);
 	}
 
-	public void sendInvites(List<User> users) throws RestClientException {
+	public JSONObject sendInvites(List<User> users) throws RestClientException {
 		
 		JSONArray jsonUsers = new JSONArray();
-		JSONObject jsonUser = new JSONObject();
 		
 		for (User user : users) {
+			JSONObject jsonUser = new JSONObject();
+			JSONObject jsonUserParent = new JSONObject();
 			try {
 				if(user.getServer_id()!=-1) {
 					jsonUser.put("id", user.getServer_id());
@@ -166,29 +167,40 @@ public class PredictionRestClient extends RestClient {
 				} else {
 					jsonUser.put("uid", user.getUid());
 				}
+				jsonUserParent.put("user", jsonUser);
 			} catch (JSONException e) {
 				e.printStackTrace();
 				continue;
 			}
-			jsonUsers.put(jsonUser);
+			
+			jsonUsers.put(jsonUserParent);
 			
 		}
 		
-		JSONObject jsonParent = new JSONObject();
+		JSONObject jsonArrayParent = new JSONObject();
 		
 		try {
-			jsonParent.put("users", jsonUsers);
+			jsonArrayParent.put("users", jsonUsers);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
-			return;
+			return null;
 		}
 		
 		//nested url = bets/:bet_id/predictions
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
-        HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		restTemplate.postForObject(url + "/send_invites" + ".json" , request, String.class, getServerBet_id());	
+        HttpEntity request= new HttpEntity( jsonArrayParent.toString(), headers);
+		String res = restTemplate.postForObject(url + "/send_invites" + ".json" , request, String.class, getServerBet_id());	
+		JSONObject json = null;
+		try {
+			json = new JSONObject(res);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return json;
 			
 	}
 
