@@ -50,6 +50,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	private static GetUserBetsTask getUserBetsTask;
 	private static GetBetAndDependantsTask getBetAndDependantTask;
 	private static BetRestClient betClient;
+	private static Dao<Bet,Integer> dao;
 	
 	private List<User> participants;
 	private Prediction ownerPrediction;
@@ -128,6 +129,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 
 	public void setOwnerPrediction(Prediction ownerPrediction) {
 		this.ownerPrediction = ownerPrediction;
+		this.ownerPrediction.setBet(this);
 	}
 
 	/**
@@ -135,14 +137,17 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<Bet,Integer> getModelDao() throws SQLException {
-		return getDbHelper().getDao(Bet.class);
+	public static Dao<Bet,Integer> getModelDao() throws SQLException  {
+		if(dao==null){
+			dao = getDbHelper().getDao(Bet.class);;
+		}
+		return dao;
 	}
 	
 	@Override
 	public void initDao() {
 		try {
-			setDao((Dao<Bet, Integer>) getDbHelper().getDao(Bet.class));
+			setDao(getModelDao());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -172,8 +177,23 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 		}
 		
-		//create predictions place holders and send invites
-		ownerPrediction.send_invites(participants);
+		for (User participant : participants) {
+			if(participant.getServer_id()==-1) {
+				if(participant.createUserAccount()==0) 
+					continue;
+			}
+			
+			Prediction prediction = new Prediction(this);
+			prediction.setSendInvite(true);
+			prediction.setUser(participant);
+			prediction.setBet(this);
+			try {
+				res = res + prediction.create();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		return res;
 	}

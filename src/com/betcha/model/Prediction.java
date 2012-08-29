@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.PredictionRestClient;
-import com.betcha.model.tasks.PredictionsSendInvitesTask;
 import com.betcha.model.tasks.UpdatePredictionsTask;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -36,8 +35,10 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	
 	private static PredictionRestClient predictionRestClient;
 	private static UpdatePredictionsTask updatePredictionsTask;
-	private static PredictionsSendInvitesTask sendInvitesTask;
+	private static Dao<Prediction,Integer> dao;
 	
+	private Boolean sendInvite = false;
+
 	public Prediction() {
 		super();
 	}
@@ -116,14 +117,17 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<Prediction,Integer> getModelDao() throws SQLException {
-		return getDbHelper().getDao(Prediction.class);
+	public static Dao<Prediction,Integer> getModelDao() throws SQLException  {
+		if(dao==null){
+			dao = getDbHelper().getDao(Prediction.class);
+		}
+		return dao;
 	}
 	
 	@Override
 	public void initDao() {
 		try {
-			setDao((Dao<Prediction, Integer>) getDbHelper().getDao(Prediction.class));
+			setDao(getModelDao());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -134,12 +138,25 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		return Prediction.class;
 	}
 	
+	public Boolean getSendInvite() {
+		return sendInvite;
+	}
+
+	public void setSendInvite(Boolean sendInvite) {
+		this.sendInvite = sendInvite;
+	}
+	
 	/** inherited ModelCache methods */
 	
 	public int onRestCreate() {		
 		int res = 0;
 		JSONObject json = null;
-		json = getPredictionRestClient().create(this);
+		
+		if (getSendInvite()) {
+			json = getPredictionRestClient().createAndInvite(this);
+		} else {
+			json = getPredictionRestClient().create(this);
+		}
 		
 		setServer_id(json.optInt("id", -1));
 		try {
@@ -221,11 +238,5 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
 		updatePredictionsTask.setValues(predictions);
 		updatePredictionsTask.run();
-	}
-	
-	public void send_invites(List<User> users) {
-		sendInvitesTask = new PredictionsSendInvitesTask(bet.getServer_id());
-		sendInvitesTask.setValues(users);
-		sendInvitesTask.run();
 	}
 }

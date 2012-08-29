@@ -36,6 +36,7 @@ public class User extends ModelCache<User,Integer> {
 	
 	//non persistent
 	private static UserRestClient userClient;
+	private static Dao<User,Integer> dao;
 	
 	private Boolean isInvitedToBet = false;
 	
@@ -108,13 +109,16 @@ public class User extends ModelCache<User,Integer> {
 	 * @throws SQLException
 	 */
 	public static Dao<User,Integer> getModelDao() throws SQLException  {
-		return getDbHelper().getDao(User.class);
+		if(dao==null){
+			dao = getDbHelper().getDao(User.class);;
+		}
+		return dao;
 	}
 	
 	@Override
 	public void initDao() {
 		try {
-			setDao((Dao<User, Integer>) getDbHelper().getDao(User.class));
+			setDao(getModelDao());
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -128,8 +132,23 @@ public class User extends ModelCache<User,Integer> {
 
 	/** inherited ModelCache methods */
 	public int onRestCreate() {
+		if(createUserAccount()>0) {
+			return createToken();
+		}
+		
+		return 0;
+	}
+	
+	public int createUserAccount() {
 		int res = 0;
 		JSONObject jsonUser = null;
+		
+		try {
+			res = createOrUpdateLocal();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return 0;
+		}
 		
 		if (provider == "email") {
 			jsonUser = getUserClient().create(name, email, password);
@@ -141,10 +160,14 @@ public class User extends ModelCache<User,Integer> {
 		try {
 			res = updateLocal();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
+		
+		return res;
+	}
+	
+	public int createToken() {
+			
 		TokenRestClient tokenClient = new TokenRestClient();
 		String jsonToken = null;
 		if (provider == "email") {
@@ -155,7 +178,11 @@ public class User extends ModelCache<User,Integer> {
 					
 		BetchaApp.setToken(jsonToken);
 		
-		return res;
+		if(jsonToken==null) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 
 	public int onRestUpdate() {

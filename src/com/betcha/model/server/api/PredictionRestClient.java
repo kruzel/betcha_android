@@ -102,6 +102,39 @@ public class PredictionRestClient extends RestClient {
 		
 		return json;
 	}
+	
+	public JSONObject createAndInvite(Prediction prediction) throws RestClientException {
+		JSONObject jsonContent = new JSONObject();
+		JSONObject jsonParent = new JSONObject();
+		
+		try {
+			//jsonContent.put("user_ack",prediction.getMyAck());
+			//jsonContent.put("prediction",prediction.getPrediction());
+			jsonContent.put("bet_id",Integer.toString(prediction.getBet().getServer_id()));
+			jsonContent.put("user_id",Integer.toString(prediction.getUser().getServer_id()));
+			//jsonContent.put("result",Boolean.toString(prediction.getResult()));
+			jsonParent.put("prediction", jsonContent);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		
+		//nested url = bets/:bet_id/predictions
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
+        headers.set("X-AUTH-TOKEN", GetToken());
+        HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
+		String res = restTemplate.postForObject(url + "/create_and_invite" + ".json" , request, String.class, getServerBet_id());		
+		JSONObject json = null;
+		try {
+			json = new JSONObject(res);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
 
 	public void update(Prediction prediction, int id) throws RestClientException {
 		JSONObject jsonContent = new JSONObject();
@@ -160,13 +193,13 @@ public class PredictionRestClient extends RestClient {
 				if(user.getServer_id()!=-1) {
 					jsonUser.put("id", user.getServer_id());
 				}
-				jsonUser.put("provider", user.getProvider());
-				if(user.getProvider()=="email") {
-					jsonUser.put("email", user.getEmail());
-					jsonUser.put("full_name", user.getName());
-				} else {
-					jsonUser.put("uid", user.getUid());
-				}
+//				jsonUser.put("provider", user.getProvider());
+//				if(user.getProvider()=="email") {
+//					jsonUser.put("email", user.getEmail());
+//					jsonUser.put("full_name", user.getName());
+//				} else {
+//					jsonUser.put("uid", user.getUid());
+//				}
 				jsonUserParent.put("user", jsonUser);
 			} catch (JSONException e) {
 				e.printStackTrace();

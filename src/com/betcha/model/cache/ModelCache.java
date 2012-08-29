@@ -49,11 +49,6 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	// TODO schedule the synch task for every period (configurable) 
 	
-	public ModelCache()  {
-		super();
-		initDao();
-	}
-	
 	abstract public void initDao();
 
 	/**
@@ -78,6 +73,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	 */
 	@Override
 	public int create() throws SQLException {
+		initDao();
+		
 		// create on local model
 		int res = createLocal();
 		
@@ -96,10 +93,12 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 	
 	public int createLocal() throws SQLException {
+		initDao();
 		return super.create();
 	}
 	
 	public int createOrUpdateLocal() throws SQLException {
+		initDao();
 		CreateOrUpdateStatus status = getDao().createOrUpdate((T) this);
 		return status.getNumLinesChanged();
 		//return super.create();
@@ -107,6 +106,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 
 	@Override
 	public int delete() throws SQLException {
+		initDao();
+		
 		// delete from local model
 		int res =  deleteLocal();
 		
@@ -125,11 +126,13 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 	
 	public int deleteLocal() throws SQLException {
+		initDao();
 		return super.delete();
 	}
 
 	@Override
 	public int update() throws SQLException {
+		initDao();
 		// update local model
 		int res =  updateLocal();
 		
@@ -148,11 +151,13 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 	
 	public int updateLocal() throws SQLException {
+		initDao();
 		return super.update();
 	}
 	
 	@Override
 	public int refresh() throws SQLException {	
+		initDao();
 		setSynced(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return -1;
@@ -265,10 +270,5 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			super.onCancelled();
 		}	
 	}
-		
-//	public static Dao<?,?> getModelDao() throws SQLException {
-//		Log.e("ModelCache.getModelDao()","must be implemented by derived class!");
-//		return null;
-//	}
 	
 }

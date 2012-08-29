@@ -16,16 +16,12 @@ import android.app.Dialog;
 import android.app.TabActivity;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -116,6 +112,10 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 			e.printStackTrace();
 		}
         
+        if(friends==null) {
+        	friends = new ArrayList<User>();
+        }
+        
         User ofer = new User();
     	ofer.setName("ofer");
     	ofer.setEmail("okruzel@gmail.com");
@@ -167,23 +167,6 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	        lvFriends.setAdapter(friendAdapter);
 	        lvFriends.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 	        
-//	        lvFriends.setOnItemClickListener(new OnItemClickListener() {
-//
-//				@Override
-//				public void onItemClick(AdapterView<?> arg0, View view,
-//						int position, long id) {
-//					
-//					friends.get(position).setIsInvitedToBet(!friends.get(position).getIsInvitedToBet());
-//					
-//	    			if(view!=null) {
-//		    			CheckBox cb = (CheckBox) view.findViewById(R.id.cb_is_invited);
-//		    			if (cb != null) {
-//		    					cb.setChecked(friends.get(position).getIsInvitedToBet());
-//		    			}
-//	    			}
-//				}
-//	        	
-//			});
         }
     }
 

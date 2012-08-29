@@ -47,9 +47,7 @@ public class GetBetAndDependantsTask extends AsyncTask<Void, Void, Boolean> {
 			return;
 		}
 				
-		if(bet!=null && owner!=null)
-			cb.OnGetBetCompleted(true, bet);
-		else if(getStatus()!=Status.RUNNING) {
+		if(getStatus()!=Status.RUNNING) {
 			execute();
 		}
 	}	
@@ -208,59 +206,12 @@ public class GetBetAndDependantsTask extends AsyncTask<Void, Void, Boolean> {
 			}
 			if(user==null) {
 				user = new User();
-			}
 			
-			UserRestClient userClient = new UserRestClient();
-			JSONObject jsonUser;
-			try {
-				jsonUser = userClient.show(jsonPrediction.getInt("user_id"));
-			} catch (RestClientException e) {
-				e.printStackTrace();
-				continue;
-			} catch (JSONException e) {
-				e.printStackTrace();
-				continue;
-			}
-			
-			try {
-				user.setServer_id(jsonUser.getInt("id"));
-			} catch (JSONException e) {
-				e.printStackTrace();
-				continue;
-			}
-			
-			try {
-				user.setEmail(jsonUser.getString("email"));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				user.setName(jsonUser.getString("full_name"));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			try {
-				user.setUid(jsonUser.getString("uuid"));
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {
-				user.createOrUpdateLocal();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			try {		
-				Prediction prediction = null;
-				List<Prediction> tmpPredictions;
+				UserRestClient userClient = new UserRestClient();
+				JSONObject jsonUser;
 				try {
-					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
-				} catch (SQLException e) {
+					jsonUser = userClient.show(jsonPrediction.getInt("user_id"));
+				} catch (RestClientException e) {
 					e.printStackTrace();
 					continue;
 				} catch (JSONException e) {
@@ -268,22 +219,66 @@ public class GetBetAndDependantsTask extends AsyncTask<Void, Void, Boolean> {
 					continue;
 				}
 				
-				if(tmpPredictions==null || tmpPredictions.size()==0) {
-					prediction = new Prediction(bet);
+				try {
+					user.setServer_id(jsonUser.getInt("id"));
+				} catch (JSONException e) {
+					e.printStackTrace();
+					continue;
 				}
 				
-				prediction.setDate(formatter.parseDateTime(jsonPrediction.getString("created_at")));
-				prediction.setMyAck(jsonPrediction.getString("user_ack"));
-				prediction.setPrediction(jsonPrediction.getString("prediction"));
-				prediction.setResult(jsonPrediction.getBoolean("result"));
-				prediction.setServer_id(jsonPrediction.getInt("id"));
+				try {
+					user.setEmail(jsonUser.getString("email"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					user.setName(jsonUser.getString("full_name"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				try {
+					user.setUid(jsonUser.getString("uuid"));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				try {
+					user.createOrUpdateLocal();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			try {		
+				Prediction prediction = null;
+				List<Prediction> tmpPredictions = null;
+				try {
+					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(tmpPredictions==null || tmpPredictions.size()==0) {
+					prediction = new Prediction(bet);
+				} else {
+					prediction = tmpPredictions.get(0);
+				}
+				
+				prediction.setDate(formatter.parseDateTime(jsonPrediction.optString("created_at")));
+				prediction.setMyAck(jsonPrediction.optString("user_ack"));
+				prediction.setPrediction(jsonPrediction.optString("prediction"));
+				prediction.setResult(jsonPrediction.optBoolean("result"));
+				prediction.setServer_id(jsonPrediction.optInt("id",-1));
 				prediction.setUser(user);
 				prediction.createOrUpdateLocal();				
 				
 			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
-			} catch (JSONException e) {
 				e.printStackTrace();
 				continue;
 			}

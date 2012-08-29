@@ -2,6 +2,6 @@
 <resources>
 <!--     <string name="betcha_api">http://api.dropabet.com:3000</string> -->
     <string name="betcha_api">http://192.168.1.143:3000</string>
-<!--     <string name="betcha_api">http://192.168.4361:3000</string> -->
+<!--     <string name="betcha_api">http://192.168.43.61:3000</string> -->
 <!-- 		<string name="betcha_api">http://10.0.2.2:3000</string> -->
 </resources>

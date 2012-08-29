@@ -43,8 +43,26 @@ public class UserRestClient extends RestClient {
 		try {
 			jsonContent.put("provider", "email");
 			jsonContent.put("email", email);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		
+		try {
 			jsonContent.put("full_name", full_name);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
 			jsonContent.put("password", password);
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
 			jsonParent.put("user", jsonContent);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
