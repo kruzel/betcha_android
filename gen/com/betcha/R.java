@@ -91,8 +91,6 @@ public final class R {
         public static final int bet_you_on=0x7f050008;
         public static final int bet_you_on_hint=0x7f050009;
         public static final int bet_you_that=0x7f050006;
-        /**      <string name="betcha_api">http://api.dropabet.com:3000</string> 
-         */
         public static final int betcha_api=0x7f050004;
         public static final int betdetails=0x7f050039;
         public static final int betsrecords=0x7f050038;

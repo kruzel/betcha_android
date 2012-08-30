@@ -214,7 +214,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 
 	protected void getFromServer() {
 
-		Bet.fetchBetAndOwner(bet.getServer_id(), this);
+		Bet.getBetAndDependants(bet.getServer_id(), this);
 		
 		app.setBetId(-1); //avoid going here on next resume
 	}

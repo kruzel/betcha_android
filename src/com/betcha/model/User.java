@@ -2,10 +2,12 @@ package com.betcha.model;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.client.RestClientException;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.ModelCache;
@@ -205,47 +207,73 @@ public class User extends ModelCache<User,Integer> {
 	}
 
 	public int onRestSync() {
-		JSONObject json = getUserClient().show(getServer_id());
-		try {
-			name = json.getString("name");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			email = json.getString("email");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//password = json.optString("password");
-		try {
-			provider = json.getString("provider");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			uid = json.getString("uid");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			access_token = json.getString("access_token");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		int res = 0;
-		try {
-			res = updateLocal();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return res;
+		User user = getAndCreateUser(getServer_id());
+			
+		if(user==null)
+			return 0;
+		else
+			return 1;
 	}
 	
+	public static User getAndCreateUser(int server_id) {
+		User tmpOwner = null;
+		try {
+			List<User> listUser = null;
+			listUser = User.getModelDao().queryForEq("server_id", server_id);
+			if(listUser!=null && listUser.size()>0) {
+				tmpOwner = listUser.get(0);
+			}
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		if(tmpOwner == null) { //then create it
+			tmpOwner = new User();
+		}
+		
+		UserRestClient userClient = new UserRestClient();
+		JSONObject jsonOwner = null;
+		try {
+			jsonOwner = userClient.show(server_id);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return null;
+		}
+		if(jsonOwner==null)
+			return null;
+		
+		
+		try {
+			tmpOwner.setEmail(jsonOwner.getString("email"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			tmpOwner.setName(jsonOwner.getString("full_name"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			tmpOwner.setServer_id(jsonOwner.getInt("id"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try {
+			tmpOwner.createOrUpdateLocal();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return tmpOwner;
+	}
+	
+	public Boolean setJson(JSONObject json) {
+		return true;
+	}
 }

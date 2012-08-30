@@ -59,7 +59,8 @@ public class BetRestClient extends RestClient {
 			jsonContent.put("user_id", Integer.toString(bet.getOwner().getServer_id()));
 			jsonContent.put("subject", bet.getSubject());
 			jsonContent.put("reward", bet.getReward());
-			jsonContent.put("due_date", bet.getDueDate().toString());
+			if(bet.getDueDate()!=null)
+				jsonContent.put("due_date", bet.getDueDate().toString());
 			jsonContent.put("state", bet.getState());
 			jsonParent.put("bet", jsonContent);
 		} catch (JSONException e1) {

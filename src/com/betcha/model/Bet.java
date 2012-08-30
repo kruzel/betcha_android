@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.client.RestClientException;
 
 import android.util.Log;
 
@@ -177,21 +180,23 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 		}
 		
-		for (User participant : participants) {
-			if(participant.getServer_id()==-1) {
-				if(participant.createUserAccount()==0) 
-					continue;
-			}
-			
-			Prediction prediction = new Prediction(this);
-			prediction.setSendInvite(true);
-			prediction.setUser(participant);
-			prediction.setBet(this);
-			try {
-				res = res + prediction.create();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if(participants!=null) {
+			for (User participant : participants) {
+				if(participant.getServer_id()==-1) {
+					if(participant.createUserAccount()==0) 
+						continue;
+				}
+				
+				Prediction prediction = new Prediction(this);
+				prediction.setSendInvite(true);
+				prediction.setUser(participant);
+				prediction.setBet(this);
+				try {
+					res = res + prediction.create();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -209,67 +214,116 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	}
 
 	public int onRestSync() {
-		JSONObject json = getBetClient().show(getServer_id());
+		Bet bet = getAndCreateBet(getServer_id());
 	
+		if(bet!=null)
+			return 1;
+		else
+			return 0;
+	}
+	
+	public static Bet getAndCreateBet(int server_id) {	
+		
+		Bet tmpBet = null;
 		try {
-			user = User.getModelDao().queryForId(json.getInt("user_id"));
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 	
-		try {
-			subject = json.getString("subject");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			reward= json.getString("reward");
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
+			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", server_id);
+			if(bets==null)
+				return null;
+			tmpBet = bets.get(0);
+		} catch (SQLException e1) {
 			e1.printStackTrace();
-		} 
-		try {
-			date= DateTime.parse(json.getString("created_at"));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			dueDate= DateTime.parse(json.getString("due_date"));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			state= json.getString("state");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
-		int res = 0;
-		try {
-			res = updateLocal();
-		} catch (SQLException e) {
-			e.printStackTrace();
+			return null;
 		}
 		
-		return res;
+		if(tmpBet==null) {
+			tmpBet = new Bet();
+		}
+		
+		BetRestClient betClient = new BetRestClient();
+		JSONObject jsonBet = null;
+		try {
+			jsonBet = betClient.show(server_id);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return null;
+		}
+		if(jsonBet==null)
+			return null;
+		
+		if(tmpBet.setJson(jsonBet)) {
+			try {
+				tmpBet.createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		
+		return tmpBet;
+	}
+	
+	public Boolean setJson(JSONObject jsonBet) {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		
+		if(jsonBet==null)
+			return null;
+		
+		User owner = null;
+		try {
+			owner = User.getAndCreateUser(jsonBet.getInt("user_id"));
+		} catch (JSONException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
+		if(owner==null)
+			return false;
+		
+		try {
+			setServer_id(jsonBet.getInt("id"));
+			setOwner(owner);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		try {
+			setReward(jsonBet.getString("reward"));
+		} catch (JSONException e1) {	
+		}
+		
+		try {
+			setSubject(jsonBet.getString("subject"));
+		} catch (JSONException e1) {
+		}
+		
+		try {
+			setDate(formatter.parseDateTime(jsonBet.getString("created_at")));
+		} catch (JSONException e1) {
+		}
+		
+		try {
+			setDueDate(formatter.parseDateTime(jsonBet.getString("due_date")));
+		} catch (JSONException e1) {
+		}
+		
+		try {
+			setState(jsonBet.getString("state"));
+		} catch (JSONException e1) {
+		}
+			       					
+		return true;
 	}
 
 	/** bulk sync per user */
-	static public void refreshForUser(User user, IGetThisUserBetsCB cb) {
+	static public void getForUser(User user, IGetThisUserBetsCB cb) {
 		getUserBetsTask = new GetUserBetsTask();
-		getUserBetsTask.setValues(user, cb);
+		getUserBetsTask.setValues(cb);
 		getUserBetsTask.run();
 	}
 	
 	/** get a new bet via bet id on server, to be used for joining bets invites */
-	static public void fetchBetAndOwner(int bet_server_id, IGetBetAndDependantCB cb) {
+	static public void getBetAndDependants(int bet_server_id, IGetBetAndDependantCB cb) {
 		getBetAndDependantTask = new GetBetAndDependantsTask();
 		getBetAndDependantTask.setValues(bet_server_id, cb);
 		getBetAndDependantTask.run();

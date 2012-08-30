@@ -1,11 +1,16 @@
 package com.betcha.model;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.PredictionRestClient;
@@ -162,7 +167,6 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		try {
 			res = updateLocal();
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -180,7 +184,31 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public int onRestSync() {
-		JSONObject json = getPredictionRestClient().show(getServer_id());
+		if(Prediction.getAndCreatePrediction(getServer_id())==null)
+			return 0;
+		else
+			return 1;
+	}
+	
+	public static Prediction getAndCreatePrediction(int server_id) {
+				
+		PredictionRestClient predictionRestClient = new PredictionRestClient(server_id);
+		JSONObject json = predictionRestClient.show(server_id);
+		Prediction prediction = null;
+		try {
+			prediction = Prediction.getModelDao().queryForId(json.getInt("server_id"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		} 	
+		
+		if(prediction==null)
+			return null;
+		
+		User user = null;
 		try {
 			user = User.getModelDao().queryForId(json.getInt("user_id"));
 		} catch (SQLException e) {
@@ -190,6 +218,11 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 	
+		
+		if(user==null)
+			return null;
+		
+		Bet bet = null;
 		try {
 			bet = Bet.getModelDao().queryForId(json.getInt("bet_id"));
 		} catch (SQLException e) {
@@ -199,39 +232,115 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 	
+		
+		if(bet==null)
+			return null;
+		
 		try {
-			prediction = json.getString("prediction");
+			prediction.setPrediction(json.getString("prediction"));
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
 		}
 		try {
-			date= DateTime.parse(json.getString("created_at"));
+			prediction.setDate(DateTime.parse(json.getString("created_at")));
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
 		try {
-			result = json.getBoolean("result");
+			prediction.setResult(json.getBoolean("result"));
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		
 		}
 		try {
-			user_ack = json.getString("user_ack");
+			prediction.setMyAck(json.getString("user_ack"));
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			
 		}
 		
-		int res = 0;
+		
 		try {
-			res = updateLocal();
+			prediction.createOrUpdateLocal();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return null;
 		}
 		
-		return res;
+		return prediction;
+	}
+	
+	public static List<Prediction> getAndCreatePredictions(Bet inBet) {
+		
+		List<Prediction> predictions = new ArrayList<Prediction>();
+		
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		
+		PredictionRestClient userBetClient = new PredictionRestClient(inBet.getServer_id());
+		JSONArray jsonPredictions = null;
+		try {
+			jsonPredictions = userBetClient.showPredictionsForBet(inBet.getServer_id());
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return null;
+		}
+		if(jsonPredictions==null)
+			return null;
+		
+		User user = null;
+		JSONObject jsonPrediction = null;
+		for (int i = 0; i < jsonPredictions.length(); i++) {
+			try {
+				jsonPrediction = jsonPredictions.getJSONObject(i);
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+				continue;
+			}
+					
+			try {
+				user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
+			} catch (JSONException e2) {
+				e2.printStackTrace();
+				continue;
+			}
+			
+			if(user==null)
+				continue;
+						
+			try {		
+				Prediction prediction = null;
+				List<Prediction> tmpPredictions = null;
+				try {
+					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(tmpPredictions==null || tmpPredictions.size()==0) {
+					prediction = new Prediction(inBet);
+				} else {
+					prediction = tmpPredictions.get(0);
+				}
+				
+				prediction.setDate(formatter.parseDateTime(jsonPrediction.optString("created_at")));
+				prediction.setMyAck(jsonPrediction.optString("user_ack"));
+				prediction.setPrediction(jsonPrediction.optString("prediction"));
+				prediction.setResult(jsonPrediction.optBoolean("result"));
+				prediction.setServer_id(jsonPrediction.optInt("id",-1));
+				prediction.setUser(user);
+				prediction.createOrUpdateLocal();				
+				predictions.add(prediction);
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			}
+       	
+		}
+		return predictions;
+	}
+	
+	public Boolean setJson(JSONObject json) {
+		return true;
 	}
 
 	public void update(List<Prediction> predictions) {

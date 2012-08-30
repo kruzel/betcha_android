@@ -50,7 +50,7 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	    	Bet.refreshForUser(app.getMe(), BetsListActivity.this);
+    	    	Bet.getForUser(app.getMe(), BetsListActivity.this);
     	    }
     	});
         
@@ -62,6 +62,9 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
 				openDetailedActivity(bet_item, false);
 			}
 		});
+        
+        lvBets.setRefreshing();
+        Bet.getForUser(app.getMe(), BetsListActivity.this);
     }
     
 	protected void onResume() {
@@ -69,7 +72,7 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
 			dialog = ProgressDialog.show(BetsListActivity.this.getParent(), "", 
 	                getString(R.string.msg_bet_loading), true);
 			
-			Bet.fetchBetAndOwner(app.getBetId(), this);		
+			Bet.getBetAndDependants(app.getBetId(), this);		
 			
 			app.setBetId(-1); //avoid going here on next resume
 			
