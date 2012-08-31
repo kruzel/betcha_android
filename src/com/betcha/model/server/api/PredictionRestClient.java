@@ -109,7 +109,7 @@ public class PredictionRestClient extends RestClient {
 		
 		try {
 			//jsonContent.put("user_ack",prediction.getMyAck());
-			//jsonContent.put("prediction",prediction.getPrediction());
+			jsonContent.put("prediction","");
 			jsonContent.put("bet_id",Integer.toString(prediction.getBet().getServer_id()));
 			jsonContent.put("user_id",Integer.toString(prediction.getUser().getServer_id()));
 			//jsonContent.put("result",Boolean.toString(prediction.getResult()));
