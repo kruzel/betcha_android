@@ -2,6 +2,9 @@ package com.betcha;
 
 import java.sql.SQLException;
 
+import org.acra.ACRA;
+import org.acra.annotation.ReportsCrashes;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,7 +22,7 @@ import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
-
+@ReportsCrashes(formKey = "dFNHeE4wcDNfYWFCQWdnazVkdHdLSGc6MQ") 
 public class BetchaApp extends Application {
 	
 	/** preferences file **/
@@ -36,6 +39,8 @@ public class BetchaApp extends Application {
 	@Override
 	public void onCreate() {
 				
+		ACRA.init(this);
+
 		prefs = getSharedPreferences(getString(R.string.prefs_name), Context.MODE_PRIVATE);
 		
 		if(!createDbHelpers()) {

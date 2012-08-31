@@ -47,7 +47,7 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		}
 		
 		tvBetUser.setText(prediction.getUser().getName());
-		tvBetBet.setText(prediction.getPrediction());
+		tvBetBet.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
 		Boolean res = prediction.getResult();
 		if(res!=null)
 			cbResult.setChecked(res); //true = win

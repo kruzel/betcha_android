@@ -28,7 +28,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	
-	private RestTask restTask;
+	private static RestTask restTask;
 	IModelListener listener;
 	
 	protected Boolean authenticateCreate() {
@@ -87,6 +87,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
 		restTask.execute(RestMethod.CREATE);
 		
 		return res;
@@ -120,6 +121,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
 		restTask.execute(RestMethod.DELETE);
 		
 		return res;
@@ -145,6 +147,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
 		restTask.execute(RestMethod.UPDATE);
 		
 		return res;
@@ -167,6 +170,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
 		restTask.execute(RestMethod.SYNC);
 		
 		return getServer_id();
@@ -197,7 +201,12 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		private IModel model;
 		private IModelListener modelListener;
+		private Class modelClass;
 
+		public void setModelClass(Class clazz) {
+			modelClass = clazz;
+		}
+		
 		public void setModel(IModel model) {
 			this.model = model;
 		}
@@ -248,13 +257,13 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			if(modelListener!=null) {
 				switch (currMethod) {
 				case CREATE:
-					modelListener.onCreateComplete(result);
+					modelListener.onCreateComplete(modelClass,result);
 					break;
 				case UPDATE:
-					modelListener.onUpdateComplete(result);
+					modelListener.onUpdateComplete(modelClass,result);
 					break;
 				case DELETE:
-					modelListener.onDeleteComplete(result);
+					modelListener.onDeleteComplete(modelClass,result);
 					break;
 				default:
 					break;

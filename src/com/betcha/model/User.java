@@ -158,6 +158,10 @@ public class User extends ModelCache<User,Integer> {
 			jsonUser = getUserClient().createOAuth(provider, uid, access_token);
 		}
 		
+		if(jsonUser==null)
+			return 0;
+			
+			
 		setServer_id(jsonUser.optInt("id",-1));
 		try {
 			res = updateLocal();

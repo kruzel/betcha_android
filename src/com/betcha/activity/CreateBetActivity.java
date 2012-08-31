@@ -105,6 +105,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         //inviteUsers = fetch all users from DB and contacts list, later from FB
         try {
         	//TODO add distinct email 
+        	if(app.getMe()!=null)
         		friends = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -116,11 +117,11 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         	friends = new ArrayList<User>();
         }
         
-        User ofer = new User();
-    	ofer.setName("ofer");
-    	ofer.setEmail("okruzel@gmail.com");
-    	ofer.setProvider("email");
-	    friends.add(ofer);
+//        User ofer = new User();
+//    	ofer.setName("ofer");
+//    	ofer.setEmail("okruzel@gmail.com");
+//    	ofer.setProvider("email");
+//	    friends.add(ofer);
         
         //invite users only from pre-loaded friend list should be loaded ad registration)
         ContentResolver cr = getContentResolver();
@@ -144,7 +145,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 				e.printStackTrace();
 			}
      	    
-     	    if((name!=null || email!=null) && (foundUsers.size()==0)) {
+     	    if((name!=null || email!=null) && (foundUsers==null)) {
      	    	User tmpUser = new User();
      	    	tmpUser.setName(name);
           	   	tmpUser.setEmail(email);

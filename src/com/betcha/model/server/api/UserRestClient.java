@@ -73,14 +73,21 @@ public class UserRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
 		
-		String res = restTemplate.postForObject(url + ".json" , request, String.class);	
+        String res = null;
+        try {
+        	res = restTemplate.postForObject(url + ".json" , request, String.class);
+        } catch (RestClientException e) {
+    		
+    	}
 		
 		JSONObject json = null;
-		try {
-			json = new JSONObject(res);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(res!=null) {
+			try {
+				json = new JSONObject(res);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		return json;

@@ -64,7 +64,7 @@ public class BetUTabActivity extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 	    
-	    if(app.getMe()==null) {
+	    if(app.getMe()==null || app.getMe().getServer_id()==-1) {
 	    	tabHost.getTabWidget().setEnabled(false);
 	    	tabHost.setCurrentTab(2);
 	    } else if(app.getBetId() != -1) {

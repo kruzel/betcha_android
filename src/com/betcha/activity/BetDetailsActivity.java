@@ -47,7 +47,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	private TextView tvOwner;
 	private TextView tvSubject;
 
-	private PullToRefreshListView lvPredictionss;
+	private PullToRefreshListView lvPredictions;
 	private Button btnPublishResult;
 
 	private View footerView;
@@ -63,11 +63,11 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 
 		app = (BetchaApp) getApplication();
 
-		lvPredictionss = (PullToRefreshListView) findViewById(R.id.pull_to_refresh_betdetails_list);
+		lvPredictions = (PullToRefreshListView) findViewById(R.id.pull_to_refresh_betdetails_list);
 
 		LayoutInflater inflater = this.getLayoutInflater();
 		View header = inflater.inflate(R.layout.bet_details_header, null);
-		lvPredictionss.addHeaderView(header);
+		lvPredictions.addHeaderView(header);
 
 		tvState = (TextView) findViewById(R.id.tv_bet_header_state);
 		tvDate = (TextView) findViewById(R.id.tv_bet_header_date);
@@ -76,7 +76,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 
 		footerView = inflater.inflate(R.layout.add_bet_footer, null);
 
-		lvPredictionss.setOnRefreshListener(new OnRefreshListener() {
+		lvPredictions.setOnRefreshListener(new OnRefreshListener() {
 
 			public void onRefresh() {
 				getFromServer();
@@ -113,22 +113,22 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 		// Creating a button - only if bet owner is the current logged in user
 		if (bet.getOwner().getId() == app.getMe().getId()) {
 			if (btnPublishResult == null) {
-				lvPredictionss.removeFooterView(footerView);
+				lvPredictions.removeFooterView(footerView);
 
 				btnPublishResult = new Button(BetDetailsActivity.this);
 				btnPublishResult.setText(getString(R.string.publish_results));
 				btnPublishResult.setOnClickListener(BetDetailsActivity.this);
 
 				// Adding button to listview at footer
-				lvPredictionss.addFooterView(btnPublishResult);
+				lvPredictions.addFooterView(btnPublishResult);
 			}
 		} else {
 			if (btnPublishResult != null) {
-				lvPredictionss.removeFooterView(btnPublishResult);
+				lvPredictions.removeFooterView(btnPublishResult);
 				btnPublishResult = null;
 			}
 
-			lvPredictionss.addFooterView(footerView);
+			lvPredictions.addFooterView(footerView);
 			etMyBet = (EditText) findViewById(R.id.editTextAddBet);
 			etMyBet.clearFocus();
 
@@ -180,7 +180,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 		predictionAdapter = new PredictionAdapter(this, R.layout.bets_list_item,
 				predictions);
 
-		lvPredictionss.setAdapter(predictionAdapter);
+		lvPredictions.setAdapter(predictionAdapter);
 	}
 
 	@Override
@@ -191,8 +191,8 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	// Prediction list OnClick
 	public void onClick(View v) {
 
-		for (int i = 2; i < lvPredictionss.getCount() - 1; i++) {
-			View vListItem = lvPredictionss.getChildAt(i);
+		for (int i = 2; i < lvPredictions.getCount() - 1; i++) {
+			View vListItem = lvPredictions.getChildAt(i);
 			CheckBox cb = (CheckBox) vListItem
 					.findViewById(R.id.cb_user_bet_win);
 			if (cb != null)
@@ -266,6 +266,8 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 
 				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG);
 				
+				lvPredictions.invalidate();
+				
 				try {
 					myPrediction.update();
 				} catch (SQLException e) {
@@ -279,7 +281,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 	}
 
 	public void OnGetBetCompleted(Boolean success, Bet bet) {
-		lvPredictionss.onRefreshComplete();
+		lvPredictions.onRefreshComplete();
 		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;

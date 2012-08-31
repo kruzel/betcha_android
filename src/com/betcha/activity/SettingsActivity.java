@@ -4,7 +4,10 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TabActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -15,8 +18,13 @@ import android.widget.Toast;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
+import com.betcha.model.cache.IModelListener;
+import com.facebook.android.DialogError;
+import com.facebook.android.Facebook;
+import com.facebook.android.Facebook.DialogListener;
+import com.facebook.android.FacebookError;
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends Activity implements IModelListener {
 	public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
 	          "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 	          "\\@" +
@@ -28,9 +36,14 @@ public class SettingsActivity extends Activity {
 	      );
 	
 	private BetchaApp app;
-	EditText etEmail;
-	EditText etPass;
-	EditText etName;
+	
+	private Facebook facebook = new Facebook("299434100154215");
+	
+	private EditText etEmail;
+	private EditText etPass;
+	private EditText etName;
+	
+	private Dialog dialog = null;
 	
     /** Called when the activity is first created. */
     @Override
@@ -43,7 +56,14 @@ public class SettingsActivity extends Activity {
         etEmail = (EditText) findViewById(R.id.editTextEmail);
         etName = (EditText) findViewById(R.id.editTextName);
         etPass = (EditText) findViewById(R.id.editTextPass);
-        
+       
+    }
+    
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        facebook.authorizeCallback(requestCode, resultCode, data);
     }
 
 	@Override
@@ -52,8 +72,7 @@ public class SettingsActivity extends Activity {
 		Button btEmailReg = (Button) findViewById(R.id.buttonEmailReg);
 		
 		if(me!=null) {
-			btEmailReg.setText(getString(R.string.update));
-			
+						
 	        String myEmail = app.getMe().getEmail();
 	        
 	        if(myEmail!= null && myEmail.length()!=0) {
@@ -69,7 +88,11 @@ public class SettingsActivity extends Activity {
 	        if(myName!=null && myName.length()!=0) {
 		        etName.setText(myName);
 	        }
-        } else {
+        } 
+		
+		if(me!=null && me.getServer_id()!=-1) {
+			btEmailReg.setText(getString(R.string.update));
+		} else {
         	btEmailReg.setText(getString(R.string.register));
         }
 		
@@ -106,20 +129,29 @@ public class SettingsActivity extends Activity {
 		
         if(errorFound == false) {
         	User me = app.getMe();
+        	int res = 0;
         	
-        	if(me==null) {
-        		me = new User();
+        	dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
+                    "Registering. Please wait...", true);
+        	        	
+        	if(me==null || me.getServer_id()==-1) {
+        		if(me==null) {
+        			me = new User();
+        		}
         		        
         		me.setProvider("email");
 	        	me.setEmail(etEmail.getText().toString());
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
+	        	
+	        	me.setListener(this);
     		
 	        	try {
-					me.create();
+					res = me.create();
 				} catch (SQLException e) {
 					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
 					e.printStackTrace();
+					onCreateComplete(me.getClass(),false);
 					return;
 				}
 	        	
@@ -130,26 +162,16 @@ public class SettingsActivity extends Activity {
 	        	me.setPassword(etPass.getText().toString());
 	        	
     			try {
-					me.update();
+					res = me.update();
 				} catch (SQLException e) {
 					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
 					e.printStackTrace();
+					onCreateComplete(me.getClass(),false);
 					return;
 				}
     		}
     		
-    		app.setMe(me);
-    		
-    		TabActivity act = (TabActivity) getParent();
-	        if(act==null)
-	        	return;
-	        
-		    TabHost tabHost = act.getTabHost();  // The activity TabHost
-		    if(tabHost != null){
-		    	tabHost.getTabWidget().setEnabled(true);
-	        	tabHost.setCurrentTab(0);
-	        }
-        	
+        	app.setMe(me);
         }
 	}
 	
@@ -157,31 +179,85 @@ public class SettingsActivity extends Activity {
 		User me = new User();
 		me.setProvider("email");
 		
+		int res = 0;
 		try {
-			me.create();
+			res = me.create();
 		} catch (SQLException e) {
 			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
 			e.printStackTrace();
+			onCreateComplete(me.getClass(),false);
 			return;
 		}
 		
-		app.setMe(me);
-		
-		TabActivity act = (TabActivity) getParent();
-        if(act==null)
-        	return;
-        
-	    TabHost tabHost = act.getTabHost();  // The activity TabHost
-	    if(tabHost != null){
-	    	tabHost.getTabWidget().setEnabled(true);
-        	tabHost.setCurrentTab(0);
-        }
+		if(res>1) {
+			app.setMe(me);
+			onCreateComplete(me.getClass(),true);
+		} else {
+			onCreateComplete(me.getClass(),false);
+		}
+			
 	}
 	
 	public void OnFBConnect(View v) {
-		//TODO run FB connect flow
+		facebook.authorize(this, new DialogListener() {
+            @Override
+            public void onComplete(Bundle values) {
+            	//TODO on registration - load contacts to friends list
+            	String token = facebook.getAccessToken();
+            	
+            	//TODO implement FB connect registration on dropabet server
+            	onCreateComplete(app.getMe().getClass(),false);
+            	return;
+            }
+
+            @Override
+            public void onFacebookError(FacebookError error) {}
+
+            @Override
+            public void onError(DialogError e) {}
+
+            @Override
+            public void onCancel() {}
+        });
 		
 	}
+
+	@Override
+	public void onCreateComplete(Class clazz, Boolean success) {
+		
+		if(clazz.getName().contentEquals("com.betcha.model.User")) {
+			if(success) {
+				TabActivity act = (TabActivity) getParent();
+		        if(act==null)
+		        	return;
+		        
+			    TabHost tabHost = act.getTabHost();  // The activity TabHost
+			    if(tabHost != null){
+			    	tabHost.getTabWidget().setEnabled(true);
+		        	tabHost.setCurrentTab(0);
+		        }
+			} else {
+				Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
+			}
+		}
+		
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onUpdateComplete(Class clazz, Boolean success) {
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onDeleteComplete(Class clazz, Boolean success) {
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onSyncComplete(Class clazz, Boolean success) {
+		dialog.dismiss();
+	}
 	
-	//TODO on registration - load contacts to friends list
+	
 }
