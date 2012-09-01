@@ -12,9 +12,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
+import android.os.AsyncTask;
+
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.PredictionRestClient;
-import com.betcha.model.tasks.UpdatePredictionsTask;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -39,7 +40,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	private String user_ack; // Yes/No/Pending
 	
 	private static PredictionRestClient predictionRestClient;
-	private static UpdatePredictionsTask updatePredictionsTask;
+	private static UpdateBatchPredictionsTask updatePredictionsTask;
 	private static Dao<Prediction,Integer> dao;
 	
 	private Boolean sendInvite = false;
@@ -374,13 +375,61 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		return predictions;
 	}
 
-	public void update(List<Prediction> predictions) {
-		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
-		updatePredictionsTask.setValues(predictions);
-		updatePredictionsTask.run();
+	public static void update(List<Prediction> predictions, int bet_id) {
+		for (Prediction prediction : predictions) {
+			try {
+				prediction.update();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return;
+			}
+		}
+		
+		updatePredictionsTask = new UpdateBatchPredictionsTask(bet_id);
+		updatePredictionsTask.run(predictions);
 	}
 
 	public Boolean setJson(JSONObject json) {
 		return true;
+	}
+	
+	private static class UpdateBatchPredictionsTask extends AsyncTask<Void, Void, Boolean> {
+		
+		private List<Prediction> predictions;
+		private int bet_server_id;
+
+		public UpdateBatchPredictionsTask(int bet_server_id) {
+			super();
+			this.bet_server_id = bet_server_id;
+		}
+			
+		public void run(List<Prediction> predictions) {		
+			this.predictions = predictions;
+			
+			if(getStatus()!=Status.RUNNING)
+				execute();
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+	    	
+			List<Prediction> paramList = new ArrayList<Prediction>();
+			
+			PredictionRestClient predictionClient = new PredictionRestClient(bet_server_id);
+			
+			for (Prediction prediction : predictions) {
+				paramList.add(prediction);
+			}
+			
+			try {
+				predictionClient.update(paramList);
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				return false;
+			}
+		       					
+			return true;
+		}
+		
 	}
 }

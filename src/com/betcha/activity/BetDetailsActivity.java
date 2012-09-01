@@ -199,8 +199,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 				predictions.get(i - 2).setResult(cb.isChecked());
 		}
 
-		Prediction prediction = new Prediction(bet);
-		prediction.update(predictions);
+		Prediction.update(predictions,bet.getServer_id());
 
 		bet.setState(Bet.STATE_CLOSED);
 		try {
