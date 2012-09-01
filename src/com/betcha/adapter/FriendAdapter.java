@@ -49,6 +49,7 @@ public class FriendAdapter extends ArrayAdapter<User> {
  	    	if(domain!=null) {
  	    		//tvUserName.setText(user.getName());
  	    		//tvContact.setText("@"+domain);
+ 	    		tvContact.setText("");
  	    		tvUserName.setText(user.getEmail());
  	    	}
 		}  

@@ -53,6 +53,16 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		setBet(bet);
 	}
 	
+	public void setPrediction(Prediction newPrediction) {
+		id = newPrediction.getId();
+		user = newPrediction.getUser();
+		bet = newPrediction.getBet();
+		prediction = newPrediction.getPrediction();
+		date = newPrediction.getDate();
+		result = newPrediction.getResult();
+		user_ack = newPrediction.getMyAck();
+	}
+	
 	public PredictionRestClient getPredictionRestClient() {
 		if(predictionRestClient==null)
 			//nested url = bets/:bet_id/predictions
@@ -184,10 +194,35 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public int onRestSync() {
+		//TODO save client side changes to server
+		
 		if(Prediction.getAndCreatePrediction(getServer_id())==null)
 			return 0;
 		else
 			return 1;
+	}
+	
+	@Override
+	public int onRestGet() {
+		Prediction pred = Prediction.getAndCreatePrediction(getServer_id());
+		if(pred==null)
+			return 0;
+		else {
+			setPrediction(pred);
+			return 1;
+		}
+	}
+
+	@Override
+	public int onRestGetWithDependents() {
+		// fetch also prediction's user
+		Prediction pred = Prediction.getAndCreatePrediction(getServer_id());
+		if(pred==null)
+			return 0;
+		else {
+			setPrediction(pred);
+			return 1;
+		}
 	}
 	
 	public static Prediction getAndCreatePrediction(int server_id) {
@@ -338,14 +373,14 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		}
 		return predictions;
 	}
-	
-	public Boolean setJson(JSONObject json) {
-		return true;
-	}
 
 	public void update(List<Prediction> predictions) {
 		updatePredictionsTask = new UpdatePredictionsTask(bet.getServer_id());
 		updatePredictionsTask.setValues(predictions);
 		updatePredictionsTask.run();
+	}
+
+	public Boolean setJson(JSONObject json) {
+		return true;
 	}
 }

@@ -145,7 +145,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 				e.printStackTrace();
 			}
      	    
-     	    if((name!=null || email!=null) && (foundUsers==null)) {
+     	    if((name!=null || email!=null) && (foundUsers==null || foundUsers.size()==0)) {
      	    	User tmpUser = new User();
      	    	tmpUser.setName(name);
           	   	tmpUser.setEmail(email);

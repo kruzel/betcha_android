@@ -1,16 +1,19 @@
 package com.betcha.model;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.ModelCache;
+import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
 import com.j256.ormlite.dao.Dao;
@@ -42,6 +45,17 @@ public class User extends ModelCache<User,Integer> {
 	
 	private Boolean isInvitedToBet = false;
 	
+
+	public void setUser(User newUser) {
+		this.id = newUser.getId();
+		this.name = newUser.getName();
+		this.email = newUser.getEmail();
+		this.password = newUser.getPassword();
+		this.provider = newUser.getProvider();
+		this.uid = newUser.getUid();
+		this.access_token = newUser.getAccess_token();
+	}
+
 	public UserRestClient getUserClient() {
 		if(userClient==null)
 			userClient = new UserRestClient();
@@ -221,7 +235,88 @@ public class User extends ModelCache<User,Integer> {
 
 	public int onRestSync() {
 		User user = getAndCreateUser(getServer_id());
+		
+		//TODO save client side changes to server
 			
+		if(user==null)
+			return 0;
+		else
+			return 1;
+	}
+	
+	@Override
+	public int onRestGet() {
+		User user = getAndCreateUser(getServer_id());
+		if(user!=null)
+			setUser(user);
+		
+		if(user==null)
+			return 0;
+		else
+			return 1;
+	}
+
+	@Override
+	public int onRestGetWithDependents() {
+		User user = getAndCreateUser(getServer_id());
+		if(user!=null)
+			setUser(user);
+		
+		List<Bet> bets;
+		bets = new ArrayList<Bet>();
+		
+		BetRestClient restClient = new BetRestClient();
+		JSONArray jsonBets = null;
+		try {
+			jsonBets = restClient.show_for_user(); //for logged in user
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return 0;
+		} 
+		
+		for (int i = 0; i < jsonBets.length(); i++) {
+			JSONObject jsonBet;
+		
+			try {
+				jsonBet = jsonBets.getJSONObject(i);
+			} catch (JSONException e3) {
+				e3.printStackTrace();
+				continue;
+			}
+			
+			Bet tmpBet = null;
+			try {
+				List<Bet> tmpBets = Bet.getModelDao().queryForEq("server_id", jsonBet.getInt("id"));
+				if(tmpBets!=null && tmpBets.size()>0) { 
+					tmpBet = tmpBets.get(0);
+				}
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if(tmpBet==null) {
+				tmpBet = new Bet();
+			}
+							
+			if(!tmpBet.setJson(jsonBet))
+				continue;
+			
+			try {
+				tmpBet.createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			}
+			
+			if(Prediction.getAndCreatePredictions(tmpBet)==null)
+				continue;
+			
+			bets.add(tmpBet);
+			
+		}
+		
 		if(user==null)
 			return 0;
 		else

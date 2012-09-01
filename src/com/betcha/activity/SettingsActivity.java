@@ -211,7 +211,6 @@ public class SettingsActivity extends Activity implements IModelListener {
             	//TODO on registration - load contacts to friends list
             	String token = facebook.getAccessToken();
             	
-            	
             	//TODO implement FB connect registration on dropabet server
             	User me = new User();
         		me.setProvider("facebook");
@@ -287,6 +286,16 @@ public class SettingsActivity extends Activity implements IModelListener {
 
 	@Override
 	public void onSyncComplete(Class clazz, Boolean success) {
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onGetComplete(Class clazz, Boolean success) {
+		dialog.dismiss();
+	}
+
+	@Override
+	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
 		dialog.dismiss();
 	}
 	

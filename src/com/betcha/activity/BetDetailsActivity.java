@@ -29,13 +29,13 @@ import com.betcha.adapter.PredictionAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
-import com.betcha.model.tasks.IGetBetAndDependantCB;
+import com.betcha.model.cache.IModelListener;
 import com.betcha.nevigation.BetListGroupActivity;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetDetailsActivity extends Activity implements OnClickListener, IGetBetAndDependantCB {
+public class BetDetailsActivity extends Activity implements OnClickListener, IModelListener {
 	private BetchaApp app;
 	private PredictionAdapter predictionAdapter;
 	private List<Prediction> predictions;
@@ -214,7 +214,14 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 
 	protected void getFromServer() {
 
-		Bet.getBetAndDependants(bet.getServer_id(), this);
+		//Bet.getBetAndDependants(bet.getServer_id(), this);
+		bet.setListener(this);
+		try {
+			bet.getWithDependents(bet.getServer_id());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		app.setBetId(-1); //avoid going here on next resume
 	}
@@ -280,7 +287,20 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 		}
 	}
 
-	public void OnGetBetCompleted(Boolean success, Bet bet) {
+	@Override
+	public void onCreateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUpdateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGetComplete(Class clazz, Boolean success) {
 		lvPredictions.onRefreshComplete();
 		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
@@ -288,6 +308,33 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 		}
 		
 		populateList();
+		
+		lvPredictions.onRefreshComplete();
+	}
+
+	@Override
+	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
+		lvPredictions.onRefreshComplete();
+		if (dialog != null && dialog.isShowing()) {
+			dialog.dismiss();
+			dialog = null;
+		}
+		
+		populateList();
+		
+		lvPredictions.onRefreshComplete();
+	}
+
+	@Override
+	public void onDeleteComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSyncComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

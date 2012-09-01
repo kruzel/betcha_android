@@ -17,8 +17,7 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
-import com.betcha.model.tasks.IGetBetAndDependantCB;
-import com.betcha.model.tasks.IGetThisUserBetsCB;
+import com.betcha.model.cache.IModelListener;
 import com.betcha.nevigation.BetListGroupActivity;
 
 import eu.erikw.PullToRefreshListView;
@@ -28,14 +27,16 @@ import eu.erikw.PullToRefreshListView.OnRefreshListener;
  * @author ofer
  *
  */
-public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IGetBetAndDependantCB {
+public class BetsListActivity extends Activity implements IModelListener {
 	private BetchaApp app;
 	private BetAdapter betAdapter;
 	private List<Bet> bets;
+	private Bet newBet = null;
 	
 	private PullToRefreshListView lvBets;
-	
 	private ProgressDialog dialog;
+	
+	private Boolean isSychedFtchedFromServer = false;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -50,7 +51,14 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	    	Bet.getForUser(app.getMe(), BetsListActivity.this);
+    	    	app.getMe().setListener(BetsListActivity.this);
+    	    	try {
+    	    		app.getMe().setListener(BetsListActivity.this);
+					app.getMe().getWithDependents(app.getMe().getServer_id());
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     	    }
     	});
         
@@ -63,23 +71,38 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
 			}
 		});
         
-        lvBets.setRefreshing();
-        Bet.getForUser(app.getMe(), BetsListActivity.this);
     }
     
 	protected void onResume() {
+		
+		populate();
+		
 		if(app.getBetId()!=-1) {
 			dialog = ProgressDialog.show(BetsListActivity.this.getParent(), "", 
 	                getString(R.string.msg_bet_loading), true);
-			
-			Bet.getBetAndDependants(app.getBetId(), this);		
-			
-			app.setBetId(-1); //avoid going here on next resume
+						
+			app.getMe().setListener(BetsListActivity.this);
+			newBet = new Bet();
+			try {
+				newBet.getWithDependents(app.getBetId());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		} 
 		
-		populate();
-		        
+		if(app.getMe().getServer_id()!=-1 && !isSychedFtchedFromServer) {
+        	lvBets.setRefreshing();
+	        app.getMe().setListener(this);
+	    	try {
+				app.getMe().getWithDependents(app.getMe().getServer_id());
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		
 		super.onResume();
 	}
 	
@@ -113,23 +136,68 @@ public class BetsListActivity extends Activity implements IGetThisUserBetsCB, IG
         lvBets.setAdapter(betAdapter);
 	}
 
-	public void OnGetBetCompleted(Boolean success, Bet bet) {
+
+	@Override
+	public void onCreateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUpdateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGetComplete(Class clazz, Boolean success) {
 		if(dialog!=null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
 		
-		if(success && bet!=null) {
-			openDetailedActivity(bet,true);
+		lvBets.onRefreshComplete();
+		
+		if(success) {
+			populate();
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}
+	}
+
+	@Override
+	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
+		if(dialog!=null && dialog.isShowing()) {
+			dialog.dismiss();
+			dialog = null;
+		}
+		
+		lvBets.onRefreshComplete();
+		
+		if(success ) {
+			populate();
+						
+			if(app.getBetId()!=-1) {
+				app.setBetId(-1); //avoid going here on next resume
+				openDetailedActivity(newBet, true);
+			}
+			
+			isSychedFtchedFromServer = true;
+		} else {
+			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
+		}
+	}
+
+	@Override
+	public void onDeleteComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
 		
 	}
 
-	public void OnGetUserBetsCompleted(Boolean success, List<Bet> bets) {
-		populate();
-		lvBets.onRefreshComplete();
+	@Override
+	public void onSyncComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

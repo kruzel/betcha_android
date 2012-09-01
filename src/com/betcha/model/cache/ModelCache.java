@@ -28,7 +28,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	
-	private static RestTask restTask;
+	private RestTask restTask;
 	IModelListener listener;
 	
 	protected Boolean authenticateCreate() {
@@ -43,7 +43,11 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return true;
 	}
 	
-	protected Boolean authenticateRefresh() {
+	protected Boolean authenticateSynch() {
+		return true;
+	}
+	
+	protected Boolean authenticateGet() {
 		return true;
 	}
 	
@@ -158,8 +162,43 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return super.update();
 	}
 	
-	@Override
-	public int refresh() throws SQLException {	
+	public int get(int server_id) throws SQLException {	
+		initDao();
+		setSynced(false);
+		setServer_id(server_id);
+		if(authenticateGet() && RestClient.GetToken()==null)
+			return -1;
+		
+		// run task to update server
+		last_rest_call = RestMethod.GET;
+		restTask = new RestTask();
+		restTask.setModel(this);
+		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
+		restTask.execute(RestMethod.GET);
+		
+		return 1;
+	}
+	
+	public int getWithDependents(int server_id) throws SQLException {	
+		initDao();
+		setSynced(false);
+		setServer_id(server_id);
+		if(authenticateGet() && RestClient.GetToken()==null)
+			return -1;
+		
+		// run task to update server
+		last_rest_call = RestMethod.GET_WITH_DEP;
+		restTask = new RestTask();
+		restTask.setModel(this);
+		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
+		restTask.execute(RestMethod.GET_WITH_DEP);
+		
+		return 1;
+	}
+		
+	public int synch() throws SQLException {	
 		initDao();
 		setSynced(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
@@ -173,7 +212,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		restTask.setModelClass(getClass());
 		restTask.execute(RestMethod.SYNC);
 		
-		return getServer_id();
+		return 1;
 	}
 
 	public void setServer_id(int serverId) {
@@ -196,7 +235,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	 *
 	 */
 	public static class RestTask extends  AsyncTask<RestMethod, Void, Boolean> {
-		public enum RestMethod { CREATE, UPDATE, DELETE, SYNC }
+		public enum RestMethod { CREATE, UPDATE, DELETE, SYNC, GET, GET_WITH_DEP }
 		RestMethod currMethod;
 		
 		private IModel model;
@@ -240,6 +279,18 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 					return true;
 				}
 				break;
+			case GET:
+				if(model.onRestGet()>0) {
+					model.setSynced(true);
+					return true;
+				}
+				break;
+			case GET_WITH_DEP:
+				if(model.onRestGetWithDependents()>0) {
+					model.setSynced(true);
+					return true;
+				}
+				break;
 			case SYNC:
 				if(model.onRestSync()>0) {
 					model.setSynced(true);
@@ -264,6 +315,12 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 					break;
 				case DELETE:
 					modelListener.onDeleteComplete(modelClass,result);
+					break;
+				case GET:
+					modelListener.onGetComplete(modelClass,result);
+					break;
+				case GET_WITH_DEP:
+					modelListener.onGetWithDependentsComplete(modelClass,result);
 					break;
 				default:
 					break;

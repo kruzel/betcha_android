@@ -14,10 +14,6 @@ import android.util.Log;
 
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
-import com.betcha.model.tasks.GetBetAndDependantsTask;
-import com.betcha.model.tasks.GetUserBetsTask;
-import com.betcha.model.tasks.IGetBetAndDependantCB;
-import com.betcha.model.tasks.IGetThisUserBetsCB;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -50,14 +46,23 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	public static final String STATE_DUE = "due";
 	public static final String STATE_CLOSED = "closed";
 	
-	private static GetUserBetsTask getUserBetsTask;
-	private static GetBetAndDependantsTask getBetAndDependantTask;
+//	private static GetUserBetsTask getUserBetsTask;
 	private static BetRestClient betClient;
 	private static Dao<Bet,Integer> dao;
 	
 	private List<User> participants;
 	private Prediction ownerPrediction;
 	
+	public void setBet(Bet bet) {
+		this.id = bet.getId();
+		this.user = bet.getOwner();
+		this.subject = bet.getSubject();
+		this.reward = bet.getReward();
+		this.date = bet.getDate();
+		this.dueDate = bet.getDueDate();
+		this.state = bet.getState();
+	}
+
 	public BetRestClient getBetClient() {
 		if(betClient==null)
 			betClient = new BetRestClient();
@@ -216,10 +221,56 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	public int onRestSync() {
 		Bet bet = getAndCreateBet(getServer_id());
 	
+		//TODO save client side changes to server
+		
 		if(bet!=null)
 			return 1;
 		else
 			return 0;
+	}
+	
+	@Override
+	public int onRestGet() {
+		Bet bet = getAndCreateBet(getServer_id());
+		
+		if(bet!=null) {
+			setBet(bet);
+			return 1;
+		}
+		else
+			return 0;
+	}
+
+	@Override
+	public int onRestGetWithDependents() {
+		Bet bet = null;
+		User owner = null;
+		
+		try {
+			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", getServer_id());
+			if(bets.size()>0) {
+				bet = bets.get(0);
+				List<User> owners = User.getModelDao().queryForEq("id", bet.getOwner().getId());
+				if(owners.size()>0) {
+					owner = owners.get(0);
+					bet.setOwner(owner);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		bet = Bet.getAndCreateBet(bet.getServer_id());
+		if(bet==null)
+			return 0;
+		
+		setBet(bet);
+		
+		if(Prediction.getAndCreatePredictions(bet)==null)
+			return 0;
+		
+		return 0;
 	}
 	
 	public static Bet getAndCreateBet(int server_id) {	
@@ -316,17 +367,4 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		return true;
 	}
 
-	/** bulk sync per user */
-	static public void getForUser(User user, IGetThisUserBetsCB cb) {
-		getUserBetsTask = new GetUserBetsTask();
-		getUserBetsTask.setValues(cb);
-		getUserBetsTask.run();
-	}
-	
-	/** get a new bet via bet id on server, to be used for joining bets invites */
-	static public void getBetAndDependants(int bet_server_id, IGetBetAndDependantCB cb) {
-		getBetAndDependantTask = new GetBetAndDependantsTask();
-		getBetAndDependantTask.setValues(bet_server_id, cb);
-		getBetAndDependantTask.run();
-	}
 }
