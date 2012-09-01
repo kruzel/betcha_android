@@ -97,6 +97,14 @@ public class User extends ModelCache<User,Integer> {
 		this.provider = provider;
 	}
 
+	public String getAccess_token() {
+		return access_token;
+	}
+
+	public void setAccess_token(String access_token) {
+		this.access_token = access_token;
+	}
+
 	public Boolean getIsInvitedToBet() {
 		return isInvitedToBet;
 	}
@@ -156,6 +164,7 @@ public class User extends ModelCache<User,Integer> {
 			jsonUser = getUserClient().create(name, email, password);
 		} else if (provider == "facebook") {
 			jsonUser = getUserClient().createOAuth(provider, uid, access_token);
+			setJson(jsonUser);
 		}
 		
 		if(jsonUser==null)
@@ -247,26 +256,8 @@ public class User extends ModelCache<User,Integer> {
 		if(jsonOwner==null)
 			return null;
 		
-		
-		try {
-			tmpOwner.setEmail(jsonOwner.getString("email"));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			tmpOwner.setName(jsonOwner.getString("full_name"));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			tmpOwner.setServer_id(jsonOwner.getInt("id"));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+		tmpOwner.setJson(jsonOwner);
+				
 		try {
 			tmpOwner.createOrUpdateLocal();
 		} catch (SQLException e) {
@@ -278,6 +269,31 @@ public class User extends ModelCache<User,Integer> {
 	}
 	
 	public Boolean setJson(JSONObject json) {
+		try {
+			setEmail(json.getString("email"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			setName(json.getString("full_name"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			setServer_id(json.getInt("id"));
+		} catch (JSONException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			setUid(json.getString("uid"));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return true;
 	}
 }

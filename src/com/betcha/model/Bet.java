@@ -268,6 +268,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		if(jsonBet==null)
 			return null;
 		
+		// TODO move the get part outside to the caller 
 		User owner = null;
 		try {
 			owner = User.getAndCreateUser(jsonBet.getInt("user_id"));

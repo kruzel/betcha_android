@@ -250,7 +250,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 				myPrediction.setPrediction(etMyBet.getText().toString());
 				myPrediction.setMyAck(getString(R.string.pending));
 
-				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG);
+				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
 
 				try {
 					myPrediction.create();
@@ -264,7 +264,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IGe
 				myPrediction.setPrediction(etMyBet.getText().toString());
 				myPrediction.setMyAck(getString(R.string.pending));
 
-				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG);
+				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
 				
 				lvPredictions.invalidate();
 				

@@ -149,7 +149,7 @@ public class SettingsActivity extends Activity implements IModelListener {
 	        	try {
 					res = me.create();
 				} catch (SQLException e) {
-					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
 					e.printStackTrace();
 					onCreateComplete(me.getClass(),false);
 					return;
@@ -164,7 +164,7 @@ public class SettingsActivity extends Activity implements IModelListener {
     			try {
 					res = me.update();
 				} catch (SQLException e) {
-					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
 					e.printStackTrace();
 					onCreateComplete(me.getClass(),false);
 					return;
@@ -179,11 +179,14 @@ public class SettingsActivity extends Activity implements IModelListener {
 		User me = new User();
 		me.setProvider("email");
 		
+		dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
+                "Registering. Please wait...", true);
+		
 		int res = 0;
 		try {
 			res = me.create();
 		} catch (SQLException e) {
-			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG);
+			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 			onCreateComplete(me.getClass(),false);
 			return;
@@ -199,22 +202,46 @@ public class SettingsActivity extends Activity implements IModelListener {
 	}
 	
 	public void OnFBConnect(View v) {
-		facebook.authorize(this, new DialogListener() {
+		dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
+                "Registering. Please wait...", true);
+		
+		facebook.authorize(this, new String [] { "email", "read_friendlists", "friends_about_me"}, new DialogListener() {
             @Override
             public void onComplete(Bundle values) {
             	//TODO on registration - load contacts to friends list
             	String token = facebook.getAccessToken();
             	
+            	
             	//TODO implement FB connect registration on dropabet server
-            	onCreateComplete(app.getMe().getClass(),false);
+            	User me = new User();
+        		me.setProvider("facebook");
+        		me.setAccess_token(token);
+        		me.setListener(SettingsActivity.this);
+        		
+        		int res = 0;
+        		try {
+					res = me.create();
+				} catch (SQLException e) {
+					Toast.makeText(SettingsActivity.this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
+					onCreateComplete(app.getMe().getClass(),false);
+					e.printStackTrace();
+				}
+        		
+        		if(res>0)
+        			app.setMe(me);
+        		
             	return;
             }
 
             @Override
-            public void onFacebookError(FacebookError error) {}
+            public void onFacebookError(FacebookError error) {
+            	onCreateComplete(app.getMe().getClass(),false);
+            }
 
             @Override
-            public void onError(DialogError e) {}
+            public void onError(DialogError e) {
+            	onCreateComplete(app.getMe().getClass(),false);
+            }
 
             @Override
             public void onCancel() {}
@@ -236,6 +263,10 @@ public class SettingsActivity extends Activity implements IModelListener {
 			    	tabHost.getTabWidget().setEnabled(true);
 		        	tabHost.setCurrentTab(0);
 		        }
+			    
+			    etEmail.setText(app.getMe().getEmail());
+        		etName.setText(app.getMe().getName());
+        		
 			} else {
 				Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
 			}
