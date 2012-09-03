@@ -18,14 +18,22 @@ public class BetRestClient extends RestClient {
 		BetRestClient.url = url;
 	}
 	
-	public JSONArray list() throws RestClientException {
+	public JSONArray list()  {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
-	public JSONObject show(int id) throws RestClientException {
-		String res = restTemplate.getForObject(url + "/" + id  + ".json?"+ GetURLTokenParam() , String.class);
+	public JSONObject show(int id) {
+		
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/" + id  + ".json?"+ GetURLTokenParam() , String.class);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -37,8 +45,14 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONArray show_for_user() throws RestClientException {
-		String res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
+	public JSONArray show_for_user() {
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		JSONArray json = null;
 		try {
 			json = new JSONArray(res);
@@ -50,7 +64,7 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 
-	public JSONObject create(Bet bet) throws RestClientException {
+	public JSONObject create(Bet bet) {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -72,7 +86,13 @@ public class BetRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		String res = restTemplate.postForObject(url + ".json" , request, String.class);		
+		String res;
+		try {
+			res = restTemplate.postForObject(url + ".json" , request, String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -84,7 +104,7 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 
-	public void update(Bet bet, int id) throws RestClientException {
+	public void update(Bet bet, int id) {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -104,10 +124,19 @@ public class BetRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		restTemplate.put(url + "/" + id + ".json", request);
+		try {
+			restTemplate.put(url + "/" + id + ".json", request);
+		} catch (RestClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
+	public void delete(int id)  {
+		try {
+			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
 	}
 }

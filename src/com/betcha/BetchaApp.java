@@ -1,21 +1,28 @@
 package com.betcha;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.betcha.model.Bet;
+import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
 import com.betcha.model.server.api.BetRestClient;
+import com.betcha.model.server.api.FriendRestClient;
 import com.betcha.model.server.api.PredictionRestClient;
 import com.betcha.model.server.api.RestClient;
 import com.betcha.model.server.api.TokenRestClient;
@@ -35,6 +42,8 @@ public class BetchaApp extends Application {
 
 	private User me;
 	private int invite_bet_id = -1;
+	
+	private List<User> friends;
 			
 	@Override
 	public void onCreate() {
@@ -64,14 +73,17 @@ public class BetchaApp extends Application {
 	public Boolean createDbHelpers() {
 		if (databaseHelper == null) {
 			databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+			
 			User.setDbHelper(databaseHelper);
 			Bet.setDbHelper(databaseHelper);
 			Prediction.setDbHelper(databaseHelper);
+			Friend.setDbHelper(databaseHelper);
 			
 			UserRestClient.setUrl(getString(R.string.betcha_api) + "/users");
 			TokenRestClient.setUrl(getString(R.string.betcha_api) + "/tokens");
 			BetRestClient.setUrl(getString(R.string.betcha_api) + "/bets");
 			PredictionRestClient.setUrl(getString(R.string.betcha_api) + "/bets/{bet_id}/predictions");
+			FriendRestClient.setUrl(getString(R.string.betcha_api) + "/users/{user_id}/friends");
 		}
 		
 		return true;
@@ -137,5 +149,65 @@ public class BetchaApp extends Application {
 	public int getBetId() {
 		return invite_bet_id;
 	}
+	
+	public List<User> getFriends() {
+		return friends;
+	}
+	
+	public void initFriendList() {    	
+        //inviteUsers = fetch all users from DB and contacts list, later from FB
+        try {
+        	//TODO add distinct email 
+        	if(getMe()!=null)
+        		friends = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", getMe().getId()).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+        
+        if(friends==null) {
+        	friends = new ArrayList<User>();
+        }
+        
+//        User ofer = new User();
+//    	ofer.setName("ofer");
+//    	ofer.setEmail("okruzel@gmail.com");
+//    	ofer.setProvider("email");
+//	    friends.add(ofer);
+        
+        //invite users only from pre-loaded friend list should be loaded ad registration)
+        ContentResolver cr = getContentResolver();
+        Cursor emailCur = cr.query( 
+    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
+    		new String[] {
+    		        ContactsContract.Data.DISPLAY_NAME,
+    		        ContactsContract.CommonDataKinds.Email.DATA }
+    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
+    	while (emailCur.moveToNext()) { 
+    	    // This would allow you get several email addresses
+                // if the email addresses were stored in an array
+    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+     	
+     	    //verify this user is not a known user and already included
+     	    List<User> foundUsers = null;
+     	    try {
+				foundUsers = User.getModelDao().queryForEq("email", email);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+     	    
+     	    if((name!=null || email!=null) && (foundUsers==null || foundUsers.size()==0)) {
+     	    	User tmpUser = new User();
+     	    	tmpUser.setName(name);
+          	   	tmpUser.setEmail(email);
+          	   	tmpUser.setProvider("email");
+     	    	friends.add(tmpUser);
+    		}  
+     	} 
+     	emailCur.close();
+        
+    }
 
 }

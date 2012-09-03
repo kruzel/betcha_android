@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.BetchaApp;
+import com.betcha.activity.BetsListActivity;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.TokenRestClient;
@@ -156,11 +157,22 @@ public class User extends ModelCache<User,Integer> {
 
 	/** inherited ModelCache methods */
 	public int onRestCreate() {
-		if(createUserAccount()>0) {
-			return createToken();
-		}
+		if(createUserAccount()==0)
+			return 0;
 		
-		return 0;
+		if(createToken()==0)
+			return 0;
+			
+		//get friends
+		Friend friend = new Friend(this);
+		
+		//report completion only after friend get is done
+		friend.setListener(listener);
+		setListener(null);
+		
+		friend.getAllForCurUser();
+		
+		return 1;
 	}
 	
 	public int createUserAccount() {
@@ -262,65 +274,20 @@ public class User extends ModelCache<User,Integer> {
 		if(user!=null)
 			setUser(user);
 		
-		List<Bet> bets;
-		bets = new ArrayList<Bet>();
-		
-		BetRestClient restClient = new BetRestClient();
-		JSONArray jsonBets = null;
-		try {
-			jsonBets = restClient.show_for_user(); //for logged in user
-		} catch (RestClientException e) {
-			e.printStackTrace();
-			return 0;
-		} 
-		
-		for (int i = 0; i < jsonBets.length(); i++) {
-			JSONObject jsonBet;
-		
-			try {
-				jsonBet = jsonBets.getJSONObject(i);
-			} catch (JSONException e3) {
-				e3.printStackTrace();
-				continue;
-			}
-			
-			Bet tmpBet = null;
-			try {
-				List<Bet> tmpBets = Bet.getModelDao().queryForEq("server_id", jsonBet.getInt("id"));
-				if(tmpBets!=null && tmpBets.size()>0) { 
-					tmpBet = tmpBets.get(0);
-				}
-			} catch (SQLException e2) {
-				e2.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			
-			if(tmpBet==null) {
-				tmpBet = new Bet();
-			}
-							
-			if(!tmpBet.setJson(jsonBet))
-				continue;
-			
-			try {
-				tmpBet.createOrUpdateLocal();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
-			}
-			
-			if(Prediction.getAndCreatePredictions(tmpBet)==null)
-				continue;
-			
-			bets.add(tmpBet);
-			
-		}
+		//get friends
+		Friend friend = new Friend(user);
+		friend.getAllForCurUser();
 		
 		if(user==null)
 			return 0;
 		else
 			return 1;
+	}
+	
+	@Override
+	public int onRestGetAllForCurUser() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	public static User getAndCreateUser(int server_id) {

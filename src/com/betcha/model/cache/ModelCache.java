@@ -29,7 +29,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	
 	private RestTask restTask;
-	IModelListener listener;
+	protected IModelListener listener;
 	
 	protected Boolean authenticateCreate() {
 		return true;
@@ -197,6 +197,24 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		return 1;
 	}
+	
+	public int getAllForCurUser() {
+		initDao();
+		setSynced(false);
+		
+		if(authenticateGet() && RestClient.GetToken()==null)
+			return -1;
+		
+		// run task to update server
+		last_rest_call = RestMethod.GET_FOR_CUR_USER;
+		restTask = new RestTask();
+		restTask.setModel(this);
+		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
+		restTask.execute(RestMethod.GET_FOR_CUR_USER);
+		
+		return 1;
+	}
 		
 	public int synch() throws SQLException {	
 		initDao();
@@ -235,7 +253,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	 *
 	 */
 	public static class RestTask extends  AsyncTask<RestMethod, Void, Boolean> {
-		public enum RestMethod { CREATE, UPDATE, DELETE, SYNC, GET, GET_WITH_DEP }
+		public enum RestMethod { CREATE, UPDATE, DELETE, SYNC, GET, GET_WITH_DEP, GET_FOR_CUR_USER }
 		RestMethod currMethod;
 		
 		private IModel model;
@@ -291,6 +309,12 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 					return true;
 				}
 				break;
+			case GET_FOR_CUR_USER:
+				if(model.onRestGetAllForCurUser()>0) {
+					model.setSynced(true);
+					return true;
+				}
+				break;
 			case SYNC:
 				if(model.onRestSync()>0) {
 					model.setSynced(true);
@@ -321,6 +345,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 					break;
 				case GET_WITH_DEP:
 					modelListener.onGetWithDependentsComplete(modelClass,result);
+					break;
+				case GET_FOR_CUR_USER:
+					modelListener.onGetComplete(modelClass,result);
 					break;
 				default:
 					break;

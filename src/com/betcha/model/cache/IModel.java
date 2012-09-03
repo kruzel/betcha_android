@@ -12,6 +12,8 @@ public interface IModel {
 		
 	abstract public int onRestGetWithDependents();
 	
+	abstract public int onRestGetAllForCurUser();
+	
 	//return the number of updated rows, if failed 0
 	abstract public int onRestDelete();
 	

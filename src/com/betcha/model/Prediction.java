@@ -226,6 +226,12 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		}
 	}
 	
+	@Override
+	public int onRestGetAllForCurUser() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 	public static Prediction getAndCreatePrediction(int server_id) {
 				
 		PredictionRestClient predictionRestClient = new PredictionRestClient(server_id);

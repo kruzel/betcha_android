@@ -18,13 +18,19 @@ public class UserRestClient extends RestClient {
 		UserRestClient.url = url;
 	}
 	
-	public JSONArray list() throws RestClientException {
+	public JSONArray list() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public JSONObject show(int id) throws RestClientException {
-		String res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class);
+	public JSONObject show(int id) {
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -36,7 +42,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject create(String full_name, String email, String password) throws RestClientException {		
+	public JSONObject create(String full_name, String email, String password)   {		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -77,7 +83,8 @@ public class UserRestClient extends RestClient {
         try {
         	res = restTemplate.postForObject(url + ".json" , request, String.class);
         } catch (RestClientException e) {
-    		
+        	e.printStackTrace();
+    		return null;
     	}
 		
 		JSONObject json = null;
@@ -93,7 +100,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject createOAuth(String provider, String uid, String access_token ) throws RestClientException {
+	public JSONObject createOAuth(String provider, String uid, String access_token )   {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -110,7 +117,13 @@ public class UserRestClient extends RestClient {
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_JSON );
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		String res = restTemplate.postForObject(url + ".json" , request, String.class);	
+		String res;
+		try {
+			res = restTemplate.postForObject(url + ".json" , request, String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}	
 		
 		JSONObject json = null;
 		try {
@@ -123,13 +136,17 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 
-	public void update(Map<String,String> arg, int id) throws RestClientException {
+	public void update(Map<String,String> arg, int id)   {
 		arg.put("auth_token", GetToken());
 		
 		restTemplate.put(url + "/" + id + ".json", arg);
 	}
 
-	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
+	public void delete(int id)   {
+		try {
+			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
 	}
 }

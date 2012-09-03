@@ -37,14 +37,20 @@ public class PredictionRestClient extends RestClient {
 		this.server_bet_id = server_bet_id;
 	}
 
-	public JSONArray list() throws RestClientException {
+	public JSONArray list() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public JSONObject show(int id) throws RestClientException {
+	public JSONObject show(int id) {
 		//nested url = bets/:bet_id/predictions
-		String res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class, getServerBet_id());
+		String res = null;
+		try {
+			res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class, getServerBet_id());
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -56,9 +62,15 @@ public class PredictionRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONArray showPredictionsForBet(int id) throws RestClientException {
+	public JSONArray showPredictionsForBet(int id) {
 		//nested url = bets/:bet_id/predictions
-		String res = restTemplate.getForObject(url + "/show_bet_id.json?"+ GetURLTokenParam() , String.class, id);
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/show_bet_id.json?"+ GetURLTokenParam() , String.class, id);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		JSONArray json = null;
 		try {
 			json = new JSONArray(res);
@@ -70,7 +82,7 @@ public class PredictionRestClient extends RestClient {
 		return json;
 	}
 
-	public JSONObject create(Prediction prediction) throws RestClientException {
+	public JSONObject create(Prediction prediction) {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -80,7 +92,12 @@ public class PredictionRestClient extends RestClient {
 			jsonContent.put("bet_id",Integer.toString(prediction.getBet().getServer_id()));
 			jsonContent.put("user_id",Integer.toString(prediction.getUser().getServer_id()));
 			//jsonContent.put("result",Boolean.toString(prediction.getResult()));
-			jsonParent.put("prediction", jsonContent);
+			try {
+				jsonParent.put("prediction", jsonContent);
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				return null;
+			}
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 			return null;
@@ -91,7 +108,13 @@ public class PredictionRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		String res = restTemplate.postForObject(url + ".json" , request, String.class, getServerBet_id());		
+		String res;
+		try {
+			res = restTemplate.postForObject(url + ".json" , request, String.class, getServerBet_id());
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -103,7 +126,7 @@ public class PredictionRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject createAndInvite(Prediction prediction) throws RestClientException {
+	public JSONObject createAndInvite(Prediction prediction) {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -124,7 +147,13 @@ public class PredictionRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		String res = restTemplate.postForObject(url + "/create_and_invite" + ".json" , request, String.class, getServerBet_id());		
+		String res;
+		try {
+			res = restTemplate.postForObject(url + "/create_and_invite" + ".json" , request, String.class, getServerBet_id());
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -136,7 +165,7 @@ public class PredictionRestClient extends RestClient {
 		return json;
 	}
 
-	public void update(Prediction prediction, int id) throws RestClientException {
+	public void update(Prediction prediction, int id) {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -157,10 +186,14 @@ public class PredictionRestClient extends RestClient {
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
         HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
-		restTemplate.put(url + "/" + id + ".json", request, getServerBet_id());
+		try {
+			restTemplate.put(url + "/" + id + ".json", request, getServerBet_id());
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void update(List<Prediction> predictions) throws RestClientException {
+	public void update(List<Prediction> predictions) {
 		JSONArray arg = new JSONArray();
 		
 		for (Prediction prediction : predictions) {
@@ -175,66 +208,18 @@ public class PredictionRestClient extends RestClient {
 			arg.put(json);
 		}
 		
-		restTemplate.put(url + "/update_list.json?"+ GetURLTokenParam(), arg, getServerBet_id());
-	}
-
-	public void delete(int id) throws RestClientException {
-		restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam(), getServerBet_id(), id);
-	}
-
-	public JSONObject sendInvites(List<User> users) throws RestClientException {
-		
-		JSONArray jsonUsers = new JSONArray();
-		
-		for (User user : users) {
-			JSONObject jsonUser = new JSONObject();
-			JSONObject jsonUserParent = new JSONObject();
-			try {
-				if(user.getServer_id()!=-1) {
-					jsonUser.put("id", user.getServer_id());
-				}
-//				jsonUser.put("provider", user.getProvider());
-//				if(user.getProvider()=="email") {
-//					jsonUser.put("email", user.getEmail());
-//					jsonUser.put("full_name", user.getName());
-//				} else {
-//					jsonUser.put("uid", user.getUid());
-//				}
-				jsonUserParent.put("user", jsonUser);
-			} catch (JSONException e) {
-				e.printStackTrace();
-				continue;
-			}
-			
-			jsonUsers.put(jsonUserParent);
-			
-		}
-		
-		JSONObject jsonArrayParent = new JSONObject();
-		
 		try {
-			jsonArrayParent.put("users", jsonUsers);
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-			return null;
-		}
-		
-		//nested url = bets/:bet_id/predictions
-		HttpHeaders headers = new HttpHeaders();
-        headers.setContentType( MediaType.APPLICATION_JSON );
-        headers.set("X-AUTH-TOKEN", GetToken());
-        HttpEntity request= new HttpEntity( jsonArrayParent.toString(), headers);
-		String res = restTemplate.postForObject(url + "/send_invites" + ".json" , request, String.class, getServerBet_id());	
-		JSONObject json = null;
-		try {
-			json = new JSONObject(res);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			restTemplate.put(url + "/update_list.json?"+ GetURLTokenParam(), arg, getServerBet_id());
+		} catch (RestClientException e) {
 			e.printStackTrace();
 		}
-		
-		return json;
-			
 	}
 
+	public void delete(int id) {
+		try {
+			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam(), getServerBet_id(), id);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
+	}
 }

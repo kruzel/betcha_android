@@ -41,18 +41,24 @@ public class FriendAdapter extends ArrayAdapter<User> {
 		TextView tvContact = (TextView) v.findViewById(R.id.tv_invite_user_contact);
 		CheckBox cbIsInvited = (CheckBox) v.findViewById(R.id.cb_is_invited);
 		
-		if(user.getName()!=null && user.getName()!=null) {
- 	    	String[] splitEmail = StringUtils.split(user.getEmail(), "@");
- 	    	String domain = null;
- 	    	if (splitEmail!=null && splitEmail.length>1)
- 	    		domain = splitEmail[1];
- 	    	if(domain!=null) {
- 	    		//tvUserName.setText(user.getName());
- 	    		//tvContact.setText("@"+domain);
- 	    		tvContact.setText("");
- 	    		tvUserName.setText(user.getEmail());
- 	    	}
-		}  
+		if(user.getEmail()!=null && user.getEmail().length()!=0) {
+	    		tvContact.setText("");
+	    		tvUserName.setText(user.getEmail());
+ 		} else {
+ 			tvContact.setText(user.getName());
+	    	tvUserName.setText("f");
+ 		}
+		
+//		if(user.getName()!=null && user.getName()!=null) {
+// 	    	String[] splitEmail = StringUtils.split(user.getEmail(), "@");
+// 	    	String domain = null;
+// 	    	if (splitEmail!=null && splitEmail.length>1)
+// 	    		domain = splitEmail[1];
+// 	    	if(domain!=null) {
+// 	    		//tvUserName.setText(user.getName());
+// 	    		//tvContact.setText("@"+domain);	
+// 	    	}
+//		}  
 		
 		cbIsInvited.setChecked(user.getIsInvitedToBet());
 		cbIsInvited.setTag(user);

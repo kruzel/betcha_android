@@ -36,7 +36,7 @@ public class BetsListActivity extends Activity implements IModelListener {
 	private PullToRefreshListView lvBets;
 	private ProgressDialog dialog;
 	
-	private Boolean isSychedFtchedFromServer = false;
+	private Boolean isFetchedFromServer = false;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -51,14 +51,9 @@ public class BetsListActivity extends Activity implements IModelListener {
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	    	app.getMe().setListener(BetsListActivity.this);
-    	    	try {
-    	    		app.getMe().setListener(BetsListActivity.this);
-					app.getMe().getWithDependents(app.getMe().getServer_id());
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+    	    	newBet = new Bet();
+            	newBet.setListener(BetsListActivity.this);
+            	newBet.getAllForCurUser();
     	    }
     	});
         
@@ -78,10 +73,10 @@ public class BetsListActivity extends Activity implements IModelListener {
 		populate();
 		
 		if(app.getBetId()!=-1) {
-			dialog = ProgressDialog.show(BetsListActivity.this.getParent(), "", 
+			dialog = ProgressDialog.show(this.getParent(), "", 
 	                getString(R.string.msg_bet_loading), true);
 						
-			app.getMe().setListener(BetsListActivity.this);
+			app.getMe().setListener(this);
 			newBet = new Bet();
 			try {
 				newBet.getWithDependents(app.getBetId());
@@ -92,15 +87,11 @@ public class BetsListActivity extends Activity implements IModelListener {
 			
 		} 
 		
-		if(app.getMe().getServer_id()!=-1 && !isSychedFtchedFromServer) {
+		if(app.getMe().getServer_id()!=-1 && !isFetchedFromServer) {
         	lvBets.setRefreshing();
-	        app.getMe().setListener(this);
-	    	try {
-				app.getMe().getWithDependents(app.getMe().getServer_id());
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        	newBet = new Bet();
+        	newBet.setListener(this);
+        	newBet.getAllForCurUser();
         }
 		
 		super.onResume();
@@ -182,7 +173,7 @@ public class BetsListActivity extends Activity implements IModelListener {
 				openDetailedActivity(newBet, true);
 			}
 			
-			isSychedFtchedFromServer = true;
+			isFetchedFromServer = true;
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}

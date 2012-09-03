@@ -20,7 +20,13 @@ public class TokenRestClient extends RestClient {
 		arg.put("email", email);
 		arg.put("password", password);
 		
-		String res = restTemplate.postForObject(url + ".json" , arg, String.class);	
+		String res;
+		try {
+			res = restTemplate.postForObject(url + ".json" , arg, String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}	
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -47,7 +53,13 @@ public class TokenRestClient extends RestClient {
 		arg.put("uid", uid);
 		arg.put("access_token", access_token);
 		
-		String res = restTemplate.postForObject(url + ".json" , arg, String.class);	
+		String res;
+		try {
+			res = restTemplate.postForObject(url + ".json" , arg, String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}	
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
@@ -67,7 +79,11 @@ public class TokenRestClient extends RestClient {
 	}
 
 	//sign_out
-	public void delete() throws RestClientException {
-		restTemplate.delete(url  + "/" + token + ".json");
+	public void delete() {
+		try {
+			restTemplate.delete(url  + "/" + token + ".json");
+		} catch (RestClientException e) {
+			e.printStackTrace();
+		}
 	}
 }

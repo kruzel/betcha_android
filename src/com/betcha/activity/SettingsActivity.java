@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.model.Bet;
+import com.betcha.model.Friend;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
 import com.facebook.android.DialogError;
@@ -44,6 +46,8 @@ public class SettingsActivity extends Activity implements IModelListener {
 	private EditText etName;
 	
 	private Dialog dialog = null;
+	
+	private Friend friend;
 	
     /** Called when the activity is first created. */
     @Override
@@ -229,6 +233,9 @@ public class SettingsActivity extends Activity implements IModelListener {
         		if(res>0)
         			app.setMe(me);
         		
+        		etEmail.setText(app.getMe().getEmail());
+        		etName.setText(app.getMe().getName());
+        		
             	return;
             }
 
@@ -262,9 +269,6 @@ public class SettingsActivity extends Activity implements IModelListener {
 			    	tabHost.getTabWidget().setEnabled(true);
 		        	tabHost.setCurrentTab(0);
 		        }
-			    
-			    etEmail.setText(app.getMe().getEmail());
-        		etName.setText(app.getMe().getName());
         		
 			} else {
 				Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
@@ -291,6 +295,7 @@ public class SettingsActivity extends Activity implements IModelListener {
 
 	@Override
 	public void onGetComplete(Class clazz, Boolean success) {
+		app.initFriendList();
 		dialog.dismiss();
 	}
 

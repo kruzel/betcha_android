@@ -1,11 +1,13 @@
 package com.betcha.model;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
@@ -152,6 +154,8 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		return dao;
 	}
 	
+	/** inherited ModelCache methods */
+	
 	@Override
 	public void initDao() {
 		try {
@@ -161,8 +165,6 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 		}
 	}
-
-	/** inherited ModelCache methods */
 	
 	public int onRestCreate() {
 		int res = 0;
@@ -261,9 +263,10 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			return 0;
 		}
 		
-		bet = Bet.getAndCreateBet(bet.getServer_id());
 		if(bet==null)
 			return 0;
+		
+		bet = Bet.getAndCreateBet(bet.getServer_id());
 		
 		setBet(bet);
 		
@@ -271,6 +274,65 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			return 0;
 		
 		return 0;
+	}
+	
+	@Override
+	public int onRestGetAllForCurUser() {
+		List<Bet> bets = new ArrayList<Bet>();
+		
+		BetRestClient restClient = new BetRestClient();
+		JSONArray jsonBets = null;
+		try {
+			jsonBets = restClient.show_for_user(); //for logged in user
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return 0;
+		} 
+		
+		for (int i = 0; i < jsonBets.length(); i++) {
+			JSONObject jsonBet;
+		
+			try {
+				jsonBet = jsonBets.getJSONObject(i);
+			} catch (JSONException e3) {
+				e3.printStackTrace();
+				continue;
+			}
+			
+			Bet tmpBet = null;
+			try {
+				List<Bet> tmpBets = Bet.getModelDao().queryForEq("server_id", jsonBet.getInt("id"));
+				if(tmpBets!=null && tmpBets.size()>0) { 
+					tmpBet = tmpBets.get(0);
+				}
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if(tmpBet==null) {
+				tmpBet = new Bet();
+			}
+							
+			if(!tmpBet.setJson(jsonBet))
+				continue;
+			
+			try {
+				tmpBet.createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			}
+			
+			if(Prediction.getAndCreatePredictions(tmpBet)==null)
+				continue;
+			
+			bets.add(tmpBet);
+			
+		}
+
+		return bets.size(); 
 	}
 	
 	public static Bet getAndCreateBet(int server_id) {	

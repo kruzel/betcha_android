@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.betcha.model.Bet;
+import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -39,6 +40,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Bet.class);
 			TableUtils.createTable(connectionSource, User.class);
 			TableUtils.createTable(connectionSource, Prediction.class);
+			TableUtils.createTable(connectionSource, Friend.class);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't create database", e);
 			throw new RuntimeException(e);
@@ -56,6 +58,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Bet.class, true);
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, Prediction.class, true);
+			TableUtils.dropTable(connectionSource, Friend.class, true);
 			// after we drop the old databases, we create the new ones
 			onCreate(db, connectionSource);
 		} catch (SQLException e) {

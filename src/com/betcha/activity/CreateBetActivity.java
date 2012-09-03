@@ -52,7 +52,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	SlidingDrawer sliding;
 	private FriendAdapter friendAdapter;
     private ListView lvFriends;  
-    private List<User> friends;
+    
     private Button submitButton;
 	
 	DatePickerDialog dateDialog;
@@ -91,7 +91,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(this);
         
-        initFriendList();
+        app.initFriendList();
         
                 
         TabActivity act = (TabActivity) getParent();
@@ -101,70 +101,14 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 	    tabHost = act.getTabHost();  // The activity TabHost
     }
     
-    private void initFriendList() {    	
-        //inviteUsers = fetch all users from DB and contacts list, later from FB
-        try {
-        	//TODO add distinct email 
-        	if(app.getMe()!=null)
-        		friends = User.getModelDao().queryBuilder().orderBy("name", true).where().ne("id", app.getMe().getId()).query();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-        
-        if(friends==null) {
-        	friends = new ArrayList<User>();
-        }
-        
-//        User ofer = new User();
-//    	ofer.setName("ofer");
-//    	ofer.setEmail("okruzel@gmail.com");
-//    	ofer.setProvider("email");
-//	    friends.add(ofer);
-        
-        //invite users only from pre-loaded friend list should be loaded ad registration)
-        ContentResolver cr = getContentResolver();
-        Cursor emailCur = cr.query( 
-    		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
-    		new String[] {
-    		        ContactsContract.Data.DISPLAY_NAME,
-    		        ContactsContract.CommonDataKinds.Email.DATA }
-    		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
-    	while (emailCur.moveToNext()) { 
-    	    // This would allow you get several email addresses
-                // if the email addresses were stored in an array
-    	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-     	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-     	
-     	    //verify this user is not a known user and already included
-     	    List<User> foundUsers = null;
-     	    try {
-				foundUsers = User.getModelDao().queryForEq("email", email);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-     	    
-     	    if((name!=null || email!=null) && (foundUsers==null || foundUsers.size()==0)) {
-     	    	User tmpUser = new User();
-     	    	tmpUser.setName(name);
-          	   	tmpUser.setEmail(email);
-          	   	tmpUser.setProvider("email");
-     	    	friends.add(tmpUser);
-    		}  
-     	} 
-     	emailCur.close();
-        
-    }
-    
     private void initFriendListAdapter() {
-    	if(friends!=null) {
-    		for (User friend : friends) {
+    	if(app.getFriends()!=null) {
+    		for (User friend : app.getFriends()) {
 				friend.setIsInvitedToBet(false);
 			}
         	sliding=(SlidingDrawer) findViewById(R.id.drawer);
 	        lvFriends = (ListView) sliding.findViewById(R.id.invites_list);
-	        friendAdapter = new FriendAdapter(this, R.layout.invite_list_item, friends);
+	        friendAdapter = new FriendAdapter(this, R.layout.invite_list_item, app.getFriends());
 	        lvFriends.setAdapter(friendAdapter);
 	        lvFriends.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 	        
@@ -241,7 +185,7 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         	
         	//set selected friends and send invite
         	List<User> participants = new ArrayList<User>();
-        	for (User friend : friends) {
+        	for (User friend : app.getFriends()) {
 				if(friend.getIsInvitedToBet()) {
 					participants.add(friend);
 				}
