@@ -11,6 +11,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
+import android.util.Log;
+
 import com.betcha.BetchaApp;
 import com.betcha.activity.BetsListActivity;
 import com.betcha.model.cache.ModelCache;
@@ -39,6 +41,8 @@ public class User extends ModelCache<User,Integer> {
 	private String uid;
 	@DatabaseField
 	private String access_token;
+	@DatabaseField
+	private String push_notifications_device_id; 
 	
 	//non persistent
 	private static UserRestClient userClient;
@@ -128,6 +132,16 @@ public class User extends ModelCache<User,Integer> {
 		this.isInvitedToBet = isInvitedToBet;
 	}
 	
+	
+	
+	public String getPush_notifications_device_id() {
+		return push_notifications_device_id;
+	}
+
+	public void setPush_notifications_device_id(String push_notifications_device_id) {
+		this.push_notifications_device_id = push_notifications_device_id;
+	}
+
 	/**
 	 * static methods that must be implemented by derived class
 	 * @return Dao object
@@ -157,6 +171,11 @@ public class User extends ModelCache<User,Integer> {
 
 	/** inherited ModelCache methods */
 	public int onRestCreate() {
+Friend friend = new Friend(this);
+		//report completion only after friend get is done
+		friend.setListener(listener);
+		setListener(null);
+		
 		if(createUserAccount()==0)
 			return 0;
 		
@@ -164,12 +183,6 @@ public class User extends ModelCache<User,Integer> {
 			return 0;
 			
 		//get friends
-		Friend friend = new Friend(this);
-		
-		//report completion only after friend get is done
-		friend.setListener(listener);
-		setListener(null);
-		
 		friend.getAllForCurUser();
 		
 		return 1;
@@ -186,9 +199,9 @@ public class User extends ModelCache<User,Integer> {
 			return 0;
 		}
 		
-		if (provider == "email") {
+		if (provider.equals("email")) {
 			jsonUser = getUserClient().create(name, email, password);
-		} else if (provider == "facebook") {
+		} else if (provider.equals("facebook")) {
 			jsonUser = getUserClient().createOAuth(provider, uid, access_token);
 			setJson(jsonUser);
 		}
@@ -211,9 +224,9 @@ public class User extends ModelCache<User,Integer> {
 			
 		TokenRestClient tokenClient = new TokenRestClient();
 		String jsonToken = null;
-		if (provider == "email") {
+		if (provider.equals("email")) {
 			jsonToken = tokenClient.create(email, password);
-		} else if (provider == "facebook") {
+		} else if (provider.equals("facebook")) {
 			jsonToken = tokenClient.createOAuth(provider, uid, access_token);
 		}
 					
@@ -227,17 +240,10 @@ public class User extends ModelCache<User,Integer> {
 	}
 
 	public int onRestUpdate() {
-		Map<String,String> arg = new HashMap<String, String>();
-		arg.put("name", name);
-		arg.put("email", email);
-		arg.put("password", password);
-		arg.put("provider", provider);
-		arg.put("uid", uid);
-		arg.put("access_token", access_token);
+		Log.i("User.onRestUpdate()", "updating server");
+		getUserClient().update(this);
 		
-		getUserClient().update(arg, server_id);
-		
-		return getServer_id();
+		return 1;
 	}
 
 	public int onRestDelete() {
@@ -305,6 +311,8 @@ public class User extends ModelCache<User,Integer> {
 
 		if(tmpOwner == null) { //then create it
 			tmpOwner = new User();
+		} else {
+			return tmpOwner;
 		}
 		
 		UserRestClient userClient = new UserRestClient();
@@ -358,4 +366,5 @@ public class User extends ModelCache<User,Integer> {
 		
 		return true;
 	}
+	
 }

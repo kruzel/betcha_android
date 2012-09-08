@@ -27,6 +27,7 @@ import com.betcha.model.server.api.PredictionRestClient;
 import com.betcha.model.server.api.RestClient;
 import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
+import com.google.android.gcm.GCMRegistrar;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 @ReportsCrashes(formKey = "dFNHeE4wcDNfYWFCQWdnazVkdHdLSGc6MQ") 
@@ -110,14 +111,16 @@ public class BetchaApp extends Application {
 		if(myUserId!=-1) { //load my User from DB
 			try {
 				me = User.getModelDao().queryForId(myUserId);
+				
+				String authToken = prefs.getString("auth_token", null);
+				RestClient.SetToken(authToken);
+				
+				registerToPushNotifications();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
-		String authToken = prefs.getString("auth_token", null);
-		RestClient.SetToken(authToken);
 	}
 	
 	public SharedPreferences getPrefs() {
@@ -170,11 +173,11 @@ public class BetchaApp extends Application {
         	friends = new ArrayList<User>();
         }
         
-//        User ofer = new User();
-//    	ofer.setName("ofer");
-//    	ofer.setEmail("okruzel@gmail.com");
-//    	ofer.setProvider("email");
-//	    friends.add(ofer);
+        User ofer = new User();
+    	ofer.setName("a");
+    	ofer.setEmail("a@a.com");
+    	ofer.setProvider("email");
+	    friends.add(ofer);
         
         //invite users only from pre-loaded friend list should be loaded ad registration)
         ContentResolver cr = getContentResolver();
@@ -209,5 +212,17 @@ public class BetchaApp extends Application {
      	emailCur.close();
         
     }
+	
+	public void registerToPushNotifications() {
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
+		final String regId = GCMRegistrar.getRegistrationId(this);
+		if (regId.equals("")) {
+		  GCMRegistrar.register(this, "1053196289883"); //google api project number
+		} else {
+		  Log.v("BetchaApp.onCreate()", "Already registered");
+		}
+		
+	}
 
 }

@@ -6,6 +6,7 @@ package com.betcha.model.cache;
 import java.sql.SQLException;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
@@ -145,6 +146,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		setSynced(false);
 		if(authenticateUpdate() && RestClient.GetToken()==null)
 			return res;
+		
+		Log.i("ModelCache.update()", getClass().getSimpleName());
 		
 		// run task to update server
 		last_rest_call = RestMethod.UPDATE;

@@ -174,11 +174,13 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 			json = getPredictionRestClient().create(this);
 		}
 		
-		setServer_id(json.optInt("id", -1));
-		try {
-			res = updateLocal();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
+		if(json!=null) {
+			setServer_id(json.optInt("id", -1));
+			try {
+				res = updateLocal();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 		return res;

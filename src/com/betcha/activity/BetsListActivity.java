@@ -88,7 +88,7 @@ public class BetsListActivity extends Activity implements IModelListener {
 		} 
 		
 		if(app.getMe().getServer_id()!=-1 && !isFetchedFromServer) {
-        	lvBets.setRefreshing();
+        	//lvBets.setRefreshing();
         	newBet = new Bet();
         	newBet.setListener(this);
         	newBet.getAllForCurUser();
@@ -149,8 +149,15 @@ public class BetsListActivity extends Activity implements IModelListener {
 		
 		lvBets.onRefreshComplete();
 		
-		if(success) {
+		if(success ) {
 			populate();
+						
+			if(app.getBetId()!=-1) {
+				app.setBetId(-1); //avoid going here on next resume
+				openDetailedActivity(newBet, true);
+			}
+			
+			isFetchedFromServer = true;
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}

@@ -170,6 +170,8 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		int res = 0;
 		JSONObject json = null;
 		json = getBetClient().create(this);
+		if(json==null)
+			return 0;
 		
 		setServer_id(json.optInt("id", -1));
 		try {
@@ -245,28 +247,10 @@ public class Bet extends ModelCache<Bet,Integer>  {
 
 	@Override
 	public int onRestGetWithDependents() {
-		Bet bet = null;
-		User owner = null;
-		
-		try {
-			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", getServer_id());
-			if(bets.size()>0) {
-				bet = bets.get(0);
-				List<User> owners = User.getModelDao().queryForEq("id", bet.getOwner().getId());
-				if(owners.size()>0) {
-					owner = owners.get(0);
-					bet.setOwner(owner);
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return 0;
-		}
-		
+			
+		Bet bet = Bet.getAndCreateBet(getServer_id());
 		if(bet==null)
 			return 0;
-		
-		bet = Bet.getAndCreateBet(bet.getServer_id());
 		
 		setBet(bet);
 		
@@ -288,6 +272,9 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			e.printStackTrace();
 			return 0;
 		} 
+		
+		if(jsonBets==null)
+			return 0;
 		
 		for (int i = 0; i < jsonBets.length(); i++) {
 			JSONObject jsonBet;

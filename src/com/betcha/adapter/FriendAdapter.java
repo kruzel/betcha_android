@@ -35,7 +35,7 @@ public class FriendAdapter extends ArrayAdapter<User> {
 			v = vi.inflate((R.layout.invite_list_item), null);
 		}
 	
-		User user = getItem(position);
+		User user = app.getFriends().get(position); // getItem(position);
 		
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_invite_user);
 		TextView tvContact = (TextView) v.findViewById(R.id.tv_invite_user_contact);
@@ -48,17 +48,6 @@ public class FriendAdapter extends ArrayAdapter<User> {
  			tvContact.setText(user.getName());
 	    	tvUserName.setText("f");
  		}
-		
-//		if(user.getName()!=null && user.getName()!=null) {
-// 	    	String[] splitEmail = StringUtils.split(user.getEmail(), "@");
-// 	    	String domain = null;
-// 	    	if (splitEmail!=null && splitEmail.length>1)
-// 	    		domain = splitEmail[1];
-// 	    	if(domain!=null) {
-// 	    		//tvUserName.setText(user.getName());
-// 	    		//tvContact.setText("@"+domain);	
-// 	    	}
-//		}  
 		
 		cbIsInvited.setChecked(user.getIsInvitedToBet());
 		cbIsInvited.setTag(user);

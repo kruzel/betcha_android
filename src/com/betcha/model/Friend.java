@@ -147,27 +147,30 @@ public class Friend extends ModelCache<Friend, Integer> {
 		FriendRestClient restClient = new FriendRestClient(user.getId());
 		JSONArray friends = restClient.show_for_user();
 		
-		if(friends==null && retries<3) {
-			//try again in 10 sec
-			Thread thread = new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					retries++;
-					try {
-						synchronized (this) {
-							  this.wait(10000);
-							}
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					Log.i("Friend.onRestGetAllForCurUser()", "retrying to get friends");
-					Friend.this.onRestGetAllForCurUser();
-				}
-			});
-			thread.run();
+		if(friends==null || friends.length()==0) {
+			if(retries<3) {
 			
+				//try again in 10 sec
+				Thread thread = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						retries++;
+						try {
+							synchronized (this) {
+								  this.wait(10000);
+								}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						Log.i("Friend.onRestGetAllForCurUser()", "retrying to get friends");
+						Friend.this.onRestGetAllForCurUser();
+					}
+				});
+				thread.run();
+			} 
+				
 			return 0;
 		}
 		

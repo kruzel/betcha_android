@@ -209,7 +209,7 @@ public class SettingsActivity extends Activity implements IModelListener {
 		dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
                 "Registering. Please wait...", true);
 		
-		facebook.authorize(this, new String [] { "email", "read_friendlists", "friends_about_me"}, new DialogListener() {
+		facebook.authorize(this, new String [] { "email", "read_friendlists", "friends_about_me", "publish_stream", "user_online_presence", "friends_online_presence", "read_stream", "xmpp_login"}, new DialogListener() {
             @Override
             public void onComplete(Bundle values) {
             	//TODO on registration - load contacts to friends list
@@ -258,8 +258,10 @@ public class SettingsActivity extends Activity implements IModelListener {
 	@Override
 	public void onCreateComplete(Class clazz, Boolean success) {
 		
-		if(clazz.getName().contentEquals("com.betcha.model.User")) {
+		if(clazz.getSimpleName().contentEquals("User")) {
 			if(success) {
+				app.registerToPushNotifications();
+				
 				TabActivity act = (TabActivity) getParent();
 		        if(act==null)
 		        	return;
