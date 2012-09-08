@@ -26,10 +26,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 		//  Called when your server sends a message to GCM, and GCM delivers it to the device. 
 		// If the message has a payload, its contents are available as extras in the intent.
 		Bundle bundle = intent.getExtras();
-		String msg = bundle.getString("message_text");
+		Integer ownerId = Integer.valueOf(bundle.getString("owner_id"));
+		Integer userId = Integer.valueOf(bundle.getString("user_id"));
+		Integer betId = Integer.valueOf(bundle.getString("bet_id"));
+		Integer predictionId = Integer.valueOf(bundle.getString("prediction_id"));	
 		
-		
-		//Log.e("GCMIntentService.onError() error ", arg1);
+		Log.e("GCMIntentService.onMessage()", "owner: " + ownerId + ", user: " + userId + ", bet: " + betId + ", prediction: " + predictionId );
 	}
 
 	@Override
