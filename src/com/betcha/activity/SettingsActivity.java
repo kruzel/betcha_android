@@ -1,5 +1,6 @@
 package com.betcha.activity;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
@@ -273,7 +274,25 @@ public class SettingsActivity extends Activity implements IModelListener {
 		        }
         		
 			} else {
-				Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
+				dialog.dismiss();
+				dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
+						getString(R.string.error_registration_existing_user_failed), true);
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						synchronized (this) {
+							  try {
+								wait(5000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						dialog.dismiss();
+					}
+				});
+				t.start();
+				return;
 			}
 		}
 		

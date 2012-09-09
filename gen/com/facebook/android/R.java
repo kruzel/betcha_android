@@ -96,28 +96,29 @@ public final class R {
         /**      <string name="betcha_api">http://api.dropabet.com:3000</string> 
          */
         public static final int betcha_api=0x7f050004;
-        public static final int betdetails=0x7f050039;
-        public static final int betsrecords=0x7f050038;
-        public static final int betsrecordsgroup=0x7f050037;
+        public static final int betdetails=0x7f05003a;
+        public static final int betsrecords=0x7f050039;
+        public static final int betsrecordsgroup=0x7f050038;
         /**  activities 
          */
-        public static final int bettabactivity=0x7f050035;
+        public static final int bettabactivity=0x7f050036;
         public static final int close_bet=0x7f050011;
-        public static final int createbet=0x7f050036;
+        public static final int createbet=0x7f050037;
         public static final int email_address=0x7f05001b;
         public static final int email_address_hint=0x7f05001c;
         public static final int error_bad_date_format=0x7f05002d;
         public static final int error_bad_email=0x7f05002f;
         public static final int error_bad_time_format=0x7f05002e;
         public static final int error_bet_not_found=0x7f050031;
-        public static final int error_failed_publishing_bet=0x7f050034;
+        public static final int error_failed_publishing_bet=0x7f050035;
         public static final int error_missing_bet=0x7f05002b;
         public static final int error_missing_bet_reward=0x7f05002c;
         /**  error messages 
          */
         public static final int error_missing_bet_subject=0x7f05002a;
-        public static final int error_pass_short=0x7f050033;
+        public static final int error_pass_short=0x7f050034;
         public static final int error_please_register=0x7f050030;
+        public static final int error_registration_existing_user_failed=0x7f050033;
         public static final int error_registration_failed=0x7f050032;
         public static final int error_registration_succeeded=0x7f050029;
         public static final int fb_Connect=0x7f050025;
@@ -140,7 +141,7 @@ public final class R {
         public static final int pending=0x7f050016;
         /**  file names 
          */
-        public static final int prefs_name=0x7f05003b;
+        public static final int prefs_name=0x7f05003c;
         public static final int ptr_pull_to_refresh=0x7f050001;
         public static final int ptr_refreshing=0x7f050003;
         public static final int ptr_release_to_refresh=0x7f050002;
@@ -151,7 +152,7 @@ public final class R {
         public static final int select_time=0x7f05000d;
         public static final int send=0x7f05001a;
         public static final int set_bet_result=0x7f050017;
-        public static final int settingsactivity=0x7f05003a;
+        public static final int settingsactivity=0x7f05003b;
         public static final int skip=0x7f050020;
         public static final int submit=0x7f05000c;
         public static final int update=0x7f05001f;

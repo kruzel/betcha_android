@@ -53,6 +53,7 @@
 	<string name="error_please_register">You need to register before placing bets</string>
 	<string name="error_bet_not_found">Bet not found</string>
 	<string name="error_registration_failed">Registration failed</string>
+	<string name="error_registration_existing_user_failed">User exist, password reset email sent</string>
 	<string name="error_pass_short">Password to short</string>
 	<string name="error_failed_publishing_bet">Failed creatign bet</string>
 	
