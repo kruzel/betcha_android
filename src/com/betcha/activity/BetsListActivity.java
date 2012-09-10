@@ -35,9 +35,7 @@ public class BetsListActivity extends Activity implements IModelListener {
 	
 	private PullToRefreshListView lvBets;
 	private ProgressDialog dialog;
-	
-	private Boolean isFetchedFromServer = false;
-	
+		
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +64,13 @@ public class BetsListActivity extends Activity implements IModelListener {
 			}
 		});
         
+        if(app.getMe().getServer_id()!=-1) {
+        	//lvBets.setRefreshing();
+        	newBet = new Bet();
+        	//newBet.setListener(this);
+        	newBet.getAllForCurUser();
+        }
+        
     }
     
 	protected void onResume() {
@@ -73,27 +78,18 @@ public class BetsListActivity extends Activity implements IModelListener {
 		populate();
 		
 		if(app.getBetId()!=-1) {
-			dialog = ProgressDialog.show(this.getParent(), "", 
-	                getString(R.string.msg_bet_loading), true);
-						
-			app.getMe().setListener(this);
-			newBet = new Bet();
+			Bet bet = null;
 			try {
-				newBet.getWithDependents(app.getBetId());
+				bet = Bet.getModelDao().queryForId(app.getBetId());
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if(bet!=null)
+				openDetailedActivity(bet, false);
 			
+			app.setBetId(-1); //avoid going here on next resume
 		} 
-		
-		if(app.getMe().getServer_id()!=-1 && !isFetchedFromServer) {
-        	//lvBets.setRefreshing();
-        	newBet = new Bet();
-        	newBet.setListener(this);
-        	newBet.getAllForCurUser();
-        }
-		
+				
 		super.onResume();
 	}
 	
@@ -156,8 +152,6 @@ public class BetsListActivity extends Activity implements IModelListener {
 				app.setBetId(-1); //avoid going here on next resume
 				openDetailedActivity(newBet, true);
 			}
-			
-			isFetchedFromServer = true;
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}
@@ -179,8 +173,6 @@ public class BetsListActivity extends Activity implements IModelListener {
 				app.setBetId(-1); //avoid going here on next resume
 				openDetailedActivity(newBet, true);
 			}
-			
-			isFetchedFromServer = true;
 		} else {
 			Toast.makeText(this, R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
 		}

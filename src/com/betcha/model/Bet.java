@@ -192,8 +192,16 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		if(participants!=null) {
 			for (User participant : participants) {
 				if(participant.getServer_id()==-1) {
-					if(participant.createUserAccount()==0) 
-						continue;
+					User tmpParticipant = User.getAndCreateUserViaEmail(participant.getEmail());
+					if(tmpParticipant==null) {
+						if(participant.createUserAccount()==0) {
+							continue;
+						} else {
+							participant = tmpParticipant;
+						}
+					} else {
+						participant = tmpParticipant;
+					}
 				}
 				
 				Prediction prediction = new Prediction(this);
@@ -257,7 +265,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		if(Prediction.getAndCreatePredictions(bet)==null)
 			return 0;
 		
-		return 0;
+		return 1;
 	}
 	
 	@Override
@@ -327,7 +335,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		Bet tmpBet = null;
 		try {
 			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", server_id);
-			if(bets==null)
+			if(bets==null || bets.size()==0)
 				return null;
 			tmpBet = bets.get(0);
 		} catch (SQLException e1) {

@@ -260,6 +260,7 @@ public class SettingsActivity extends Activity implements IModelListener {
 	public void onCreateComplete(Class clazz, Boolean success) {
 		
 		if(clazz.getSimpleName().contentEquals("User")) {
+			dialog.dismiss();
 			if(success) {
 				app.registerToPushNotifications();
 				
@@ -274,7 +275,7 @@ public class SettingsActivity extends Activity implements IModelListener {
 		        }
         		
 			} else {
-				dialog.dismiss();
+				
 				dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
 						getString(R.string.error_registration_existing_user_failed), true);
 				Thread t = new Thread(new Runnable() {
@@ -295,8 +296,6 @@ public class SettingsActivity extends Activity implements IModelListener {
 				return;
 			}
 		}
-		
-		dialog.dismiss();
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package com.betcha.model.server.api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +32,26 @@ public class UserRestClient extends RestClient {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		JSONObject json = null;
+		try {
+			json = new JSONObject(res);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+	
+	public JSONObject show(String email) {
+		
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/show_by_email.json?"+ GetURLTokenParam() + "&email=" + email , String.class);
 		} catch (RestClientException e1) {
 			e1.printStackTrace();
 			return null;

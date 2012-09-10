@@ -338,6 +338,47 @@ Friend friend = new Friend(this);
 		return tmpOwner;
 	}
 	
+	public static User getAndCreateUserViaEmail(String email) {
+		User tmpOwner = null;
+		try {
+			List<User> listUser = null;
+			listUser = User.getModelDao().queryForEq("email", email);
+			if(listUser!=null && listUser.size()>0) {
+				tmpOwner = listUser.get(0);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
+		if(tmpOwner == null) { //then create it
+			tmpOwner = new User();
+		} else {
+			return tmpOwner;
+		}
+		
+		UserRestClient userClient = new UserRestClient();
+		JSONObject jsonOwner = null;
+		try {
+			jsonOwner = userClient.show(email);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return null;
+		}
+		if(jsonOwner==null)
+			return null;
+		
+		tmpOwner.setJson(jsonOwner);
+				
+		try {
+			tmpOwner.createOrUpdateLocal();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return tmpOwner;
+	}
+	
 	public Boolean setJson(JSONObject json) {
 		try {
 			setEmail(json.getString("email"));

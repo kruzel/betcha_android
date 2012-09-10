@@ -28,15 +28,7 @@ public class BetUTabActivity extends TabActivity {
 		app = (BetchaApp) getApplication();
 		
 		Intent launchIntent = getIntent();
-		Uri data = launchIntent.getData();
-		if(data!=null) {
-			List<String> params = data.getPathSegments();
-			try {
-				app.setBetId(Integer.parseInt(params.get(0)));
-			} catch (NumberFormatException e) {
-				// TODO: handle exception
-			}
-		}
+		app.setBetId(launchIntent.getIntExtra("bet_id", -1));
 
 	    Resources res = getResources(); // Resource object to get Drawables
 	    tabHost = getTabHost();  // The activity TabHost

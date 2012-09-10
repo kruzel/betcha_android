@@ -96,12 +96,16 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 			return;
 
 		try {
-			bet = Bet.getModelDao().queryForId(betId);
+			if(betId!=-1) {
+				bet = Bet.getModelDao().queryForId(betId);
+			} 
 		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			return;
 		}
+		
+		if(bet==null)
+			return;
 
 		if (isNewBet) {
 			dialog = ProgressDialog.show(BetDetailsActivity.this.getParent(),
@@ -134,7 +138,7 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 
 		}
 
-		getFromServer();
+		//getFromServer();
 
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/yy HH:mm");
 
@@ -212,8 +216,9 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 	}
 
 	protected void getFromServer() {
-
-		//Bet.getBetAndDependants(bet.getServer_id(), this);
+		if(bet==null)
+			return;
+		
 		bet.setListener(this);
 		try {
 			bet.getWithDependents(bet.getServer_id());
