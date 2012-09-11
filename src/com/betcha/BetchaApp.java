@@ -80,6 +80,7 @@ public class BetchaApp extends Application {
 			Prediction.setDbHelper(databaseHelper);
 			Friend.setDbHelper(databaseHelper);
 			
+			RestClient.setContext(this);
 			UserRestClient.setUrl(getString(R.string.betcha_api) + "/users");
 			TokenRestClient.setUrl(getString(R.string.betcha_api) + "/tokens");
 			BetRestClient.setUrl(getString(R.string.betcha_api) + "/bets");

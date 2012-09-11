@@ -116,7 +116,7 @@ public class UserRestClient extends RestClient {
         } catch (RestClientException e) {
         	e.printStackTrace();
     		return null;
-    	}
+    	} 
 		
 		JSONObject json = null;
 		if(res!=null) {

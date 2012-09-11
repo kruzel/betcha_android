@@ -6,6 +6,7 @@ package com.betcha.model.cache;
 import java.sql.SQLException;
 
 import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.util.Log;
 
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
@@ -87,6 +88,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return res;
 		
+		if(last_rest_call == RestMethod.CREATE && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return res;
+		
 		// run task to update server
 		last_rest_call = RestMethod.CREATE;
 		restTask = new RestTask();
@@ -119,6 +123,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		setSynced(false);
 		if(authenticateDelete() && RestClient.GetToken()==null)
+			return res;
+		
+		if(last_rest_call == RestMethod.DELETE && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
 			return res;
 		
 		// run task to update server
@@ -172,6 +179,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
 		
+		if(last_rest_call == RestMethod.GET && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return 1;
+		
 		// run task to update server
 		last_rest_call = RestMethod.GET;
 		restTask = new RestTask();
@@ -189,6 +199,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		setServer_id(server_id);
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
+		
+		if(last_rest_call == RestMethod.GET_WITH_DEP && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return 1;
 		
 		// run task to update server
 		last_rest_call = RestMethod.GET_WITH_DEP;
@@ -208,6 +221,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
 		
+		if(last_rest_call == RestMethod.GET_FOR_CUR_USER && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return 1;
+		
 		// run task to update server
 		last_rest_call = RestMethod.GET_FOR_CUR_USER;
 		restTask = new RestTask();
@@ -224,6 +240,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		setSynced(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return -1;
+		
+		if(last_rest_call == RestMethod.SYNC && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return 1;
 		
 		// run task to update server
 		last_rest_call = RestMethod.SYNC;
@@ -279,8 +298,14 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			if (model==null){
 				return false;
 			}
-					
+			
 			currMethod = params[0];
+			
+			if(!RestClient.isOnline()) {
+				return false;
+			}
+					
+			
 			switch (currMethod) {
 			case CREATE:
 				if (model.onRestCreate()>0) {
