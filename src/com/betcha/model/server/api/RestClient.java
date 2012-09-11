@@ -18,7 +18,7 @@ public abstract class RestClient {
 		restTemplate.getMessageConverters().add(new StringHttpMessageConverter());
 		restTemplate.getMessageConverters().add(new MappingJacksonHttpMessageConverter());
 		( (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setConnectTimeout(1 * 1000 );
-		( (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setReadTimeout( 3 * 1000 );
+		//( (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setReadTimeout( 3 * 1000 );
 	}
 
 	static public void SetToken(String newToken) {
