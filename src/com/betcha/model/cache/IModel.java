@@ -18,12 +18,12 @@ public interface IModel {
 	abstract public int onRestDelete();
 	
 	//return the number of updated rows, if failed 0
-	abstract public int onRestSync();
+	abstract public int onRestSyncToServer();
 		
 	abstract public void setServer_id(int serverId);
 	
 	abstract public int getServer_id();
 	
 	//get missing and create and update client changes on server 
-	abstract public void setSynced(Boolean synced);
+	abstract public void setServerUpdated(Boolean synced);
 }

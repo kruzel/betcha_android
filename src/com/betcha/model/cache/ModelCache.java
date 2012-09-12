@@ -5,6 +5,8 @@ package com.betcha.model.cache;
 
 import java.sql.SQLException;
 
+import org.joda.time.DateTime;
+
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.util.Log;
@@ -26,9 +28,11 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@DatabaseField
 	protected int server_id = -1;
 	@DatabaseField
-	protected Boolean synced = false;
+	protected Boolean serverUpdated = false;
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
+	@DatabaseField
+	protected DateTime updated_at;
 	
 	private RestTask restTask;
 	protected IModelListener listener;
@@ -84,7 +88,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		// create on local model
 		int res = createLocal();
 		
-		setSynced(false);
+		setServerUpdated(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return res;
 		
@@ -121,7 +125,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		// delete from local model
 		int res =  deleteLocal();
 		
-		setSynced(false);
+		setServerUpdated(false);
 		if(authenticateDelete() && RestClient.GetToken()==null)
 			return res;
 		
@@ -150,7 +154,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		// update local model
 		int res =  updateLocal();
 		
-		setSynced(false);
+		setServerUpdated(false);
 		if(authenticateUpdate() && RestClient.GetToken()==null)
 			return res;
 		
@@ -174,7 +178,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	public int get(int server_id) throws SQLException {	
 		initDao();
-		setSynced(false);
+		setServerUpdated(false);
 		setServer_id(server_id);
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
@@ -195,7 +199,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	public int getWithDependents(int server_id) throws SQLException {	
 		initDao();
-		setSynced(false);
+		setServerUpdated(false);
 		setServer_id(server_id);
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
@@ -216,7 +220,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	public int getAllForCurUser() {
 		initDao();
-		setSynced(false);
+		setServerUpdated(false);
 		
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
@@ -237,7 +241,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 	public int synch() throws SQLException {	
 		initDao();
-		setSynced(false);
+		setServerUpdated(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return -1;
 		
@@ -257,7 +261,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 
 	public void setServer_id(int serverId) {
 		this.server_id = serverId;
-		setSynced(true);
+		setServerUpdated(true);
 		
 	}
 	
@@ -265,9 +269,15 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		return server_id;
 	}
 
-	public void setSynced(Boolean synced) {
-		this.synced = synced;
+	public void setServerUpdated(Boolean serverUpdated) {
+		this.serverUpdated = serverUpdated;
 	}
+
+	public Boolean isServerUpdated() {
+		return serverUpdated;
+	}
+
+
 
 	/**
 	 * background task that does all the rest calls
@@ -309,43 +319,43 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			switch (currMethod) {
 			case CREATE:
 				if (model.onRestCreate()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case UPDATE:
 				if(model.onRestUpdate()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case DELETE:
 				if(model.onRestDelete()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case GET:
 				if(model.onRestGet()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case GET_WITH_DEP:
 				if(model.onRestGetWithDependents()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case GET_FOR_CUR_USER:
 				if(model.onRestGetAllForCurUser()>0) {
-					model.setSynced(true);
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;
 			case SYNC:
-				if(model.onRestSync()>0) {
-					model.setSynced(true);
+				if(model.onRestSyncToServer()>0) {
+					model.setServerUpdated(true);
 					return true;
 				}
 				break;

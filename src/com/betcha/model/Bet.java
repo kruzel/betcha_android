@@ -230,15 +230,17 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		return 1;
 	}
 
-	public int onRestSync() {
-		Bet bet = getAndCreateBet(getServer_id());
-	
-		//TODO save client side changes to server
+	public int onRestSyncToServer() {
+		int res = 0;
+		if(!isServerUpdated()) {
+			if(getServer_id()==-1) {
+				res = onRestCreate();
+			} else {
+				res = onRestUpdate(); 
+			}
+		} 
 		
-		if(bet!=null)
-			return 1;
-		else
-			return 0;
+		return res;
 	}
 	
 	@Override
@@ -255,15 +257,89 @@ public class Bet extends ModelCache<Bet,Integer>  {
 
 	@Override
 	public int onRestGetWithDependents() {
+		
+		Bet tmpBet = null;
+		try {
+			List<Bet> bets = Bet.getModelDao().queryForEq("server_id", getServer_id());
+			if(bets==null || bets.size()==0)
+				return 0;
+			tmpBet = bets.get(0);
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return 0;
+		}
+		
+		if(tmpBet==null) {
+			tmpBet = new Bet();
+		}
+		
+		BetRestClient betClient = new BetRestClient();
+		JSONObject jsonBet = null;
+		try {
+			jsonBet = betClient.show(server_id);
+		} catch (RestClientException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		if(jsonBet==null)
+			return 0;
+		
+		if(tmpBet.setJson(jsonBet)) {
+			try {
+				tmpBet.createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return 0;
+			}
+		}
+		
+		JSONArray jsonPredictions = null;
+		try {
+			jsonPredictions = jsonBet.getJSONArray("predictions");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return 0; //must have at list one prediction
+		}
+		
+		if(jsonPredictions==null)
+			return 0;
+		
+		for (int j = 0; j < jsonPredictions.length(); j++) {
+			JSONObject jsonPrediction;
+		
+			try {
+				jsonPrediction = jsonPredictions.getJSONObject(j);
+			} catch (JSONException e3) {
+				e3.printStackTrace();
+				continue;
+			}
 			
-		Bet bet = Bet.getAndCreateBet(getServer_id());
-		if(bet==null)
-			return 0;
-		
-		setBet(bet);
-		
-		if(Prediction.getAndCreatePredictions(bet)==null)
-			return 0;
+			Prediction tmpPrediction = null;
+			try {
+				List<Prediction> tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
+				if(tmpPredictions!=null && tmpPredictions.size()>0) { 
+					tmpPrediction = tmpPredictions.get(0);
+				}
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if(tmpPrediction==null) {
+				tmpPrediction = new Prediction();
+			}
+							
+			if(!tmpPrediction.setJson(jsonPrediction))
+				continue;
+			
+			try {
+				tmpPrediction.createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
 		
 		return 1;
 	}
@@ -320,8 +396,53 @@ public class Bet extends ModelCache<Bet,Integer>  {
 				continue;
 			}
 			
-			if(Prediction.getAndCreatePredictions(tmpBet)==null)
+			JSONArray jsonPredictions = null;
+			try {
+				jsonPredictions = jsonBet.getJSONArray("predictions");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				continue; //must have at list one prediction
+			}
+			
+			if(jsonPredictions==null)
 				continue;
+			
+			for (int j = 0; j < jsonPredictions.length(); j++) {
+				JSONObject jsonPrediction;
+			
+				try {
+					jsonPrediction = jsonPredictions.getJSONObject(j);
+				} catch (JSONException e3) {
+					e3.printStackTrace();
+					continue;
+				}
+				
+				Prediction tmpPrediction = null;
+				try {
+					List<Prediction> tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
+					if(tmpPredictions!=null && tmpPredictions.size()>0) { 
+						tmpPrediction = tmpPredictions.get(0);
+					}
+				} catch (SQLException e2) {
+					e2.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(tmpPrediction==null) {
+					tmpPrediction = new Prediction();
+				}
+								
+				if(!tmpPrediction.setJson(jsonPrediction))
+					continue;
+				
+				try {
+					tmpPrediction.createOrUpdateLocal();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					continue;
+				}
+			}
 			
 			bets.add(tmpBet);
 			

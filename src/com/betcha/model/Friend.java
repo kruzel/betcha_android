@@ -235,9 +235,17 @@ public class Friend extends ModelCache<Friend, Integer> {
 	}
 
 	@Override
-	public int onRestSync() {
-		// TODO Auto-generated method stub
-		return 0;
+	public int onRestSyncToServer() {
+		int res = 0;
+		if(!isServerUpdated()) {
+			if(getServer_id()==-1) {
+				res = onRestCreate();
+			} else {
+				res = onRestUpdate(); 
+			}
+		}
+		
+		return res;
 	}
 
 }

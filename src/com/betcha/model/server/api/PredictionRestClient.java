@@ -66,7 +66,7 @@ public class PredictionRestClient extends RestClient {
 		//nested url = bets/:bet_id/predictions
 		String res;
 		try {
-			res = restTemplate.getForObject(url + "/show_bet_id.json?"+ GetURLTokenParam() , String.class, id);
+			res = restTemplate.getForObject(url + "/show_for_bet.json?"+ GetURLTokenParam() , String.class, id);
 		} catch (RestClientException e1) {
 			e1.printStackTrace();
 			return null;

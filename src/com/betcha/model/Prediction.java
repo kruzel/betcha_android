@@ -196,13 +196,17 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		return 1;
 	}
 
-	public int onRestSync() {
-		//TODO save client side changes to server
+	public int onRestSyncToServer() {
+		int res = 0;
+		if(!isServerUpdated()) {
+			if(getServer_id()==-1) {
+				res = onRestCreate();
+			} else {
+				res = onRestUpdate(); 
+			}
+		} 
 		
-		if(Prediction.getAndCreatePrediction(getServer_id())==null)
-			return 0;
-		else
-			return 1;
+		return res;
 	}
 	
 	@Override
@@ -398,6 +402,11 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public Boolean setJson(JSONObject json) {
+		
+		setResult(json.optBoolean("result", false));
+		setPrediction(json.optString("prediction",""));
+		setMyAck(json.optString("user_ack","Pending"));
+		
 		return true;
 	}
 	

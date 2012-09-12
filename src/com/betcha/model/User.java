@@ -171,7 +171,7 @@ public class User extends ModelCache<User,Integer> {
 
 	/** inherited ModelCache methods */
 	public int onRestCreate() {
-Friend friend = new Friend(this);
+		Friend friend = new Friend(this);
 		//report completion only after friend get is done
 		friend.setListener(listener);
 		setListener(null);
@@ -251,15 +251,17 @@ Friend friend = new Friend(this);
 		return 1;
 	}
 
-	public int onRestSync() {
-		User user = getAndCreateUser(getServer_id());
+	public int onRestSyncToServer() {
+		int res = 0;
+		if(!isServerUpdated()) {
+			if(getServer_id()==-1) {
+				res = onRestCreate();
+			} else {
+				res = onRestUpdate(); 
+			}
+		} 
 		
-		//TODO save client side changes to server
-			
-		if(user==null)
-			return 0;
-		else
-			return 1;
+		return res;
 	}
 	
 	@Override
