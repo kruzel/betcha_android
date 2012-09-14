@@ -1,5 +1,7 @@
 package com.betcha.model.cache;
 
+import org.json.JSONObject;
+
 
 public interface IModel {
 	//return the serverId, if failed -1
@@ -26,4 +28,6 @@ public interface IModel {
 	
 	//get missing and create and update client changes on server 
 	abstract public void setServerUpdated(Boolean synced);
+	
+	abstract public Boolean setJson(JSONObject json);
 }

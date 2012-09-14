@@ -6,13 +6,21 @@ package com.betcha.model.cache;
 import java.sql.SQLException;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.util.Log;
 
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
+import com.betcha.service.ConnectivityReceiver;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.misc.BaseDaoEnabled;
@@ -28,7 +36,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	@DatabaseField
 	protected int server_id = -1;
 	@DatabaseField
-	protected Boolean serverUpdated = false;
+	protected Boolean server_updated = false;
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	@DatabaseField
@@ -36,7 +44,12 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	private RestTask restTask;
 	protected IModelListener listener;
-	
+	private static Context context;
+
+	public static void setContext(Context context) {
+		ModelCache.context = context;
+	}
+
 	protected Boolean authenticateCreate() {
 		return true;
 	}
@@ -270,14 +283,57 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 
 	public void setServerUpdated(Boolean serverUpdated) {
-		this.serverUpdated = serverUpdated;
+		this.server_updated = serverUpdated;
 	}
 
 	public Boolean isServerUpdated() {
-		return serverUpdated;
+		return server_updated;
+	}
+	
+	public DateTime getUpdated_at() {
+		return updated_at;
 	}
 
+	public void setUpdated_at(DateTime updated_at) {
+		this.updated_at = updated_at;
+	}
 
+	public static void enableConnectivityReciever() {
+		ComponentName receiver = new ComponentName(context, ConnectivityReceiver.class);
+
+		PackageManager pm = context.getPackageManager();
+
+		pm.setComponentEnabledSetting(receiver,
+		        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+		        PackageManager.DONT_KILL_APP);
+	}
+	
+	public static void disableConnectivityReciever() {
+		ComponentName receiver = new ComponentName(context, ConnectivityReceiver.class);
+
+		PackageManager pm = context.getPackageManager();
+
+		pm.setComponentEnabledSetting(receiver,
+		        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+		        PackageManager.DONT_KILL_APP);
+	}
+	
+	public Boolean setJson(JSONObject json) {
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+		try {
+			setUpdated_at(formatter.parseDateTime(json.getString("updated_at")));
+		} catch (JSONException e1) {
+		}
+		
+		try {
+			setServer_id(json.getInt("id"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return true;
+	}
 
 	/**
 	 * background task that does all the rest calls
@@ -312,6 +368,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			currMethod = params[0];
 			
 			if(!RestClient.isOnline()) {
+				ModelCache.enableConnectivityReciever();
 				return false;
 			}
 					

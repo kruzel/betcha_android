@@ -91,7 +91,7 @@ public class Friend extends ModelCache<Friend, Integer> {
 	}
 	
 	public Boolean setJson(JSONObject json) {
-		setServer_id(json.optInt("id", -1));
+		super.setJson(json);
 		
 		try {
 			user = User.getAndCreateUser(json.getInt("user_id"));

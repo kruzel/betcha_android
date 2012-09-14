@@ -382,6 +382,8 @@ public class User extends ModelCache<User,Integer> {
 	}
 	
 	public Boolean setJson(JSONObject json) {
+		super.setJson(json);
+		
 		try {
 			setEmail(json.getString("email"));
 		} catch (JSONException e1) {
@@ -390,12 +392,6 @@ public class User extends ModelCache<User,Integer> {
 		}
 		try {
 			setName(json.getString("full_name"));
-		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		try {
-			setServer_id(json.getInt("id"));
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

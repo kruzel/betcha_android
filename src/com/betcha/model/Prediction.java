@@ -402,6 +402,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	}
 
 	public Boolean setJson(JSONObject json) {
+		super.setJson(json);
 		
 		setResult(json.optBoolean("result", false));
 		setPrediction(json.optString("prediction",""));

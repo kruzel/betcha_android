@@ -1,5 +1,6 @@
 package com.betcha.model;
 
+import java.lang.Thread.State;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 //	private static GetUserBetsTask getUserBetsTask;
 	private static BetRestClient betClient;
 	private static Dao<Bet,Integer> dao;
+	private static Thread syncThread;
 	
 	private List<User> participants;
 	private Prediction ownerPrediction;
@@ -346,6 +348,10 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	
 	@Override
 	public int onRestGetAllForCurUser() {
+		return getAllBetsForCurUser();
+	}
+	
+	public static int getAllBetsForCurUser() {
 		List<Bet> bets = new ArrayList<Bet>();
 		
 		BetRestClient restClient = new BetRestClient();
@@ -436,12 +442,27 @@ public class Bet extends ModelCache<Bet,Integer>  {
 				if(!tmpPrediction.setJson(jsonPrediction))
 					continue;
 				
+				User user = null;
+				try {
+					user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
+				} catch (JSONException e2) {
+					e2.printStackTrace();
+					continue;
+				}
+				
+				if(user==null)
+					continue;
+				
+				tmpPrediction.setUser(user);
+				tmpPrediction.setBet(tmpBet);
+				
 				try {
 					tmpPrediction.createOrUpdateLocal();
 				} catch (SQLException e) {
 					e.printStackTrace();
 					continue;
 				}
+				
 			}
 			
 			bets.add(tmpBet);
@@ -491,11 +512,62 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		return tmpBet;
 	}
 	
+	public static void syncWithServer() {	
+		if(syncThread!=null && syncThread.getState()==State.RUNNABLE)
+			return;
+		
+		syncThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				//get all updates from server (bets and their predictions and chat_messages
+				//TODO - use the show all update for current user
+				Bet.getAllBetsForCurUser();
+				
+				// push all bets that not yet synced pushed to server
+				List<Bet> bets = null;
+				try {
+					bets = Bet.getModelDao().queryForEq("server_updated", false);
+					if(bets==null || bets.size()==0)
+						return;
+				} catch (SQLException e1) {
+					return;
+				}
+				
+				for (Bet bet : bets) {
+					if(!bet.isServerUpdated()) {
+						bet.onRestSyncToServer();
+					}
+					
+					List<Prediction> predictions = null;
+					try {
+						predictions = Prediction.getModelDao().queryForEq("server_updated", false);
+						if(predictions==null || predictions.size()==0)
+							return;
+					} catch (SQLException e1) {
+						return;
+					}
+					
+					for (Prediction prediction : predictions) {
+						if(!prediction.isServerUpdated()) {
+							prediction.onRestSyncToServer();
+						}
+					}
+				}
+				
+			}
+		});
+		syncThread.start();
+		
+	}
+	
 	public Boolean setJson(JSONObject jsonBet) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		
 		if(jsonBet==null)
 			return null;
+		
+		super.setJson(jsonBet);
 		
 		// TODO move the get part outside to the caller 
 		User owner = null;
@@ -509,13 +581,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		if(owner==null)
 			return false;
 		
-		try {
-			setServer_id(jsonBet.getInt("id"));
-			setOwner(owner);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return false;
-		}
+		setOwner(owner);
 		
 		try {
 			setReward(jsonBet.getString("reward"));

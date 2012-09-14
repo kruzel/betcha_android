@@ -21,6 +21,7 @@ import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
+import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.FriendRestClient;
 import com.betcha.model.server.api.PredictionRestClient;
@@ -74,6 +75,9 @@ public class BetchaApp extends Application {
 	public Boolean createDbHelpers() {
 		if (databaseHelper == null) {
 			databaseHelper = OpenHelperManager.getHelper(this, DatabaseHelper.class);
+			
+			ModelCache.setContext(this);
+			ModelCache.disableConnectivityReciever();
 			
 			User.setDbHelper(databaseHelper);
 			Bet.setDbHelper(databaseHelper);
