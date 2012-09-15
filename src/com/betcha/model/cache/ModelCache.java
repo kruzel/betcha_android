@@ -102,6 +102,10 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		this.listener = listener;
 	}
 		
+	public IModelListener getListener() {
+		return listener;
+	}
+
 	/** BaseDaoEnabled overides
 	 * @see com.j256.ormlite.misc.BaseDaoEnabled#create()
 	 */
@@ -468,6 +472,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 					modelListener.onGetWithDependentsComplete(modelClass,result);
 					break;
 				case GET_FOR_CUR_USER:
+					modelListener.onGetComplete(modelClass,result);
+					break;
+				case SYNC:
 					modelListener.onGetComplete(modelClass,result);
 					break;
 				default:

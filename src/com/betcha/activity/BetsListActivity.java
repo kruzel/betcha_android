@@ -18,6 +18,7 @@ import com.betcha.R;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.ModelCache;
 import com.betcha.nevigation.BetListGroupActivity;
 
 import eu.erikw.PullToRefreshListView;
@@ -35,6 +36,7 @@ public class BetsListActivity extends Activity implements IModelListener {
 	
 	private PullToRefreshListView lvBets;
 	private ProgressDialog dialog;
+	private Boolean isFirstBetsLoad = true;
 		
 	/** Called when the activity is first created. */
     @Override
@@ -49,9 +51,7 @@ public class BetsListActivity extends Activity implements IModelListener {
         lvBets.setOnRefreshListener(new OnRefreshListener() {
 
     	    public void onRefresh() {
-    	    	newBet = new Bet();
-            	newBet.setListener(BetsListActivity.this);
-            	newBet.getAllForCurUser();
+    	    	Bet.syncWithServer(BetsListActivity.this);
     	    }
     	});
         
@@ -64,16 +64,15 @@ public class BetsListActivity extends Activity implements IModelListener {
 			}
 		});
         
-        if(app.getMe().getServer_id()!=-1) {
-        	//lvBets.setRefreshing();
-        	newBet = new Bet();
-        	//newBet.setListener(this);
-        	newBet.getAllForCurUser();
-        }
-        
     }
     
 	protected void onResume() {
+		
+		if(app.getMe().getServer_id()!=-1 && isFirstBetsLoad) {
+			isFirstBetsLoad = false;
+        	lvBets.setRefreshing();
+        	Bet.syncWithServer(this);
+        }
 		
 		populate();
 		

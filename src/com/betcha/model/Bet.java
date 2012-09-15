@@ -13,8 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
+import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
 import com.j256.ormlite.dao.Dao;
@@ -568,52 +570,13 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		return tmpBet;
 	}
 	
-	public static void syncWithServer() {	
+	public static void syncWithServer(IModelListener modelListener) {	
 		if(syncThread!=null && syncThread.getState()==State.RUNNABLE)
 			return;
 		
-		syncThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				//get all updates from server (bets and their predictions and chat_messages
-				//TODO - use the show all update for current user
-				Bet.getAllUpdatesForCurUser(Bet.getLastUpdateFromServer());
-				
-				// push all bets that not yet synced pushed to server
-				List<Bet> bets = null;
-				try {
-					bets = Bet.getModelDao().queryForEq("server_updated", false);
-					if(bets==null || bets.size()==0)
-						return;
-				} catch (SQLException e1) {
-					return;
-				}
-				
-				for (Bet bet : bets) {
-					if(!bet.isServerUpdated()) {
-						bet.onRestSyncToServer();
-					}
-					
-					List<Prediction> predictions = null;
-					try {
-						predictions = Prediction.getModelDao().queryForEq("server_updated", false);
-						if(predictions==null || predictions.size()==0)
-							return;
-					} catch (SQLException e1) {
-						return;
-					}
-					
-					for (Prediction prediction : predictions) {
-						if(!prediction.isServerUpdated()) {
-							prediction.onRestSyncToServer();
-						}
-					}
-				}
-				
-			}
-		});
-		syncThread.start();
+		SyncTask task = new SyncTask();
+		task.setListener(modelListener);
+		task.execute();
 		
 	}
 	
@@ -666,5 +629,65 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			       					
 		return true;
 	}
+	
+	private static class SyncTask extends AsyncTask<Void, Void, Boolean> {
+		private IModelListener modelListener;
+				
+		public void setListener(IModelListener modelListener) {
+			this.modelListener = modelListener;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			//get all updates from server (bets and their predictions and chat_messages
+			//TODO - use the show all update for current user
+			Bet.getAllUpdatesForCurUser(Bet.getLastUpdateFromServer());
+			
+			// push all bets that not yet synced pushed to server
+			List<Bet> bets = null;
+			try {
+				bets = Bet.getModelDao().queryForEq("server_updated", false);
+				if(bets==null || bets.size()==0) {
+					return true;
+				}
+			} catch (SQLException e1) {
+				if(modelListener!=null)
+					modelListener.onGetComplete(Bet.class, true);
+				return true;
+			}
+			
+			for (Bet bet : bets) {
+				if(!bet.isServerUpdated()) {
+					bet.onRestSyncToServer();
+				}
+				
+				List<Prediction> predictions = null;
+				try {
+					predictions = Prediction.getModelDao().queryForEq("server_updated", false);
+					if(predictions==null || predictions.size()==0) {
+						continue;
+					}
+				} catch (SQLException e1) {
+					continue;
+				}
+				
+				for (Prediction prediction : predictions) {
+					if(!prediction.isServerUpdated()) {
+						prediction.onRestSyncToServer();
+					}
+				}
+			}
+			
+			return true;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			if(modelListener!=null)
+				modelListener.onGetComplete(Bet.class, result);
+			super.onPostExecute(result);
+		}
+		
+	};
 
 }

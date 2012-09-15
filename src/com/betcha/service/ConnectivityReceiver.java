@@ -17,7 +17,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 		//stop receiving network state changes events
 		ModelCache.disableConnectivityReciever();
 		
-		Bet.syncWithServer();
+		Bet.syncWithServer(null);
 	}
 
 }
