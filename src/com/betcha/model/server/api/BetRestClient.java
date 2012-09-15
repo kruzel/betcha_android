@@ -1,5 +1,6 @@
 package com.betcha.model.server.api;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +50,25 @@ public class BetRestClient extends RestClient {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		JSONArray json = null;
+		try {
+			json = new JSONArray(res);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+	
+	public JSONArray show_updates_for_user(DateTime lastUpdate) {
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/show_updates_for_user.json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class);
 		} catch (RestClientException e1) {
 			e1.printStackTrace();
 			return null;

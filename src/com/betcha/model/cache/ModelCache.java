@@ -41,10 +41,21 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	@DatabaseField
 	protected DateTime updated_at;
+	@DatabaseField
+	private DateTime created_at;
 	
 	private RestTask restTask;
 	protected IModelListener listener;
 	private static Context context;
+	private static DateTime lastUpdateFromServer;
+
+	public static DateTime getLastUpdateFromServer() {
+		return lastUpdateFromServer;
+	}
+
+	public static void setLastUpdateFromServer(DateTime lastUpdateFromServer) {
+		ModelCache.lastUpdateFromServer = lastUpdateFromServer;
+	}
 
 	public static void setContext(Context context) {
 		ModelCache.context = context;
@@ -298,6 +309,14 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		this.updated_at = updated_at;
 	}
 
+	public DateTime getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(DateTime created_at) {
+		this.created_at = created_at;
+	}
+
 	public static void enableConnectivityReciever() {
 		ComponentName receiver = new ComponentName(context, ConnectivityReceiver.class);
 
@@ -322,6 +341,11 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		try {
 			setUpdated_at(formatter.parseDateTime(json.getString("updated_at")));
+		} catch (JSONException e1) {
+		}
+		
+		try {
+			setCreated_at(formatter.parseDateTime(json.getString("created_at")));
 		} catch (JSONException e1) {
 		}
 		
@@ -413,6 +437,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			case SYNC:
 				if(model.onRestSyncToServer()>0) {
 					model.setServerUpdated(true);
+					lastUpdateFromServer = new DateTime();
+					lastUpdateFromServer.now();
 					return true;
 				}
 				break;

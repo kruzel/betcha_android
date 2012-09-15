@@ -17,12 +17,14 @@ import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.betcha.model.Bet;
+import com.betcha.model.ChatMessage;
 import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
+import com.betcha.model.server.api.ChatMessageRestClient;
 import com.betcha.model.server.api.FriendRestClient;
 import com.betcha.model.server.api.PredictionRestClient;
 import com.betcha.model.server.api.RestClient;
@@ -83,6 +85,7 @@ public class BetchaApp extends Application {
 			Bet.setDbHelper(databaseHelper);
 			Prediction.setDbHelper(databaseHelper);
 			Friend.setDbHelper(databaseHelper);
+			ChatMessage.setDbHelper(databaseHelper);
 			
 			RestClient.setContext(this);
 			UserRestClient.setUrl(getString(R.string.betcha_api) + "/users");
@@ -90,6 +93,7 @@ public class BetchaApp extends Application {
 			BetRestClient.setUrl(getString(R.string.betcha_api) + "/bets");
 			PredictionRestClient.setUrl(getString(R.string.betcha_api) + "/bets/{bet_id}/predictions");
 			FriendRestClient.setUrl(getString(R.string.betcha_api) + "/users/{user_id}/friends");
+			ChatMessageRestClient.setUrl(getString(R.string.betcha_api) + "/bets/{bet_id}/chat_messages");
 		}
 		
 		return true;

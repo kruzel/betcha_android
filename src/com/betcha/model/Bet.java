@@ -348,16 +348,21 @@ public class Bet extends ModelCache<Bet,Integer>  {
 	
 	@Override
 	public int onRestGetAllForCurUser() {
-		return getAllBetsForCurUser();
+		return getAllUpdatesForCurUser(null);
 	}
 	
-	public static int getAllBetsForCurUser() {
+	public static int getAllUpdatesForCurUser(DateTime lastUpdate) {
 		List<Bet> bets = new ArrayList<Bet>();
 		
 		BetRestClient restClient = new BetRestClient();
 		JSONArray jsonBets = null;
 		try {
-			jsonBets = restClient.show_for_user(); //for logged in user
+			if(lastUpdate==null)
+				jsonBets = restClient.show_for_user(); //for logged in user
+			else {
+				jsonBets = restClient.show_updates_for_user(lastUpdate); //for logged in user
+			}
+				
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return 0;
@@ -442,9 +447,60 @@ public class Bet extends ModelCache<Bet,Integer>  {
 				if(!tmpPrediction.setJson(jsonPrediction))
 					continue;
 				
+				tmpPrediction.setBet(tmpBet);
+				
+				try {
+					tmpPrediction.createOrUpdateLocal();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					continue;
+				}
+				
+			}
+			
+			JSONArray jsonChatMessages = null;
+			try {
+				jsonChatMessages = jsonBet.getJSONArray("chat_messages");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				continue; //must have at list one prediction
+			}
+			
+			if(jsonChatMessages==null)
+				continue;
+			
+			for (int j = 0; j < jsonChatMessages.length(); j++) {
+				JSONObject jsonChatMessage;
+			
+				try {
+					jsonChatMessage = jsonChatMessages.getJSONObject(j);
+				} catch (JSONException e3) {
+					e3.printStackTrace();
+					continue;
+				}
+				
+				ChatMessage tmpChatMessage = null;
+				try {
+					List<ChatMessage> tmpChatMessages = ChatMessage.getModelDao().queryForEq("server_id", jsonChatMessage.getInt("id"));
+					if(tmpChatMessages!=null && tmpChatMessages.size()>0) { 
+						tmpChatMessage = tmpChatMessages.get(0);
+					}
+				} catch (SQLException e2) {
+					e2.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(tmpChatMessage==null) {
+					tmpChatMessage = new ChatMessage();
+				}
+								
+				if(!tmpChatMessage.setJson(jsonChatMessage))
+					continue;
+				
 				User user = null;
 				try {
-					user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
+					user = User.getAndCreateUser(jsonChatMessage.getInt("user_id"));
 				} catch (JSONException e2) {
 					e2.printStackTrace();
 					continue;
@@ -453,11 +509,11 @@ public class Bet extends ModelCache<Bet,Integer>  {
 				if(user==null)
 					continue;
 				
-				tmpPrediction.setUser(user);
-				tmpPrediction.setBet(tmpBet);
+				tmpChatMessage.setUser(user);
+				tmpChatMessage.setBet(tmpBet);
 				
 				try {
-					tmpPrediction.createOrUpdateLocal();
+					tmpChatMessage.createOrUpdateLocal();
 				} catch (SQLException e) {
 					e.printStackTrace();
 					continue;
@@ -522,7 +578,7 @@ public class Bet extends ModelCache<Bet,Integer>  {
 			public void run() {
 				//get all updates from server (bets and their predictions and chat_messages
 				//TODO - use the show all update for current user
-				Bet.getAllBetsForCurUser();
+				Bet.getAllUpdatesForCurUser(Bet.getLastUpdateFromServer());
 				
 				// push all bets that not yet synced pushed to server
 				List<Bet> bets = null;

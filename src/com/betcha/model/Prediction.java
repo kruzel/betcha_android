@@ -316,76 +316,76 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		return prediction;
 	}
 	
-	public static List<Prediction> getAndCreatePredictions(Bet inBet) {
-		
-		List<Prediction> predictions = new ArrayList<Prediction>();
-		
-		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-		
-		PredictionRestClient userBetClient = new PredictionRestClient(inBet.getServer_id());
-		JSONArray jsonPredictions = null;
-		try {
-			jsonPredictions = userBetClient.showPredictionsForBet(inBet.getServer_id());
-		} catch (RestClientException e) {
-			e.printStackTrace();
-			return null;
-		}
-		if(jsonPredictions==null)
-			return null;
-		
-		User user = null;
-		JSONObject jsonPrediction = null;
-		for (int i = 0; i < jsonPredictions.length(); i++) {
-			try {
-				jsonPrediction = jsonPredictions.getJSONObject(i);
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-				continue;
-			}
-					
-			try {
-				user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
-			} catch (JSONException e2) {
-				e2.printStackTrace();
-				continue;
-			}
-			
-			if(user==null)
-				continue;
-						
-			try {		
-				Prediction prediction = null;
-				List<Prediction> tmpPredictions = null;
-				try {
-					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				if(tmpPredictions==null || tmpPredictions.size()==0) {
-					prediction = new Prediction(inBet);
-				} else {
-					prediction = tmpPredictions.get(0);
-				}
-				
-				prediction.setDate(formatter.parseDateTime(jsonPrediction.optString("created_at")));
-				prediction.setMyAck(jsonPrediction.optString("user_ack"));
-				prediction.setPrediction(jsonPrediction.optString("prediction"));
-				prediction.setResult(jsonPrediction.optBoolean("result"));
-				prediction.setServer_id(jsonPrediction.optInt("id",-1));
-				prediction.setUser(user);
-				prediction.createOrUpdateLocal();				
-				predictions.add(prediction);
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
-			}
-       	
-		}
-		return predictions;
-	}
+//	public static List<Prediction> getAndCreatePredictions(Bet inBet) {
+//		
+//		List<Prediction> predictions = new ArrayList<Prediction>();
+//		
+//		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//		
+//		PredictionRestClient userBetClient = new PredictionRestClient(inBet.getServer_id());
+//		JSONArray jsonPredictions = null;
+//		try {
+//			jsonPredictions = userBetClient.showForBet(inBet.getServer_id());
+//		} catch (RestClientException e) {
+//			e.printStackTrace();
+//			return null;
+//		}
+//		if(jsonPredictions==null)
+//			return null;
+//		
+//		User user = null;
+//		JSONObject jsonPrediction = null;
+//		for (int i = 0; i < jsonPredictions.length(); i++) {
+//			try {
+//				jsonPrediction = jsonPredictions.getJSONObject(i);
+//			} catch (JSONException e1) {
+//				e1.printStackTrace();
+//				continue;
+//			}
+//					
+//			try {
+//				user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
+//			} catch (JSONException e2) {
+//				e2.printStackTrace();
+//				continue;
+//			}
+//			
+//			if(user==null)
+//				continue;
+//						
+//			try {		
+//				Prediction prediction = null;
+//				List<Prediction> tmpPredictions = null;
+//				try {
+//					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
+//				} catch (SQLException e) {
+//					e.printStackTrace();
+//				} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//				
+//				if(tmpPredictions==null || tmpPredictions.size()==0) {
+//					prediction = new Prediction(inBet);
+//				} else {
+//					prediction = tmpPredictions.get(0);
+//				}
+//				
+//				prediction.setDate(formatter.parseDateTime(jsonPrediction.optString("created_at")));
+//				prediction.setMyAck(jsonPrediction.optString("user_ack"));
+//				prediction.setPrediction(jsonPrediction.optString("prediction"));
+//				prediction.setResult(jsonPrediction.optBoolean("result"));
+//				prediction.setServer_id(jsonPrediction.optInt("id",-1));
+//				prediction.setUser(user);
+//				prediction.createOrUpdateLocal();				
+//				predictions.add(prediction);
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//				continue;
+//			}
+//       	
+//		}
+//		return predictions;
+//	}
 
 	public static void update(List<Prediction> predictions, int bet_id) {
 		for (Prediction prediction : predictions) {
@@ -407,6 +407,13 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		setResult(json.optBoolean("result", false));
 		setPrediction(json.optString("prediction",""));
 		setMyAck(json.optString("user_ack","Pending"));
+		
+		try {
+			user = User.getAndCreateUser(json.getInt("user_id"));
+		} catch (JSONException e2) {
+			e2.printStackTrace();
+			return false;
+		}
 		
 		return true;
 	}
