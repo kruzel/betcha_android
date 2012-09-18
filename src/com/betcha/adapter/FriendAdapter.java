@@ -57,8 +57,7 @@ public class FriendAdapter extends ArrayAdapter<User> {
 		
 		//Load from contacts
 		Bitmap bm = user.getProfilePhoto(this);
-		if(bm!=null)
-			profPic.setImageBitmap(bm);
+		profPic.setImageBitmap(bm);
 	
 		cbIsInvited.setOnClickListener(new OnClickListener() {
 			

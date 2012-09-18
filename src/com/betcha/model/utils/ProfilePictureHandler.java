@@ -153,7 +153,6 @@ public class ProfilePictureHandler extends AsyncTask<Void, Void, Void> {
 	}
 	
 	public Bitmap downloadBitmap(String url) {
-		//Log.d("ImageDownloader", "loading image from " + url); 
 		
 		URL https_url = null;
 		try {
@@ -204,9 +203,6 @@ public class ProfilePictureHandler extends AsyncTask<Void, Void, Void> {
 			return null;
 		}	
 		
-		
-		
-		
 //		if(url.startsWith("https")) { 
 //			URL https_url = null;
 //			try {
@@ -256,54 +252,7 @@ public class ProfilePictureHandler extends AsyncTask<Void, Void, Void> {
 //				e.printStackTrace();
 //				return null;
 //			}	
-//		} else {
-//			final AndroidHttpClient client = AndroidHttpClient.newInstance("Android");
-//		    final HttpGet getRequest = new HttpGet(url);
-//	
-//		    try {
-//		        HttpResponse response = client.execute(getRequest);
-//		        final int statusCode = response.getStatusLine().getStatusCode();
-//		        
-//		        if (statusCode != HttpStatus.SC_SEE_OTHER || statusCode != HttpStatus.SC_MOVED_TEMPORARILY) { 
-//		        	org.apache.http.Header[] headers = response.getHeaders("Location");
-//
-//		            if (headers != null && headers.length != 0) {
-//		                String newUrl = headers[headers.length - 1].getValue();
-//		                // call again the same downloading method with new URL
-//		                return downloadBitmap(newUrl);
-//		            }
-//		        }
-//		        
-//		        if (statusCode != HttpStatus.SC_OK) { 
-//		            Log.w("ImageDownloader", "Error " + statusCode + " while retrieving bitmap from " + url); 
-//		            return null;
-//		        }
-//		        
-//		        final HttpEntity entity = response.getEntity();
-//		        if (entity != null) {
-//		            InputStream inputStream = null;
-//		            try {
-//		                inputStream = entity.getContent(); 
-//		                final Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//		                return bitmap;
-//		            } finally {
-//		                if (inputStream != null) {
-//		                    inputStream.close();  
-//		                }
-//		                entity.consumeContent();
-//		            }
-//		        }
-//		    } catch (Exception e) {
-//		        // Could provide a more explicit error message for IOException or IllegalStateException
-//		    	e.printStackTrace();
-//		        getRequest.abort();
-//		        Log.w("ImageDownloader", "Error while retrieving bitmap from " + url);
-//		    } finally {
-//		        if (client != null) {
-//		            client.close();
-//		        }
-//		    }
-//		}
+//		} 
 		
 		return null;
 	}
