@@ -9,16 +9,11 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
-import android.app.TabActivity;
 import android.app.TimePickerDialog;
-import android.content.ContentResolver;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -26,11 +21,13 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SlidingDrawer;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.FriendAdapter;
@@ -38,9 +35,8 @@ import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 
-public class CreateBetActivity extends Activity implements OnClickListener {
+public class CreateBetActivity extends SherlockActivity implements OnClickListener {
 	private BetchaApp app;
-	private TabHost tabHost;
 	
 	private Bet bet;
 	private TextView betSubject;
@@ -63,6 +59,9 @@ public class CreateBetActivity extends Activity implements OnClickListener {
     public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
         setContentView(R.layout.createbet);
+        
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         
         app = (BetchaApp) getApplication();
                 
@@ -91,14 +90,8 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(this);
         
-        app.initFriendList();
+        app.initFriendList(); //in case not init yet
         
-                
-        TabActivity act = (TabActivity) getParent();
-        if(act==null)
-        	return;
-        
-	    tabHost = act.getTabHost();  // The activity TabHost
     }
     
     private void initFriendListAdapter() {
@@ -130,6 +123,17 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         initFriendListAdapter();
         
 		super.onResume();		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+            finish();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	public void onCreateBet(View v) {
@@ -177,7 +181,6 @@ public class CreateBetActivity extends Activity implements OnClickListener {
         	
         	Prediction prediction = new Prediction(bet);
         	prediction.setUser(me);
-        	prediction.setDate(new DateTime()); //current betting time
         	prediction.setPrediction(betMyBet.getText().toString());
         	prediction.setMyAck(getString(R.string.pending));
     		       	
@@ -204,11 +207,8 @@ public class CreateBetActivity extends Activity implements OnClickListener {
 			}
         	
         	//prediction is create after bet is created as part of bet creation
-	        	        
-        	// When clicked, move back to records tab
-            if(tabHost != null){
-            	tabHost.setCurrentTab(1);
-            }
+	        	
+        	finish();
         }
 	}
 

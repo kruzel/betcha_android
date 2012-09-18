@@ -9,7 +9,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +22,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.PredictionAdapter;
@@ -30,12 +34,11 @@ import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
-import com.betcha.nevigation.BetListGroupActivity;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetDetailsActivity extends Activity implements OnClickListener, IModelListener {
+public class BetDetailsActivity extends SherlockActivity implements OnClickListener, IModelListener {
 	private BetchaApp app;
 	private PredictionAdapter predictionAdapter;
 	private List<Prediction> predictions;
@@ -58,8 +61,10 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.bet_details);
+		
+		ActionBar actionBar = getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 
 		app = (BetchaApp) getApplication();
 
@@ -189,7 +194,29 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 
 	@Override
 	public void onBackPressed() {
-		BetListGroupActivity.group.back();
+		finish();
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+            finish();
+            return true;
+        case R.id.menu_refresh:
+        	lvPredictions.setRefreshing();
+        	getFromServer();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getSupportMenuInflater();
+	    inflater.inflate(R.menu.bet_details_activity, menu);
+	    return true;
 	}
 
 	// Prediction list OnClick
@@ -256,8 +283,6 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 				// UserBet for the existing bet
 				myPrediction = new Prediction(bet);
 				myPrediction.setUser(me);
-
-				myPrediction.setDate(new DateTime()); // current betting time
 				myPrediction.setPrediction(etMyBet.getText().toString());
 				myPrediction.setMyAck(getString(R.string.pending));
 
@@ -271,7 +296,6 @@ public class BetDetailsActivity extends Activity implements OnClickListener, IMo
 				}
 			} else {
 				// just update current UserBet
-				myPrediction.setDate(new DateTime()); // current betting time
 				myPrediction.setPrediction(etMyBet.getText().toString());
 				myPrediction.setMyAck(getString(R.string.pending));
 

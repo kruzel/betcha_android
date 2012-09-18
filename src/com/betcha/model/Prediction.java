@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
@@ -33,8 +30,6 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 	@DatabaseField
 	private String prediction;
 	@DatabaseField
-	private DateTime date;
-	@DatabaseField
 	private Boolean result;
 	@DatabaseField
 	private String user_ack; // Yes/No/Pending
@@ -59,9 +54,10 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		user = newPrediction.getUser();
 		bet = newPrediction.getBet();
 		prediction = newPrediction.getPrediction();
-		date = newPrediction.getDate();
 		result = newPrediction.getResult();
 		user_ack = newPrediction.getMyAck();
+		setCreated_at(newPrediction.getCreated_at());
+		setUpdated_at(newPrediction.getUpdated_at());
 	}
 	
 	public PredictionRestClient getPredictionRestClient() {
@@ -102,14 +98,6 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 
 	public void setBet(Bet bet) {
 		this.bet = bet;
-	}
-
-	public DateTime getDate() {
-		return date;
-	}
-
-	public void setDate(DateTime date) {
-		this.date = date;
 	}
 
 	public String getMyAck() {
@@ -284,27 +272,7 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		if(bet==null)
 			return null;
 		
-		try {
-			prediction.setPrediction(json.getString("prediction"));
-		} catch (JSONException e1) {
-			
-		}
-		try {
-			prediction.setDate(DateTime.parse(json.getString("created_at")));
-		} catch (JSONException e) {
-			
-		}
-		try {
-			prediction.setResult(json.getBoolean("result"));
-		} catch (JSONException e1) {
-		
-		}
-		try {
-			prediction.setMyAck(json.getString("user_ack"));
-		} catch (JSONException e1) {
-			
-		}
-		
+		prediction.setJson(json);		
 		
 		try {
 			prediction.createOrUpdateLocal();
@@ -315,77 +283,6 @@ public class Prediction extends ModelCache<Prediction,Integer> {
 		
 		return prediction;
 	}
-	
-//	public static List<Prediction> getAndCreatePredictions(Bet inBet) {
-//		
-//		List<Prediction> predictions = new ArrayList<Prediction>();
-//		
-//		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-//		
-//		PredictionRestClient userBetClient = new PredictionRestClient(inBet.getServer_id());
-//		JSONArray jsonPredictions = null;
-//		try {
-//			jsonPredictions = userBetClient.showForBet(inBet.getServer_id());
-//		} catch (RestClientException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//		if(jsonPredictions==null)
-//			return null;
-//		
-//		User user = null;
-//		JSONObject jsonPrediction = null;
-//		for (int i = 0; i < jsonPredictions.length(); i++) {
-//			try {
-//				jsonPrediction = jsonPredictions.getJSONObject(i);
-//			} catch (JSONException e1) {
-//				e1.printStackTrace();
-//				continue;
-//			}
-//					
-//			try {
-//				user = User.getAndCreateUser(jsonPrediction.getInt("user_id"));
-//			} catch (JSONException e2) {
-//				e2.printStackTrace();
-//				continue;
-//			}
-//			
-//			if(user==null)
-//				continue;
-//						
-//			try {		
-//				Prediction prediction = null;
-//				List<Prediction> tmpPredictions = null;
-//				try {
-//					tmpPredictions = Prediction.getModelDao().queryForEq("server_id", jsonPrediction.getInt("id"));
-//				} catch (SQLException e) {
-//					e.printStackTrace();
-//				} catch (JSONException e) {
-//					e.printStackTrace();
-//				}
-//				
-//				if(tmpPredictions==null || tmpPredictions.size()==0) {
-//					prediction = new Prediction(inBet);
-//				} else {
-//					prediction = tmpPredictions.get(0);
-//				}
-//				
-//				prediction.setDate(formatter.parseDateTime(jsonPrediction.optString("created_at")));
-//				prediction.setMyAck(jsonPrediction.optString("user_ack"));
-//				prediction.setPrediction(jsonPrediction.optString("prediction"));
-//				prediction.setResult(jsonPrediction.optBoolean("result"));
-//				prediction.setServer_id(jsonPrediction.optInt("id",-1));
-//				prediction.setUser(user);
-//				prediction.createOrUpdateLocal();				
-//				predictions.add(prediction);
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//				continue;
-//			}
-//       	
-//		}
-//		return predictions;
-//	}
 
 	public static void update(List<Prediction> predictions, int bet_id) {
 		for (Prediction prediction : predictions) {

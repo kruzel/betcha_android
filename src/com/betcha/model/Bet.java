@@ -16,6 +16,7 @@ import org.springframework.web.client.RestClientException;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.betcha.R;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
@@ -211,7 +212,8 @@ public class Bet extends ModelCache<Bet,Integer>  {
 				Prediction prediction = new Prediction(this);
 				prediction.setSendInvite(true);
 				prediction.setUser(participant);
-				prediction.setBet(this);
+	        	prediction.setPrediction("");
+	        	prediction.setMyAck(context.getString(R.string.pending));
 				try {
 					res = res + prediction.create();
 				} catch (SQLException e) {
@@ -609,11 +611,6 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		
 		try {
 			setSubject(jsonBet.getString("subject"));
-		} catch (JSONException e1) {
-		}
-		
-		try {
-			setDate(formatter.parseDateTime(jsonBet.getString("created_at")));
 		} catch (JSONException e1) {
 		}
 		

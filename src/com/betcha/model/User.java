@@ -1,24 +1,21 @@
 package com.betcha.model;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
+import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.betcha.BetchaApp;
-import com.betcha.activity.BetsListActivity;
 import com.betcha.model.cache.ModelCache;
-import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
+import com.betcha.model.utils.ProfilePictureHandler;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -43,6 +40,11 @@ public class User extends ModelCache<User,Integer> {
 	private String access_token;
 	@DatabaseField
 	private String push_notifications_device_id; 
+	@DatabaseField
+	private String profile_pic_url;
+
+	private Long contact_id;
+	private Long contact_photo_id;
 	
 	//non persistent
 	private static UserRestClient userClient;
@@ -50,7 +52,6 @@ public class User extends ModelCache<User,Integer> {
 	
 	private Boolean isInvitedToBet = false;
 	
-
 	public void setUser(User newUser) {
 		this.id = newUser.getId();
 		this.name = newUser.getName();
@@ -59,6 +60,12 @@ public class User extends ModelCache<User,Integer> {
 		this.provider = newUser.getProvider();
 		this.uid = newUser.getUid();
 		this.access_token = newUser.getAccess_token();
+		this.profile_pic_url = newUser.getProfile_pic_url();
+		this.push_notifications_device_id = newUser.getPush_notifications_device_id();
+		this.contact_id = newUser.getContact_id();
+		this.contact_photo_id = newUser.getContact_photo_id();
+		setCreated_at(newUser.getCreated_at());
+		setUpdated_at(newUser.getUpdated_at());
 	}
 
 	public UserRestClient getUserClient() {
@@ -132,8 +139,30 @@ public class User extends ModelCache<User,Integer> {
 		this.isInvitedToBet = isInvitedToBet;
 	}
 	
-	
-	
+	public String getProfile_pic_url() {
+		return profile_pic_url;
+	}
+
+	public void setProfile_pic_url(String profile_pic_url) {
+		this.profile_pic_url = profile_pic_url;
+	}
+
+	public Long getContact_id() {
+		return contact_id;
+	}
+
+	public void setContact_id(Long contact_id) {
+		this.contact_id = contact_id;
+	}
+
+	public Long getContact_photo_id() {
+		return contact_photo_id;
+	}
+
+	public void setContact_photo_id(Long contact_photo_id) {
+		this.contact_photo_id = contact_photo_id;
+	}
+
 	public String getPush_notifications_device_id() {
 		return push_notifications_device_id;
 	}
@@ -200,17 +229,16 @@ public class User extends ModelCache<User,Integer> {
 		}
 		
 		if (provider.equals("email")) {
-			jsonUser = getUserClient().create(name, email, password);
+			jsonUser = getUserClient().create(name, email, password, profile_pic_url);
 		} else if (provider.equals("facebook")) {
 			jsonUser = getUserClient().createOAuth(provider, uid, access_token);
-			setJson(jsonUser);
 		}
 		
 		if(jsonUser==null)
 			return 0;
 			
-			
-		setServer_id(jsonUser.optInt("id",-1));
+		setJson(jsonUser);
+		//setServer_id(jsonUser.optInt("id",-1));
 		try {
 			res = updateLocal();
 		} catch (SQLException e) {
@@ -385,25 +413,48 @@ public class User extends ModelCache<User,Integer> {
 		super.setJson(json);
 		
 		try {
+			setProvider(json.getString("provider"));
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		try {
 			setEmail(json.getString("email"));
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 		try {
 			setName(json.getString("full_name"));
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		try {
 			setUid(json.getString("uid"));
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		}
+		
+		try {
+			String pic = json.getString("profile_pic_url");
+			if(pic!=null && !pic.equals("null"))
+				setProfile_pic_url(pic);
+		} catch (JSONException e) {
+		}
+		
+		try {
+			setPush_notifications_device_id(json.getString("push_notifications_device_id"));
+		} catch (JSONException e) {
 		}
 		
 		return true;
+	}
+	
+	public Bitmap getProfilePhoto(ArrayAdapter<User> adaper) 	{
+		ProfilePictureHandler bmpHandler = new ProfilePictureHandler(this,context,adaper);
+		Bitmap profile_pic_bitmap = bmpHandler.getBitmapFromMemCache();
+		   
+	    if(profile_pic_bitmap == null) {
+			bmpHandler.execute();
+	    }
+		
+		return profile_pic_bitmap;
 	}
 	
 }

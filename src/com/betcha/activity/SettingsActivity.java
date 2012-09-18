@@ -1,24 +1,25 @@
 package com.betcha.activity;
 
-import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TabHost;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.model.Bet;
 import com.betcha.model.Friend;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
@@ -27,7 +28,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-public class SettingsActivity extends Activity implements IModelListener {
+public class SettingsActivity extends SherlockActivity implements IModelListener {
 	public final Pattern EMAIL_ADDRESS_PATTERN = Pattern.compile(
 	          "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 	          "\\@" +
@@ -55,6 +56,9 @@ public class SettingsActivity extends Activity implements IModelListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
+        
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
         
         app = (BetchaApp) getApplication();
         
@@ -102,6 +106,17 @@ public class SettingsActivity extends Activity implements IModelListener {
         }
 		
 		super.onResume();		
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+        case android.R.id.home:
+            finish();
+            return true;
+        default:
+            return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	public void onSubmit(View v) {
@@ -216,7 +231,6 @@ public class SettingsActivity extends Activity implements IModelListener {
             	//TODO on registration - load contacts to friends list
             	String token = facebook.getAccessToken();
             	
-            	//TODO implement FB connect registration on dropabet server
             	User me = new User();
         		me.setProvider("facebook");
         		me.setAccess_token(token);
@@ -260,19 +274,13 @@ public class SettingsActivity extends Activity implements IModelListener {
 	public void onCreateComplete(Class clazz, Boolean success) {
 		
 		if(clazz.getSimpleName().contentEquals("User")) {
-			dialog.dismiss();
+			if(dialog!=null && dialog.isShowing())
+				dialog.dismiss();
+			
 			if(success) {
 				app.registerToPushNotifications();
 				
-				TabActivity act = (TabActivity) getParent();
-		        if(act==null)
-		        	return;
-		        
-			    TabHost tabHost = act.getTabHost();  // The activity TabHost
-			    if(tabHost != null){
-			    	tabHost.getTabWidget().setEnabled(true);
-		        	tabHost.setCurrentTab(0);
-		        }
+				finish();
         		
 			} else {
 				
@@ -289,7 +297,8 @@ public class SettingsActivity extends Activity implements IModelListener {
 								e.printStackTrace();
 							}
 						}
-						dialog.dismiss();
+						if(dialog!=null && dialog.isShowing())
+							dialog.dismiss();
 					}
 				});
 				t.start();
@@ -300,28 +309,33 @@ public class SettingsActivity extends Activity implements IModelListener {
 
 	@Override
 	public void onUpdateComplete(Class clazz, Boolean success) {
-		dialog.dismiss();
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 	}
 
 	@Override
 	public void onDeleteComplete(Class clazz, Boolean success) {
-		dialog.dismiss();
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 	}
 
 	@Override
 	public void onSyncComplete(Class clazz, Boolean success) {
-		dialog.dismiss();
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 	}
 
 	@Override
 	public void onGetComplete(Class clazz, Boolean success) {
 		app.initFriendList();
-		dialog.dismiss();
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 	}
 
 	@Override
 	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
-		dialog.dismiss();
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 	}
 	
 	

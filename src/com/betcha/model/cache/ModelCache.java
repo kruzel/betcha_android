@@ -46,7 +46,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	
 	private RestTask restTask;
 	protected IModelListener listener;
-	private static Context context;
+	protected static Context context;
 	private static DateTime lastUpdateFromServer;
 
 	public static DateTime getLastUpdateFromServer() {
@@ -59,6 +59,10 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 
 	public static void setContext(Context context) {
 		ModelCache.context = context;
+	}
+	
+	public static Context setContext() {
+		return context;
 	}
 
 	protected Boolean authenticateCreate() {
@@ -113,6 +117,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	public int create() throws SQLException {
 		initDao();
 		
+		setCreated_at(new DateTime());
+		setUpdated_at(new DateTime());
+		
 		// create on local model
 		int res = createLocal();
 		
@@ -135,11 +142,13 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 	
 	public int createLocal() throws SQLException {
+				
 		initDao();
 		return super.create();
 	}
 	
 	public int createOrUpdateLocal() throws SQLException {
+				
 		initDao();
 		CreateOrUpdateStatus status = getDao().createOrUpdate((T) this);
 		return status.getNumLinesChanged();
@@ -178,6 +187,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 
 	@Override
 	public int update() throws SQLException {
+		setUpdated_at(new DateTime());
+		
 		initDao();
 		// update local model
 		int res =  updateLocal();
@@ -200,6 +211,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	}
 	
 	public int updateLocal() throws SQLException {
+		setUpdated_at(new DateTime());
+		
 		initDao();
 		return super.update();
 	}

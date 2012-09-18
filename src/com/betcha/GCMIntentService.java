@@ -10,8 +10,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
-import com.betcha.nevigation.BetUTabActivity;
 import com.google.android.gcm.GCMBaseIntentService;
 
 public class GCMIntentService extends GCMBaseIntentService {
@@ -58,7 +58,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			Context context = getApplicationContext();
 			CharSequence contentTitle = "DropaBet invitation";
 			CharSequence contentText = "Hey, " + bet.getOwner().getName() + " is inviting you to bet that " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
-			Intent notificationIntent = new Intent(this, BetUTabActivity.class);
+			Intent notificationIntent = new Intent(this, BetDetailsActivity.class);
 			notificationIntent.putExtra("bet_id", bet.getId());
 			PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
 			notification.defaults |= Notification.DEFAULT_SOUND;

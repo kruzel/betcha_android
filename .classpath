@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="com/betcha/model/tasks/GetBetPredictionsTask.java|com/betcha/model/tasks/GetUserBetsTask.java|com/betcha/model/tasks/IGetThisUserBetsCB.java|com/betcha/model/tasks/IGetPredictionsCB.java|com/betcha/model/tasks/UpdatePredictionsTask.java" kind="src" path="src"/>
+	<classpathentry excluding="com/betcha/model/tasks/GetBetPredictionsTask.java|com/betcha/model/tasks/GetUserBetsTask.java|com/betcha/model/tasks/IGetThisUserBetsCB.java|com/betcha/model/tasks/IGetPredictionsCB.java|com/betcha/model/tasks/UpdatePredictionsTask.java|com/betcha/nevigation/BetUTabActivity.java|com/betcha/nevigation/BetListGroupActivity.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libPullToRefreshListView"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/libFacebook"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/libActionBarSherlock"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

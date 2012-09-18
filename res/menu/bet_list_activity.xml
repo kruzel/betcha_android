@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_create_bet"
+          android:icon="@drawable/ic_menu_btn_add"
+          android:title="@string/createbet"
+          android:showAsAction="ifRoom|withText" />
+    
+    <item android:id="@+id/menu_settings"
+          android:icon="@drawable/ic_menu_preferences"
+          android:title="@string/settings"
+          android:showAsAction="ifRoom|withText" />
+
+    <item android:id="@+id/menu_refresh"
+          android:icon="@drawable/ic_menu_refresh"
+          android:title="@string/refresh"
+          android:showAsAction="ifRoom|withText" />
+</menu>

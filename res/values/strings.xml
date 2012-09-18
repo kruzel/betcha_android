@@ -37,6 +37,9 @@
 	<string name="password_hint">password</string>
 	<string name="fb_Connect">FB Connect</string>
 	
+	<string name="settings">Settings</string>
+	<string name="refresh">Refresh</string>
+	
 	<!-- messages -->
 	<string name="msg_bet_accepted">Bet accepted</string>
 	<string name="msg_bet_rejected">Bet rejected</string>

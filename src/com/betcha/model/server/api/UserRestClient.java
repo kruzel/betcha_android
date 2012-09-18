@@ -1,7 +1,7 @@
 package com.betcha.model.server.api;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import com.betcha.model.User;
@@ -67,7 +70,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject create(String full_name, String email, String password)   {		
+	public JSONObject create(String full_name, String email, String password, String profile_picture_path)   {		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -97,6 +100,24 @@ public class UserRestClient extends RestClient {
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		
+		if(profile_picture_path!=null) {
+			Bitmap bm = BitmapFactory.decodeFile(profile_picture_path);
+			if(bm==null) {
+				Log.e("UserRestClient.create()", "profile picture not found in path: " + profile_picture_path);
+			} else {
+				ByteArrayOutputStream output = new ByteArrayOutputStream();  
+				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
+				byte[] bytes = output.toByteArray();
+				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+				try {
+					jsonContent.put("avatar", base64Image);
+				} catch (JSONException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 		
 		try {
@@ -205,6 +226,23 @@ public class UserRestClient extends RestClient {
 		try {
 			jsonContent.put("device_type", "android");
 		} catch (JSONException e1) {
+		}
+		
+		if(user.getProfile_pic_url()!=null) {
+			Bitmap bm = BitmapFactory.decodeFile(user.getProfile_pic_url());
+			if(bm==null) {
+				Log.e("UserRestClient.create()", "profile picture not found in path: " + user.getProfile_pic_url());
+			} else {
+				ByteArrayOutputStream output = new ByteArrayOutputStream();  
+				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
+				byte[] bytes = output.toByteArray();
+				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+				try {
+					jsonContent.put("avatar", base64Image);
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+			}
 		}
 		
 		try {

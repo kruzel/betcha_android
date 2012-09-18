@@ -13,7 +13,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 
 import com.betcha.model.Bet;
@@ -22,6 +24,7 @@ import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
+import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.ChatMessageRestClient;
@@ -32,9 +35,12 @@ import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
+import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 @ReportsCrashes(formKey = "dFNHeE4wcDNfYWFCQWdnazVkdHdLSGc6MQ") 
-public class BetchaApp extends Application {
+public class BetchaApp extends Application implements IModelListener {
 	
 	/** preferences file **/
 	private static SharedPreferences prefs;
@@ -48,6 +54,8 @@ public class BetchaApp extends Application {
 	private int invite_bet_id = -1;
 	
 	private List<User> friends;
+	
+	public static int THEME = R.style.Theme_Sherlock;
 			
 	@Override
 	public void onCreate() {
@@ -124,11 +132,18 @@ public class BetchaApp extends Application {
 				String authToken = prefs.getString("auth_token", null);
 				RestClient.SetToken(authToken);
 				
+				Friend friend = new Friend(me);
+				friend.setListener(this);
+				friend.getAllForCurUser();
+				
+				initFriendList();
+				
 				registerToPushNotifications();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	}
 	
@@ -168,6 +183,9 @@ public class BetchaApp extends Application {
 	
 	public void initFriendList() {    	
         //inviteUsers = fetch all users from DB and contacts list, later from FB
+		if(friends!=null)
+			return;
+		
         try {
         	//TODO add distinct email 
         	if(getMe()!=null)
@@ -193,6 +211,8 @@ public class BetchaApp extends Application {
         Cursor emailCur = cr.query( 
     		ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
     		new String[] {
+    				Contacts._ID,
+    				Contacts.PHOTO_ID,
     		        ContactsContract.Data.DISPLAY_NAME,
     		        ContactsContract.CommonDataKinds.Email.DATA }
     		, null, null , "lower(" + ContactsContract.Data.DISPLAY_NAME + ") ASC"); 
@@ -201,7 +221,10 @@ public class BetchaApp extends Application {
                 // if the email addresses were stored in an array
     	    String email = emailCur.getString(emailCur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
      	    String name = emailCur.getString(emailCur.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-     	
+     	    
+     	    long contact_id = emailCur.getLong(emailCur.getColumnIndex(ContactsContract.Contacts._ID));
+     	    long photo_id = emailCur.getLong(emailCur.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
+     	         	
      	    //verify this user is not a known user and already included
      	    List<User> foundUsers = null;
      	    try {
@@ -215,6 +238,9 @@ public class BetchaApp extends Application {
      	    	tmpUser.setName(name);
           	   	tmpUser.setEmail(email);
           	   	tmpUser.setProvider("email");
+          	   	tmpUser.setContact_id(contact_id);
+          	   	tmpUser.setContact_photo_id(photo_id);
+          	   	tmpUser.getProfilePhoto(null); //load to cache
      	    	friends.add(tmpUser);
     		}  
      	} 
@@ -223,14 +249,57 @@ public class BetchaApp extends Application {
     }
 	
 	public void registerToPushNotifications() {
-		GCMRegistrar.checkDevice(this);
-		GCMRegistrar.checkManifest(this);
-		final String regId = GCMRegistrar.getRegistrationId(this);
-		if (regId.equals("")) {
-		  GCMRegistrar.register(this, "1053196289883"); //google api project number
-		} else {
-		  Log.v("BetchaApp.onCreate()", "Already registered");
+		
+		try {
+			GCMRegistrar.checkDevice(this);
+			GCMRegistrar.checkManifest(this);
+			final String regId = GCMRegistrar.getRegistrationId(this);
+			if (regId.equals("")) {
+			  GCMRegistrar.register(this, "1053196289883"); //google api project number
+			} else {
+			  Log.v("BetchaApp.onCreate()", "Already registered");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
+	}
+
+	@Override
+	public void onCreateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUpdateComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGetComplete(Class clazz, Boolean success) {
+		if(clazz.getSimpleName().contentEquals("Friend") && success) {
+			//new friedns found
+			initFriendList();
+		}
+	}
+
+	@Override
+	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDeleteComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSyncComplete(Class clazz, Boolean success) {
+		// TODO Auto-generated method stub
 		
 	}
 
