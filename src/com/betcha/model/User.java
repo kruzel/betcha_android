@@ -469,7 +469,7 @@ public class User extends ModelCache<User,Integer> {
 			default_pic = BitmapFactory.decodeResource(context.getResources(), com.betcha.R.drawable.ic_launcher);
 				
 		//default image
-		image.setImageBitmap(default_pic);
+		image.setImageBitmap(Bitmap.createScaledBitmap(default_pic, 48, 48, false));
 		
 		ContentResolver cr = context.getContentResolver();
 		
@@ -479,7 +479,7 @@ public class User extends ModelCache<User,Integer> {
 		    if (input != null) 
 		    {
 		    	profile_pic_bitmap = BitmapFactory.decodeStream(input);
-		    	image.setImageBitmap(profile_pic_bitmap);
+		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 48, 48, false));
 		    	return;
 		    }
 		}
@@ -503,27 +503,29 @@ public class User extends ModelCache<User,Integer> {
 	
 		    if (photoBytes != null) {
 		    	profile_pic_bitmap = BitmapFactory.decodeByteArray(photoBytes,0,photoBytes.length);
-		    	image.setImageBitmap(profile_pic_bitmap);
+		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 48, 48, false));
 		    	return;
 		    }
 		}
 		
-		if(getProvider().equals("facebook")) {
-						
+		if(imageLoader==null) {
+			imageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+			defaultOptions = new DisplayImageOptions.Builder()
+	        .cacheInMemory()
+	        .cacheOnDisc()
+	        .build();
+		}
+		
+		if(getProvider().equals("facebook")) {	
 			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
-			if(imageLoader==null) {
-				imageLoader = ImageLoader.getInstance();
-				// Initialize ImageLoader with configuration. Do it once.
-				imageLoader.init(ImageLoaderConfiguration.createDefault(context));
-				defaultOptions = new DisplayImageOptions.Builder()
-		        .cacheInMemory()
-		        .cacheOnDisc()
-		        .build();
-			}
-			// Load and display image asynchronously
 			imageLoader.displayImage(url, image,defaultOptions);
 			return;
     	}
+		
+		String url = "http://robohash.org/" + getEmail() + ".png?set=set3&size=48x48";
+		imageLoader.displayImage(url, image,defaultOptions);
 		
 	}
 	
