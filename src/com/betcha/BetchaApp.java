@@ -244,7 +244,7 @@ public class BetchaApp extends Application implements IModelListener {
 		          	   	tmpUser.setProvider("email");
 		          	   	tmpUser.setContact_id(contact_id);
 		          	   	tmpUser.setContact_photo_id(photo_id);
-		          	   	tmpUser.getProfilePhoto(null); //load to cache
+		          	   	
 		     	    	friends.add(tmpUser);
 		    		}  
 		     	} 

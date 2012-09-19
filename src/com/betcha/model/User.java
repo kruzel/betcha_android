@@ -1,5 +1,6 @@
 package com.betcha.model;
 
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -7,18 +8,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
-import com.betcha.model.utils.ProfilePictureHandler;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 @DatabaseTable(tableName = "users")
 public class User extends ModelCache<User,Integer> {
@@ -49,6 +58,9 @@ public class User extends ModelCache<User,Integer> {
 	//non persistent
 	private static UserRestClient userClient;
 	private static Dao<User,Integer> dao;
+	private static Bitmap default_pic;
+	private static ImageLoader imageLoader;
+	private static DisplayImageOptions defaultOptions;
 	
 	private Boolean isInvitedToBet = false;
 	
@@ -446,15 +458,73 @@ public class User extends ModelCache<User,Integer> {
 		return true;
 	}
 	
-	public Bitmap getProfilePhoto(ArrayAdapter<User> adaper) 	{
-		ProfilePictureHandler bmpHandler = new ProfilePictureHandler(this,context,adaper);
-		Bitmap profile_pic_bitmap = bmpHandler.getBitmapFromMemCache();
-		   
-	    if(profile_pic_bitmap == null) {
-			bmpHandler.execute();
-	    }
+	public void cancelProfilePhotoUpdate(ImageView image) 	{
+		if(imageLoader!=null) 
+			imageLoader.cancelDisplayTask(image);
+	}
+	
+	public void setProfilePhoto(ImageView image) 	{
+		Bitmap profile_pic_bitmap = null;
+		if(default_pic==null)
+			default_pic = BitmapFactory.decodeResource(context.getResources(), com.betcha.R.drawable.ic_launcher);
+				
+		//default image
+		image.setImageBitmap(default_pic);
 		
-		return profile_pic_bitmap;
+		ContentResolver cr = context.getContentResolver();
+		
+		if(getContact_id()!=null) {
+		    Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, getContact_id());
+		    InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+		    if (input != null) 
+		    {
+		    	profile_pic_bitmap = BitmapFactory.decodeStream(input);
+		    	image.setImageBitmap(profile_pic_bitmap);
+		    	return;
+		    }
+		}
+
+		if(getContact_photo_id()!=null) {
+		    byte[] photoBytes = null;
+	
+		    Uri photoUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, getContact_photo_id());
+		    Cursor c = cr.query(photoUri, new String[] {ContactsContract.CommonDataKinds.Photo.PHOTO}, null, null, null);
+	
+		    try 
+		    {
+		        if (c.moveToFirst()) 
+		            photoBytes = c.getBlob(0);
+	
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    } finally {
+		        c.close();
+		    }           
+	
+		    if (photoBytes != null) {
+		    	profile_pic_bitmap = BitmapFactory.decodeByteArray(photoBytes,0,photoBytes.length);
+		    	image.setImageBitmap(profile_pic_bitmap);
+		    	return;
+		    }
+		}
+		
+		if(getProvider().equals("facebook")) {
+						
+			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
+			if(imageLoader==null) {
+				imageLoader = ImageLoader.getInstance();
+				// Initialize ImageLoader with configuration. Do it once.
+				imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+				defaultOptions = new DisplayImageOptions.Builder()
+		        .cacheInMemory()
+		        .cacheOnDisc()
+		        .build();
+			}
+			// Load and display image asynchronously
+			imageLoader.displayImage(url, image,defaultOptions);
+			return;
+    	}
+		
 	}
 	
 }

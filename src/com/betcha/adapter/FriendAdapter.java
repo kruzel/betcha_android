@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,8 +17,6 @@ import android.widget.TextView;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class FriendAdapter extends ArrayAdapter<User> {
 	BetchaApp app;
@@ -56,9 +55,9 @@ public class FriendAdapter extends ArrayAdapter<User> {
 		cbIsInvited.setTag(user);
 		
 		//Load from contacts
-		Bitmap bm = user.getProfilePhoto(this);
-		profPic.setImageBitmap(bm);
-	
+		user.cancelProfilePhotoUpdate(profPic);
+		user.setProfilePhoto(profPic);
+			
 		cbIsInvited.setOnClickListener(new OnClickListener() {
 			
 			@Override
