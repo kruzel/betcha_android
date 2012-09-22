@@ -5,19 +5,24 @@ import java.util.List;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.betcha.R;
 import com.betcha.model.Bet;
+import com.betcha.model.Prediction;
 
 public class BetAdapter extends ArrayAdapter<Bet> {
-
+	
 	private List<Bet> items;
+	
 	public BetAdapter(Context context, int textViewResourceId, List<Bet> bets) {
 		super(context, textViewResourceId, bets);
 		this.items = bets;
@@ -26,26 +31,37 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
+		LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
+		
 		if (v == null) {
-			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate((R.layout.bets_list_item), null);
+	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
 		}
 		
 		Bet bet = items.get(position);
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
 		
-		TextView tvBetState = (TextView) v.findViewById(R.id.tv_bet_state);
+		//bet owner and other details (outer frame)
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
+		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
 		TextView tvBetDate = (TextView) v.findViewById(R.id.tv_bet_date);
-		TextView tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		TextView tvBetOwner = (TextView) v.findViewById(R.id.tv_bet_owner);
 		
-		tvBetState.setText(bet.getState());
+		bet.getOwner().setProfilePhoto(ivProfPic);
 		tvBetDate.setText(fmt.print(bet.getDate()));
-		tvBetSubject.setText(bet.getSubject());
 		tvBetOwner.setText(bet.getOwner().getName());
+		
+		// internal frame 
+		TextView tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
+		TextView tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
+		
+		tvBetSubject.setText(bet.getSubject());
+		tvBetReward.setText(bet.getReward());
+		
+		ListView lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
+		List<Prediction> predictions = bet.getAllPredictions();
+		PredictionShortAdapter predictionAdapter = new PredictionShortAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
+		lvPredictions.setAdapter(predictionAdapter);
 		
 		return v;
 	}
 
-	
 }

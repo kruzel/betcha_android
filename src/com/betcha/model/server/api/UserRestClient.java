@@ -70,6 +70,26 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
+	public JSONObject showViaUid(String uid) {
+		
+		String res;
+		try {
+			res = restTemplate.getForObject(url + "/show_by_uid.json?"+ GetURLTokenParam() + "&uid=" + uid , String.class);
+		} catch (RestClientException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		JSONObject json = null;
+		try {
+			json = new JSONObject(res);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+	
 	public JSONObject create(String full_name, String email, String password, String profile_picture_path)   {		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();

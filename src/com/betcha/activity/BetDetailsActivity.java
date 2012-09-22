@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -19,6 +18,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,9 +34,9 @@ import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
-
-import eu.erikw.PullToRefreshListView;
-import eu.erikw.PullToRefreshListView.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 public class BetDetailsActivity extends SherlockActivity implements OnClickListener, IModelListener {
 	private BetchaApp app;
@@ -72,7 +72,7 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 
 		LayoutInflater inflater = this.getLayoutInflater();
 		View header = inflater.inflate(R.layout.bet_details_header, null);
-		lvPredictions.addHeaderView(header);
+		lvPredictions.addView(header,0);
 
 		tvState = (TextView) findViewById(R.id.tv_bet_header_state);
 		tvDate = (TextView) findViewById(R.id.tv_bet_header_date);
@@ -81,9 +81,10 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 
 		footerView = inflater.inflate(R.layout.add_bet_footer, null);
 
-		lvPredictions.setOnRefreshListener(new OnRefreshListener() {
+		lvPredictions.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
-			public void onRefresh() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				getFromServer();
 			}
 		});
@@ -122,22 +123,22 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 		// Creating a button - only if bet owner is the current logged in user
 		if (bet.getOwner().getId() == app.getMe().getId()) {
 			if (btnPublishResult == null) {
-				lvPredictions.removeFooterView(footerView);
+				lvPredictions.removeView(footerView);
 
 				btnPublishResult = new Button(BetDetailsActivity.this);
 				btnPublishResult.setText(getString(R.string.publish_results));
 				btnPublishResult.setOnClickListener(BetDetailsActivity.this);
 
 				// Adding button to listview at footer
-				lvPredictions.addFooterView(btnPublishResult);
+				lvPredictions.addView(btnPublishResult);
 			}
 		} else {
 			if (btnPublishResult != null) {
-				lvPredictions.removeFooterView(btnPublishResult);
+				lvPredictions.removeView(btnPublishResult);
 				btnPublishResult = null;
 			}
 
-			lvPredictions.addFooterView(footerView);
+			lvPredictions.addView(footerView);
 			etMyBet = (EditText) findViewById(R.id.editTextAddBet);
 			etMyBet.clearFocus();
 
@@ -222,7 +223,7 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 	// Prediction list OnClick
 	public void onClick(View v) {
 
-		for (int i = 2; i < lvPredictions.getCount() - 1; i++) {
+		for (int i = 2; i < lvPredictions.getChildCount() - 1; i++) {
 			View vListItem = lvPredictions.getChildAt(i);
 			CheckBox cb = (CheckBox) vListItem
 					.findViewById(R.id.cb_user_bet_win);

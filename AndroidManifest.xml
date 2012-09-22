@@ -48,7 +48,7 @@
 		  </intent-filter>
 		</receiver>
 		<service android:name=".GCMIntentService" />
-		<receiver android:name=".receiver.ConnectivityReceiver">
+		<receiver android:name=".service.ConnectivityReceiver">
 		    <intent-filter>
 		        <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 		    </intent-filter>

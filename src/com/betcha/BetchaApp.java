@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.util.Log;
@@ -35,9 +34,6 @@ import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.nostra13.universalimageloader.cache.disc.DiscCacheAware;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 @ReportsCrashes(formKey = "dFNHeE4wcDNfYWFCQWdnazVkdHdLSGc6MQ") 
 public class BetchaApp extends Application implements IModelListener {
@@ -56,11 +52,14 @@ public class BetchaApp extends Application implements IModelListener {
 	private List<User> friends;
 	
 	public static int THEME = R.style.Theme_Sherlock;
+	public static BetchaApp app;
 			
 	@Override
 	public void onCreate() {
 				
 		ACRA.init(this);
+		
+		app = this;
 
 		prefs = getSharedPreferences(getString(R.string.prefs_name), Context.MODE_PRIVATE);
 		
@@ -77,6 +76,10 @@ public class BetchaApp extends Application implements IModelListener {
 	public void onTerminate() {
 		releaseDbHelpers();
 		super.onTerminate();
+	}
+	
+	public static BetchaApp getInstance() {
+		return app;
 	}
 	
 	/**

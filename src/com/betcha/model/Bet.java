@@ -146,6 +146,19 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		this.ownerPrediction = ownerPrediction;
 		this.ownerPrediction.setBet(this);
 	}
+	
+	public List<Prediction> getAllPredictions() {
+		List<Prediction> predictionList=null;
+		
+		try {
+			predictionList = Prediction.getModelDao().queryForEq("bet_id", getId());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return predictionList;
+	}
 
 	/**
 	 * static methods that must be implemented by derived class
@@ -197,7 +210,12 @@ public class Bet extends ModelCache<Bet,Integer>  {
 		if(participants!=null) {
 			for (User participant : participants) {
 				if(participant.getServer_id()==-1) {
-					User tmpParticipant = User.getAndCreateUserViaEmail(participant.getEmail());
+					User tmpParticipant = null;
+					if(participant.getEmail()!=null)
+						tmpParticipant = User.getAndCreateUserViaEmail(participant.getEmail());
+					else if(participant.getUid()!=null)
+						tmpParticipant = User.getAndCreateUserViaFacebookUid(participant.getUid());
+					
 					if(tmpParticipant==null) {
 						if(participant.createUserAccount()==0) {
 							continue;
