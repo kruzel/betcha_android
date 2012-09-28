@@ -31,7 +31,7 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate((R.layout.user_bet_list_item), null);
+			v = vi.inflate((R.layout.prediction_list_item), null);
 		}
 		
 		Prediction prediction = items.get(position);
@@ -40,7 +40,7 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		TextView tvBetBet = (TextView) v.findViewById(R.id.tv_user_bet_bet);
 		CheckBox cbResult = (CheckBox) v.findViewById(R.id.cb_user_bet_win);
 		
-		if(app.getMe().getId() == prediction.getBet().getOwner().getId()) {
+		if(app.getMe().getId().endsWith(prediction.getBet().getOwner().getId())) {
 			cbResult.setClickable(true);
 		} else {
 			cbResult.setClickable(false);

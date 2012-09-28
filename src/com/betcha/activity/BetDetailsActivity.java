@@ -34,9 +34,9 @@ import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
+import eu.erikw.PullToRefreshListView;
+import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
 public class BetDetailsActivity extends SherlockActivity implements OnClickListener, IModelListener {
 	private BetchaApp app;
@@ -72,7 +72,7 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 
 		LayoutInflater inflater = this.getLayoutInflater();
 		View header = inflater.inflate(R.layout.bet_details_header, null);
-		lvPredictions.addView(header,0);
+		lvPredictions.addHeaderView(header);
 
 		tvState = (TextView) findViewById(R.id.tv_bet_header_state);
 		tvDate = (TextView) findViewById(R.id.tv_bet_header_date);
@@ -80,11 +80,14 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 		tvSubject = (TextView) findViewById(R.id.tv_bet_header_subject);
 
 		footerView = inflater.inflate(R.layout.add_bet_footer, null);
+		lvPredictions.addFooterView(footerView);
+		etMyBet = (EditText) findViewById(R.id.editTextAddBet);
+		etMyBet.clearFocus();
 
-		lvPredictions.setOnRefreshListener(new OnRefreshListener<ListView>() {
+		lvPredictions.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
-			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+			public void onRefresh() {
 				getFromServer();
 			}
 		});
@@ -123,26 +126,20 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 		populateList();
 
 		// Creating a button - only if bet owner is the current logged in user
-		if (bet.getOwner().getId() == app.getMe().getId()) {
+		if (bet.getOwner().getId().equals(app.getMe().getId())) {
 			if (btnPublishResult == null) {
-				lvPredictions.removeView(footerView);
-
 				btnPublishResult = new Button(BetDetailsActivity.this);
 				btnPublishResult.setText(getString(R.string.publish_results));
 				btnPublishResult.setOnClickListener(BetDetailsActivity.this);
 
 				// Adding button to listview at footer
-				lvPredictions.addView(btnPublishResult);
+				lvPredictions.addFooterView(btnPublishResult);
 			}
 		} else {
 			if (btnPublishResult != null) {
-				lvPredictions.removeView(btnPublishResult);
+				lvPredictions.removeFooterView(btnPublishResult);
 				btnPublishResult = null;
 			}
-
-			lvPredictions.addView(footerView);
-			etMyBet = (EditText) findViewById(R.id.editTextAddBet);
-			etMyBet.clearFocus();
 
 		}
 

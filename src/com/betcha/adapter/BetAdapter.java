@@ -7,8 +7,10 @@ import org.joda.time.format.DateTimeFormatter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -16,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.betcha.R;
+import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 
@@ -31,15 +34,35 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-		LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
 		
 		if (v == null) {
+			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
 	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
+	        v.setClickable(false);
+		    v.setFocusable(false);
+		    v.setBackgroundResource(android.R.drawable.menuitem_background);
+		    v.setOnClickListener(new OnClickListener() {
+
+		        @Override
+		        public void onClick(View v) {
+		            Intent i = new Intent(getContext(), BetDetailsActivity.class);
+		            String betId = (String) v.getTag();
+		            i.putExtra("betId", betId);
+		            //i.putExtra("is_new_bet", isNewBet);
+		            //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+		            getContext().startActivity(i);
+		        }
+
+		    });
 		}
+		
+		
 		
 		Bet bet = items.get(position);
 		if(bet==null || bet.getOwner()==null)
 			return v;
+		
+		v.setTag(bet.getId());
 		
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");

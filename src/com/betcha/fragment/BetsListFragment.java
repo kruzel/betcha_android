@@ -10,9 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -26,9 +23,9 @@ import com.betcha.activity.SettingsActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.IModelListener;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
+import eu.erikw.PullToRefreshListView;
+import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
 public class BetsListFragment extends SherlockFragment  implements IModelListener {
 	private BetchaApp app;
@@ -57,10 +54,10 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		  
 		lvBets = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_bets_list);
         
-        lvBets.setOnRefreshListener(new OnRefreshListener<ListView>() {
+        lvBets.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
-			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+			public void onRefresh() {
 				Bet.syncAllWithServer(BetsListFragment.this);
 			}
 		});        
@@ -137,15 +134,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
  		if(bets!=null && bets.size()>0) {
  			if(betAdapter==null){
 	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
-		        lvBets.setAdapter(betAdapter);
-		        lvBets.setOnItemClickListener(new OnItemClickListener() {
-
-					public void onItemClick(AdapterView<?> parent, View view,
-							int position, long id) {
-						Bet bet_item = bets.get(position-1);
-						openDetailedActivity(bet_item, false);
-					}
-				});
+		        lvBets.setAdapter(betAdapter);    
  			} else {
 	 			betAdapter.clear();
 	 			betAdapter.addAll(bets);
