@@ -38,6 +38,8 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		}
 		
 		Bet bet = items.get(position);
+		if(bet==null || bet.getOwner()==null)
+			return v;
 		
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
@@ -56,10 +58,14 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		tvBetSubject.setText(bet.getSubject());
 		tvBetReward.setText(bet.getReward());
 		
+		ViewGroup vg = (ViewGroup) v;
+		
 		ListView lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
-		List<Prediction> predictions = bet.getAllPredictions();
-		PredictionShortAdapter predictionAdapter = new PredictionShortAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
-		lvPredictions.setAdapter(predictionAdapter);
+		List<Prediction> predictions = bet.getPredictions();
+		if(predictions!=null) {
+			PredictionShortAdapter predictionAdapter = new PredictionShortAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
+			lvPredictions.setAdapter(predictionAdapter);
+		}
 		
 		return v;
 	}

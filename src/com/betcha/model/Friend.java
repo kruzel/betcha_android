@@ -6,9 +6,11 @@ package com.betcha.model;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.web.client.RestClientException;
 
 import android.util.Log;
 
@@ -24,8 +26,6 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 @DatabaseTable(tableName = "friends")
 public class Friend extends ModelCache<Friend, Integer> {
-	@DatabaseField(generatedId  = true)
-	private int id;
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; 
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
@@ -40,14 +40,6 @@ public class Friend extends ModelCache<Friend, Integer> {
 	public Friend(User user) {
 		super();
 		this.user = user;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public User getUser() {
@@ -81,27 +73,25 @@ public class Friend extends ModelCache<Friend, Integer> {
 	}
 	
 	@Override
-	public void initDao() {
-		try {
-			setDao(getModelDao());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	protected Dao<Friend, Integer> getDao() throws SQLException {
+		if(dao==null){
+			dao = getDbHelper().getDao(Friend.class);
 		}
+		return dao;
 	}
 	
 	public Boolean setJson(JSONObject json) {
 		super.setJson(json);
 		
 		try {
-			user = User.getAndCreateUser(json.getInt("user_id"));
+			user = User.getUserLocalOrRemoteInner(json.getString("user_id"));
 		} catch (JSONException e2) {
 			e2.printStackTrace();
 			return false;
 		}
 		
 		try {
-			friend = User.getAndCreateUser(json.getInt("friend_id"));
+			friend = User.getUserLocalOrRemoteInner(json.getString("friend_id"));
 		} catch (JSONException e2) {
 			e2.printStackTrace();
 			return false;
@@ -109,37 +99,31 @@ public class Friend extends ModelCache<Friend, Integer> {
 		
 		return true;
 	}
-	
-	public static Boolean getCurrentUsetBets(User curUser) {
-		
-		return false; 
-	}
 
 	@Override
 	public int onRestCreate() {
-		// TODO Auto-generated method stub
+		// not supported
 		return 0;
 	}
 
 	@Override
 	public int onRestUpdate() {
-		// TODO Auto-generated method stub
+		// not supported
 		return 0;
 	}
 
 	@Override
 	public int onRestGet() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int onRestGetWithDependents() {
-		// TODO Auto-generated method stub
+		// not supported
 		return 0;
 	}
 	
 	@Override
+	public int onRestDelete() {
+		// not supported
+		return 0;
+	}
+	
 	public int onRestGetAllForCurUser() {
 		// this may take some time till we fetch all contacts from FB, so keep trying till it succeed
 		int res = 0;
@@ -157,9 +141,10 @@ public class Friend extends ModelCache<Friend, Integer> {
 					public void run() {
 						retries++;
 						try {
-							synchronized (this) {
-								  this.wait(10000);
-								}
+							Thread.sleep(10000);
+//							synchronized (this) {
+//								  this.wait(10000);
+//								}
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -185,7 +170,7 @@ public class Friend extends ModelCache<Friend, Integer> {
 			
 			User tmpNewUser = null;
 			try {
-				List<User> tmpNewUsers = User.getModelDao().queryForEq("server_id", jsonFriend.getInt("id"));
+				List<User> tmpNewUsers = User.getModelDao().queryForEq("id", jsonFriend.getString("id"));
 				if(tmpNewUsers!=null && tmpNewUsers.size()>0) { 
 					tmpNewUser = tmpNewUsers.get(0);
 				} 
@@ -210,42 +195,39 @@ public class Friend extends ModelCache<Friend, Integer> {
 				continue;
 			}
 			
-			if(user.getServer_id() == tmpNewUser.getServer_id())
+			if(user.getId().equals(tmpNewUser.getId()))
 				continue;
 			
 			Friend friend = new Friend(user);
 			friend.setFriend(tmpNewUser);
-			try {
-				friend.createLocal();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
-			}
 			
-			res++;
+			res += friend.onLocalCreate();
 		}
 		
 		return res;
 	}
 
 	@Override
-	public int onRestDelete() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int onRestSyncToServer() {
-		int res = 0;
-		if(!isServerUpdated()) {
-			if(getServer_id()==-1) {
-				res = onRestCreate();
-			} else {
-				res = onRestUpdate(); 
+	public JSONObject toJson() {
+		JSONObject jsonContent = new JSONObject();
+		JSONObject jsonParent = new JSONObject();
+		
+		try {
+			jsonContent.put("id",getId());
+			jsonContent.put("friend_id",getFriend().getId());
+		
+			try {
+				jsonParent.put("friend", jsonContent);
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				return null;
 			}
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return null;
 		}
 		
-		return res;
+		return jsonParent;
 	}
 
 }

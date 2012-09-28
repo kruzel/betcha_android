@@ -4,6 +4,8 @@
 package com.betcha.model.cache;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -16,14 +18,14 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
-import android.util.Log;
 
+import com.betcha.model.User;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
 import com.betcha.service.ConnectivityReceiver;
+import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.misc.BaseDaoEnabled;
 
 /**
  * @author ofer
@@ -32,9 +34,14 @@ import com.j256.ormlite.misc.BaseDaoEnabled;
  * @param <ID>
  */
 
-public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements IModel {
+//TODO move BaseDaoEnabled<T,ID> to member so create,update, delete, get will not be exposed
+// 							developers should use modelCreate, modelUpdate, modelDelete, modelGet only
+
+public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
+	@DatabaseField(id = true, canBeNull = false)
+	protected String id;
 	@DatabaseField
-	protected int server_id = -1;
+	protected Boolean server_created = false;
 	@DatabaseField
 	protected Boolean server_updated = false;
 	@DatabaseField
@@ -48,6 +55,20 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	protected IModelListener listener;
 	protected static Context context;
 	private static DateTime lastUpdateFromServer;
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String genId() {
+		UUID uuid = UUID.randomUUID();
+		id = uuid.toString();
+		return id;
+	}
 
 	public static DateTime getLastUpdateFromServer() {
 		return lastUpdateFromServer;
@@ -84,10 +105,6 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	protected Boolean authenticateGet() {
 		return true;
 	}
-	
-	// TODO schedule the synch task for every period (configurable) 
-	
-	abstract public void initDao();
 
 	/**
 	 * You'll need this in your class to cache the helper in the class.
@@ -109,19 +126,9 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 	public IModelListener getListener() {
 		return listener;
 	}
-
-	/** BaseDaoEnabled overides
-	 * @see com.j256.ormlite.misc.BaseDaoEnabled#create()
-	 */
-	@Override
-	public int create() throws SQLException {
-		initDao();
-		
-		setCreated_at(new DateTime());
-		setUpdated_at(new DateTime());
-		
-		// create on local model
-		int res = createLocal();
+	
+	public int create() {
+		int res = onLocalCreate();
 		
 		setServerUpdated(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
@@ -140,27 +147,49 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		return res;
 	}
-	
-	public int createLocal() throws SQLException {
-				
-		initDao();
-		return super.create();
-	}
-	
-	public int createOrUpdateLocal() throws SQLException {
-				
-		initDao();
-		CreateOrUpdateStatus status = getDao().createOrUpdate((T) this);
-		return status.getNumLinesChanged();
-		//return super.create();
+
+	public int update() {		
+		// update local model
+		int res =  onLocalUpdate();
+		
+		setServerUpdated(false);
+		if(authenticateUpdate() && RestClient.GetToken()==null)
+			return res;
+		
+		// run task to update server
+		last_rest_call = RestMethod.UPDATE;
+		restTask = new RestTask();
+		restTask.setModel(this);
+		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
+		restTask.execute(RestMethod.UPDATE);
+		
+		return res;
 	}
 
-	@Override
-	public int delete() throws SQLException {
-		initDao();
+	public int get() {
+		int res = 0;
 		
-		// delete from local model
-		int res =  deleteLocal();
+		setServerUpdated(false);
+		if(authenticateGet() && RestClient.GetToken()==null)
+			return -1;
+		
+		if(last_rest_call == RestMethod.GET && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return res;
+		
+		// run task to update server
+		last_rest_call = RestMethod.GET;
+		restTask = new RestTask();
+		restTask.setModel(this);
+		restTask.setModelListener(listener);
+		restTask.setModelClass(getClass());
+		restTask.execute(RestMethod.GET);
+		
+		return res;
+	}
+
+	public int delete() {
+		int res =  onLocalDelete();
 		
 		setServerUpdated(false);
 		if(authenticateDelete() && RestClient.GetToken()==null)
@@ -179,88 +208,8 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		return res;
 	}
-	
-	public int deleteLocal() throws SQLException {
-		initDao();
-		return super.delete();
-	}
-
-	@Override
-	public int update() throws SQLException {
-		setUpdated_at(new DateTime());
 		
-		initDao();
-		// update local model
-		int res =  updateLocal();
-		
-		setServerUpdated(false);
-		if(authenticateUpdate() && RestClient.GetToken()==null)
-			return res;
-		
-		Log.i("ModelCache.update()", getClass().getSimpleName());
-		
-		// run task to update server
-		last_rest_call = RestMethod.UPDATE;
-		restTask = new RestTask();
-		restTask.setModel(this);
-		restTask.setModelListener(listener);
-		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.UPDATE);
-		
-		return res;
-	}
-	
-	public int updateLocal() throws SQLException {
-		setUpdated_at(new DateTime());
-		
-		initDao();
-		return super.update();
-	}
-	
-	public int get(int server_id) throws SQLException {	
-		initDao();
-		setServerUpdated(false);
-		setServer_id(server_id);
-		if(authenticateGet() && RestClient.GetToken()==null)
-			return -1;
-		
-		if(last_rest_call == RestMethod.GET && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
-			return 1;
-		
-		// run task to update server
-		last_rest_call = RestMethod.GET;
-		restTask = new RestTask();
-		restTask.setModel(this);
-		restTask.setModelListener(listener);
-		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.GET);
-		
-		return 1;
-	}
-	
-	public int getWithDependents(int server_id) throws SQLException {	
-		initDao();
-		setServerUpdated(false);
-		setServer_id(server_id);
-		if(authenticateGet() && RestClient.GetToken()==null)
-			return -1;
-		
-		if(last_rest_call == RestMethod.GET_WITH_DEP && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
-			return 1;
-		
-		// run task to update server
-		last_rest_call = RestMethod.GET_WITH_DEP;
-		restTask = new RestTask();
-		restTask.setModel(this);
-		restTask.setModelListener(listener);
-		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.GET_WITH_DEP);
-		
-		return 1;
-	}
-	
 	public int getAllForCurUser() {
-		initDao();
 		setServerUpdated(false);
 		
 		if(authenticateGet() && RestClient.GetToken()==null)
@@ -279,35 +228,18 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		
 		return 1;
 	}
-		
-	public int synch() throws SQLException {	
-		initDao();
-		setServerUpdated(false);
-		if(authenticateCreate() && RestClient.GetToken()==null)
-			return -1;
-		
-		if(last_rest_call == RestMethod.SYNC && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
-			return 1;
-		
-		// run task to update server
-		last_rest_call = RestMethod.SYNC;
-		restTask = new RestTask();
-		restTask.setModel(this);
-		restTask.setModelListener(listener);
-		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.SYNC);
-		
-		return 1;
-	}
 
-	public void setServer_id(int serverId) {
-		this.server_id = serverId;
-		setServerUpdated(true);
-		
+	public int createOrUpdateLocal() throws SQLException {
+		CreateOrUpdateStatus status = getDao().createOrUpdate((T) this);
+		return status.getNumLinesChanged();
+	}
+			
+	public void setServerCreated(Boolean server_created) {
+		this.server_created = server_created;
 	}
 	
-	public int getServer_id() {
-		return server_id;
+	public Boolean isServerCreated() {
+		return server_created;
 	}
 
 	public void setServerUpdated(Boolean serverUpdated) {
@@ -354,6 +286,10 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		        PackageManager.DONT_KILL_APP);
 	}
 	
+	///////////// helper methods ///////////////////////////////
+	
+	protected abstract Dao<T,ID> getDao() throws SQLException;
+	
 	public Boolean setJson(JSONObject json) {
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		try {
@@ -366,26 +302,117 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 		} catch (JSONException e1) {
 		}
 		
-		try {
-			setServer_id(json.getInt("id"));
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return false;
-		}
-		
 		return true;
 	}
+	
+	public JSONObject toJson() {
+		// add this class members
+		return null;
+	}
+	
+	//////////// REST API operations ////////////////////////////////
+	//return the number of updated rows, if failed 0
+	abstract protected int onRestCreate();
+	
+	//return the number of updated rows, if failed 0
+	abstract protected int onRestUpdate();
+	
+	abstract protected int onRestGet();
+	
+	//return the number of updated rows, if failed 0
+	abstract protected int onRestDelete();
+	
+	//return the number of updated rows, if failed 0
+	public int onRestSync() {
+		int res = 0;
+		res = onRestGet();
+		
+		if(!isServerUpdated()) {
+			if(getId()==null) {
+				res =+ onRestCreate();
+			} else {
+				res =+ onRestUpdate(); 
+			}
+		} 
+		
+		return res;
+	}
+	
+	public int onRestGetAllForCurUser() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	//////////////// local model operations ////////////////////
+	
+	public int onLocalCreate() {
+		if(getId()==null)
+			genId();
+		setCreated_at(new DateTime());
+		setUpdated_at(new DateTime());
+		
+		int res = 0;
+		try {
+			res  = createOrUpdateLocal();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+			return 0;
+		}
+		return res;
+	}
 
+	public int onLocalUpdate() {
+		setUpdated_at(new DateTime());
+		int res = 0;
+		try {
+			res = getDao().update((T) this);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	public int onLocalDelete() {
+		setUpdated_at(new DateTime());
+		
+		int res = 0;
+		try {
+			res = getDao().delete((T) this);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
+	
+	public T onLocalGet() {
+		T t = null;
+	
+		try {
+			List<T> listT = null;
+			listT = getDao().queryForEq("id", getId());
+			if(listT!=null && listT.size()>0) {
+				t = listT.get(0);
+			}
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+
+		return t;
+	}
+	
 	/**
 	 * background task that does all the rest calls
 	 * @author ofer
 	 *
 	 */
 	public static class RestTask extends  AsyncTask<RestMethod, Void, Boolean> {
-		public enum RestMethod { CREATE, UPDATE, DELETE, SYNC, GET, GET_WITH_DEP, GET_FOR_CUR_USER }
+		public enum RestMethod { CREATE, UPDATE, DELETE, GET, GET_FOR_CUR_USER }
 		RestMethod currMethod;
 		
-		private IModel model;
+		private ModelCache model;
 		private IModelListener modelListener;
 		private Class modelClass;
 
@@ -393,7 +420,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			modelClass = clazz;
 		}
 		
-		public void setModel(IModel model) {
+		public void setModel(ModelCache model) {
 			this.model = model;
 		}
 
@@ -417,45 +444,49 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			switch (currMethod) {
 			case CREATE:
 				if (model.onRestCreate()>0) {
+					model.setServerCreated(true);
 					model.setServerUpdated(true);
+					model.onLocalUpdate();
 					return true;
 				}
 				break;
 			case UPDATE:
-				if(model.onRestUpdate()>0) {
-					model.setServerUpdated(true);
-					return true;
-				}
+				if(model.isServerCreated()) {
+					if(model.onRestUpdate()>0) {
+						model.setServerUpdated(true);
+						model.onLocalUpdate();
+						return true;
+					}
+				} else {
+					if (model.onRestCreate()>0) {
+						model.setServerCreated(true);
+						model.setServerUpdated(true);
+						model.onLocalUpdate();
+						return true;
+					}
+				}	
 				break;
 			case DELETE:
-				if(model.onRestDelete()>0) {
-					model.setServerUpdated(true);
+				if(model.isServerCreated()) {
+					if(model.onRestDelete()>0) {
+						model.setServerUpdated(true);
+						model.onLocalUpdate();
+						return true;
+					}
+				} else
 					return true;
-				}
 				break;
 			case GET:
 				if(model.onRestGet()>0) {
 					model.setServerUpdated(true);
-					return true;
-				}
-				break;
-			case GET_WITH_DEP:
-				if(model.onRestGetWithDependents()>0) {
-					model.setServerUpdated(true);
+					model.onLocalUpdate();
 					return true;
 				}
 				break;
 			case GET_FOR_CUR_USER:
 				if(model.onRestGetAllForCurUser()>0) {
 					model.setServerUpdated(true);
-					return true;
-				}
-				break;
-			case SYNC:
-				if(model.onRestSyncToServer()>0) {
-					model.setServerUpdated(true);
-					lastUpdateFromServer = new DateTime();
-					lastUpdateFromServer.now();
+					model.onLocalUpdate();
 					return true;
 				}
 				break;
@@ -481,13 +512,7 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 				case GET:
 					modelListener.onGetComplete(modelClass,result);
 					break;
-				case GET_WITH_DEP:
-					modelListener.onGetWithDependentsComplete(modelClass,result);
-					break;
 				case GET_FOR_CUR_USER:
-					modelListener.onGetComplete(modelClass,result);
-					break;
-				case SYNC:
 					modelListener.onGetComplete(modelClass,result);
 					break;
 				default:
@@ -497,12 +522,6 @@ public abstract class ModelCache<T,ID> extends BaseDaoEnabled<T,ID> implements I
 			
 			super.onPostExecute(result);
 		}
-
-		@Override
-		protected void onCancelled() {
-			// TODO Auto-generated method stub
-			super.onCancelled();
-		}	
 	}
 	
 }

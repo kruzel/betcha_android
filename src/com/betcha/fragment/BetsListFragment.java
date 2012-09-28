@@ -61,25 +61,15 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-				Bet.syncWithServer(BetsListFragment.this);
+				Bet.syncAllWithServer(BetsListFragment.this);
 			}
-		});
-        
-        lvBets.setOnItemClickListener(new OnItemClickListener() {
-
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Bet bet_item = bets.get(position-1);
-				openDetailedActivity(bet_item, false);
-			}
-		});
-        
+		});        
         
         if(app.getMe()!=null) {
-			if(app.getMe().getServer_id()!=-1 && isFirstBetsLoad) {
+			if(app.getMe().getId()!=null && isFirstBetsLoad) {
 				isFirstBetsLoad = false;
 	        	//lvBets.setRefreshing();
-	        	Bet.syncWithServer(this);
+	        	Bet.syncAllWithServer(this);
 	        }
 			
         }
@@ -118,7 +108,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	            return true;
 	        case R.id.menu_refresh:
 	        	lvBets.setRefreshing();
-	        	Bet.syncWithServer(this);
+	        	Bet.syncAllWithServer(this);
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
@@ -144,9 +134,23 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
  			e.printStackTrace();
  		}
         
- 		if(bets!=null) {
- 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
-	        lvBets.setAdapter(betAdapter);
+ 		if(bets!=null && bets.size()>0) {
+ 			if(betAdapter==null){
+	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
+		        lvBets.setAdapter(betAdapter);
+		        lvBets.setOnItemClickListener(new OnItemClickListener() {
+
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						Bet bet_item = bets.get(position-1);
+						openDetailedActivity(bet_item, false);
+					}
+				});
+ 			} else {
+	 			betAdapter.clear();
+	 			betAdapter.addAll(bets);
+	 			betAdapter.notifyDataSetChanged();
+ 			}
  		}
 	}
 
@@ -175,8 +179,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		if(success ) {
 			populate();
 						
-			if(app.getBetId()!=-1) {
-				app.setBetId(-1); //avoid going here on next resume
+			if(app.getBetId()!="-1") {
+				app.setBetId("-1"); //avoid going here on next resume
 				openDetailedActivity(newBet, true);
 			}
 		} else {
@@ -196,8 +200,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		if(success ) {
 			populate();
 						
-			if(app.getBetId()!=-1) {
-				app.setBetId(-1); //avoid going here on next resume
+			if(app.getBetId()!="-1") {
+				app.setBetId("-1"); //avoid going here on next resume
 				openDetailedActivity(newBet, true);
 			}
 		} else {

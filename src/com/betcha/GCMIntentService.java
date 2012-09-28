@@ -32,7 +32,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		String msgType = bundle.getString("type");
 		Integer ownerId = Integer.valueOf(bundle.getString("owner_id"));
 		Integer userId = Integer.valueOf(bundle.getString("user_id"));
-		Integer betId = Integer.valueOf(bundle.getString("bet_id"));
+		String betId = bundle.getString("bet_id");
 		String pred = bundle.getString("prediction_id");
 		Integer predictionId = null;
 		if(pred != null) {
@@ -43,8 +43,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 		
 		if(msgType.equals("invite")) {
 			Bet bet = new Bet();
-			bet.setServer_id(betId);
-			if(bet.onRestGetWithDependents()==0) 
+			bet.setId(betId);
+			if(bet.onRestGet()==0) 
 				return;
 			
 			String ns = Context.NOTIFICATION_SERVICE;
@@ -91,12 +91,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 		if(app.getMe()!=null) {
 			app.getMe().setPush_notifications_device_id(regId);
 			
-			try {
-				Log.i("GCMIntentService.onRegistered()", "updating server");
-				app.getMe().update();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			Log.i("GCMIntentService.onRegistered()", "updating server");
+			app.getMe().update();
 		}	
 	}
 
@@ -108,15 +104,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 		BetchaApp app = (BetchaApp) ctx;
 		if(app.getMe()!=null) {
 			app.getMe().setPush_notifications_device_id("");
-			
-			try {
-				app.getMe().update();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			app.getMe().update();
 		}	
 	}
-
-
 
 }

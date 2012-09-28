@@ -95,16 +95,18 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 		super.onResume();
 
 		Intent intent = getIntent();
-		Integer betId = intent.getIntExtra("betId", -1);
+		String betId = intent.getStringExtra("betId");
 		Boolean isNewBet = intent.getBooleanExtra("is_new_bet", false);
 
-		if (betId == -1)
+		if (betId == "-1")
 			return;
 
 		try {
-			if(betId!=-1) {
-				bet = Bet.getModelDao().queryForId(betId);
-			} 
+			
+			List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
+			if(bets!=null && bets.size()>0)
+				bet = bets.get(0);
+		
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 			return;
@@ -231,15 +233,10 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 				predictions.get(i - 2).setResult(cb.isChecked());
 		}
 
-		Prediction.update(predictions,bet.getServer_id());
+		Prediction.update(predictions,bet.getId());
 
 		bet.setState(Bet.STATE_CLOSED);
-		try {
-			bet.update();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bet.update();
 		tvState.setText(bet.getState());
 	}
 
@@ -248,14 +245,9 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 			return;
 		
 		bet.setListener(this);
-		try {
-			bet.getWithDependents(bet.getServer_id());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		bet.get();
 		
-		app.setBetId(-1); //avoid going here on next resume
+		app.setBetId("-1"); //avoid going here on next resume
 	}
 
 	public void onAddBet(View v) { // by this user invited to bet
@@ -289,27 +281,15 @@ public class BetDetailsActivity extends SherlockActivity implements OnClickListe
 
 				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
 
-				try {
-					myPrediction.create();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				myPrediction.create();
 			} else {
 				// just update current UserBet
 				myPrediction.setPrediction(etMyBet.getText().toString());
 				myPrediction.setMyAck(getString(R.string.pending));
 
 				Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
-				
 				lvPredictions.invalidate();
-				
-				try {
-					myPrediction.update();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				myPrediction.update();
 			}
 
 			populateList();

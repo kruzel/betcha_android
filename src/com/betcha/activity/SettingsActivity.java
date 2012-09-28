@@ -99,7 +99,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        }
         } 
 		
-		if(me!=null && me.getServer_id()!=-1) {
+		if(me!=null && me.getId()!=null) {
 			btEmailReg.setText(getString(R.string.update));
 		} else {
         	btEmailReg.setText(getString(R.string.register));
@@ -151,10 +151,12 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
         	User me = app.getMe();
         	int res = 0;
         	
+        	if(dialog!=null && dialog.isShowing())
+    			dialog.dismiss();
         	dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
                     "Registering. Please wait...", true);
         	        	
-        	if(me==null || me.getServer_id()==-1) {
+        	if(me==null || me.getId()==null) {
         		if(me==null) {
         			me = new User();
         		}
@@ -166,14 +168,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	
 	        	me.setListener(this);
     		
-	        	try {
-					res = me.create();
-				} catch (SQLException e) {
-					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-					e.printStackTrace();
-					onCreateComplete(me.getClass(),false);
-					return;
-				}
+	        	res = me.create();
 	        	
     		} else {
     			
@@ -181,17 +176,16 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
 	        	
-    			try {
-					res = me.update();
-				} catch (SQLException e) {
-					Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-					e.printStackTrace();
-					onCreateComplete(me.getClass(),false);
-					return;
-				}
+	        	me.setListener(this);
+    			res = me.update();
     		}
     		
         	app.setMe(me);
+        	
+        	if(res==0) {
+        		Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
+				onCreateComplete(me.getClass(),false);
+        	}
         }
 	}
 	
@@ -199,29 +193,27 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 		User me = new User();
 		me.setProvider("email");
 		
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 		dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
                 "Registering. Please wait...", true);
 		
 		int res = 0;
-		try {
-			res = me.create();
-		} catch (SQLException e) {
-			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-			e.printStackTrace();
-			onCreateComplete(me.getClass(),false);
-			return;
-		}
+		res = me.create();
 		
 		if(res>1) {
 			app.setMe(me);
 			onCreateComplete(me.getClass(),true);
 		} else {
+			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
 			onCreateComplete(me.getClass(),false);
 		}
 			
 	}
 	
 	public void OnFBConnect(View v) {
+		if(dialog!=null && dialog.isShowing())
+			dialog.dismiss();
 		dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
                 "Registering. Please wait...", true);
 		
@@ -236,17 +228,14 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
         		me.setAccess_token(token);
         		me.setListener(SettingsActivity.this);
         		
-        		int res = 0;
-        		try {
-					res = me.create();
-				} catch (SQLException e) {
-					Toast.makeText(SettingsActivity.this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-					onCreateComplete(app.getMe().getClass(),false);
-					e.printStackTrace();
-				}
+        		int res = me.create();
         		
         		if(res>0)
         			app.setMe(me);
+        		else {
+        			Toast.makeText(SettingsActivity.this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
+					onCreateComplete(app.getMe().getClass(),false);
+        		}
         		
         		etEmail.setText(app.getMe().getEmail());
         		etName.setText(app.getMe().getName());
@@ -311,6 +300,9 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	public void onUpdateComplete(Class clazz, Boolean success) {
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
+		
+		if(success)
+			finish();
 	}
 
 	@Override

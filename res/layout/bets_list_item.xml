@@ -68,8 +68,7 @@
 				    android:layout_width="wrap_content"
 				    android:layout_height="wrap_content"
 				    android:layout_margin="5dp"
-				    android:src="@drawable/ic_launcher" />
-
+				    android:src="@drawable/ic_launcher" />
 	            <TextView
 	                android:id="@+id/tv_bet_reward"
 	                android:layout_width="wrap_content"
@@ -85,13 +84,12 @@
 	        <ListView
 	            android:id="@+id/lv_bet_predictions"
 	            android:layout_width="fill_parent"
-	            android:layout_height="wrap_content"
+	            android:layout_height="100dp"
 	            android:layout_below="@id/ll_bet_reward"
 	            android:layout_centerHorizontal="true"
-	            android:layout_margin="5dp" >
-	            
+	            android:layout_margin="5dp" >  
 	        </ListView>
-    
+  
     	</RelativeLayout>
 
     </RelativeLayout>

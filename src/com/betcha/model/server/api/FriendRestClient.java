@@ -14,9 +14,9 @@ import org.springframework.web.client.RestClientException;
 public class FriendRestClient extends RestClient {
 	protected static String url;
 	
-	private int user_id;
+	private String user_id;
 
-	public FriendRestClient(int user_id) {
+	public FriendRestClient(String user_id) {
 		super();
 		this.user_id = user_id;
 	}

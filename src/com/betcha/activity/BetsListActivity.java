@@ -1,6 +1,7 @@
 package com.betcha.activity;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,23 +31,25 @@ public class BetsListActivity extends SherlockFragmentActivity {
     
 	protected void onResume() {
 		
-		if(app.getMe()==null || app.getMe().getServer_id()==-1) {
+		if(app.getMe()==null || app.getMe().getId()==null) {
         	Intent intent = new Intent();
         	intent.setClass(this, SettingsActivity.class);
         	startActivity(intent);
 	    } else {
 			
-			if(app.getBetId()!=-1) {
+			if(app.getBetId()!="-1") {
 				Bet bet = null;
 				try {
-					bet = Bet.getModelDao().queryForId(app.getBetId());
+					List<Bet> bets = Bet.getModelDao().queryForEq("id",app.getBetId());
+					if(bets!=null && bets.size()>0)
+						bet=bets.get(0);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
 				if(bet!=null)
 					openDetailedActivity(bet, false);
 				
-				app.setBetId(-1); //avoid going here on next resume
+				app.setBetId("-1"); //avoid going here on next resume
 				
 				long count=0;
 				try {

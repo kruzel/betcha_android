@@ -31,7 +31,7 @@ public class UserRestClient extends RestClient {
 		return null;
 	}
 
-	public JSONObject show(int id) {
+	public JSONObject show(String id) {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class);
@@ -50,7 +50,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject show(String email) {
+	public JSONObject showViaEmail(String email) {
 		
 		String res;
 		try {
@@ -90,9 +90,15 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject create(String full_name, String email, String password, String profile_picture_path)   {		
+	public JSONObject create(String id, String full_name, String email, String password, String profile_picture_path)   {		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
+		
+		try {
+			jsonContent.put("id", id);
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
 		
 		try {
 			jsonContent.put("is_app_installed", true);
@@ -172,11 +178,12 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject createOAuth(String provider, String uid, String access_token )   {
+	public JSONObject createOAuth(String id, String provider, String uid, String access_token )   {
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
 		try {
+			jsonContent.put("id", id);
 			jsonContent.put("is_app_installed", true);
 			jsonContent.put("provider", provider);
 			jsonContent.put("uid", uid);
@@ -280,7 +287,7 @@ public class UserRestClient extends RestClient {
         String res = null;
         try {
         	Log.i("UserRestClient.update()", "updating server through rest api");
-        	restTemplate.put(url + "/" + user.getServer_id() + ".json", request);
+        	restTemplate.put(url + "/" + user.getId() + ".json", request);
         } catch (RestClientException e) {
         	e.printStackTrace();
     		return;
@@ -289,7 +296,7 @@ public class UserRestClient extends RestClient {
 		return;
 	}
 
-	public void delete(int id)   {
+	public void delete(String id)   {
 		try {
 			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
 		} catch (RestClientException e) {

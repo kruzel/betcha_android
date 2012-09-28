@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.Bet;
+import com.betcha.model.Prediction;
 
 public class BetRestClient extends RestClient {
 
@@ -25,7 +26,7 @@ public class BetRestClient extends RestClient {
 	}
 
 
-	public JSONObject show(int id) {
+	public JSONObject show(String id) {
 		
 		String res;
 		try {
@@ -85,27 +86,12 @@ public class BetRestClient extends RestClient {
 	}
 
 	public JSONObject create(Bet bet) {
-		JSONObject jsonContent = new JSONObject();
-		JSONObject jsonParent = new JSONObject();
-		
-		try {
-			
-			jsonContent.put("user_id", Integer.toString(bet.getOwner().getServer_id()));
-			jsonContent.put("subject", bet.getSubject());
-			jsonContent.put("reward", bet.getReward());
-			if(bet.getDueDate()!=null)
-				jsonContent.put("due_date", bet.getDueDate().toString());
-			jsonContent.put("state", bet.getState());
-			jsonParent.put("bet", jsonContent);
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-			return null;
-		}
+		JSONObject json = bet.toJson();
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
-        HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
+        HttpEntity request= new HttpEntity( json.toString(), headers);
 		String res;
 		try {
 			res = restTemplate.postForObject(url + ".json" , request, String.class);
@@ -113,50 +99,53 @@ public class BetRestClient extends RestClient {
 			e1.printStackTrace();
 			return null;
 		}		
-		JSONObject json = null;
+		JSONObject jsonRes = null;
 		try {
-			json = new JSONObject(res);
+			jsonRes = new JSONObject(res);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return json;
+		return jsonRes;
 	}
 
-	public void update(Bet bet, int id) {
-		JSONObject jsonContent = new JSONObject();
-		JSONObject jsonParent = new JSONObject();
-		
-		try {
-			jsonContent.put("user_id", Integer.toString(bet.getOwner().getServer_id()));
-			jsonContent.put("subject", bet.getSubject());
-			jsonContent.put("reward", bet.getReward());
-			jsonContent.put("due_date", bet.getDueDate().toString());
-			jsonContent.put("state", bet.getState());
-			jsonParent.put("bet", jsonContent);
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-			return;
-		}
+	public void update(Bet bet) {
+		JSONObject json = bet.toJson();
 		
 		HttpHeaders headers = new HttpHeaders();
         headers.setContentType( MediaType.APPLICATION_JSON );
         headers.set("X-AUTH-TOKEN", GetToken());
-        HttpEntity request= new HttpEntity( jsonParent.toString(), headers);
+        HttpEntity request= new HttpEntity( json.toString(), headers);
 		try {
-			restTemplate.put(url + "/" + id + ".json", request);
+			restTemplate.put(url + "/" + bet.getId() + ".json", request);
+		} catch (RestClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateOrCreate(Bet bet) {
+		JSONObject json = bet.toJson();
+		
+		HttpHeaders headers = new HttpHeaders();
+        headers.setContentType( MediaType.APPLICATION_JSON );
+        headers.set("X-AUTH-TOKEN", GetToken());
+        HttpEntity request= new HttpEntity( json.toString(), headers);
+		try {
+			restTemplate.put(url + "/" + bet.getId() + "/update_or_create.json", request);
 		} catch (RestClientException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public void delete(int id)  {
+	public void delete(String id)  {
 		try {
 			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
 		} catch (RestClientException e) {
 			e.printStackTrace();
 		}
 	}
+	
 }

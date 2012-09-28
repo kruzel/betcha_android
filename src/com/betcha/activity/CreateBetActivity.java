@@ -183,7 +183,8 @@ public class CreateBetActivity extends SherlockActivity implements OnClickListen
         	prediction.setUser(me);
         	prediction.setPrediction(betMyBet.getText().toString());
         	prediction.setMyAck(getString(R.string.pending));
-    		       	
+    		prediction.genId();       	
+        	        			
         	bet.setOwnerPrediction(prediction);
         	
         	//set selected friends and send invite
@@ -199,14 +200,7 @@ public class CreateBetActivity extends SherlockActivity implements OnClickListen
         	
         	Toast.makeText(this, R.string.publishing_bet, Toast.LENGTH_LONG).show();
         	
-        	try {
-				bet.create();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-        	
-        	//prediction is create after bet is created as part of bet creation
+        	bet.create(); //prediction is create after bet is created as part of bet creation
 	        	
         	finish();
         }
