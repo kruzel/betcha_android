@@ -34,11 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".nevigation.BetUTabActivity" android:label="@string/app_name"></activity>
-        <activity android:name=".activity.CreateBetActivity" android:label="@string/createbet"></activity>
+        <activity android:name=".activity.CreateBetActivityOld" android:label="@string/createbet"></activity>
         <activity android:name=".nevigation.BetListGroupActivity" android:label="@string/betsrecordsgroup"></activity>
         <activity android:name=".activity.BetDetailsActivity" android:label="@string/betdetails"></activity>
         <activity android:name=".activity.SettingsActivity" android:label="@string/settingsactivity"></activity>
+        <activity android:name=".activity.CreateBetActivity" android:label="@string/betcategoryactivity"></activity>
         
         <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 		  <intent-filter>

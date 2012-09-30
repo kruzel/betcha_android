@@ -34,6 +34,8 @@ public class Bet extends ModelCache<Bet, Integer> {
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; // owner
 	@DatabaseField
+	private String category;
+	@DatabaseField
 	private String subject;
 	@DatabaseField
 	private String reward; // benefit
@@ -82,6 +84,10 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	public void setParticipants(List<User> participants) {
 		this.participants = participants;
+	}
+	
+	public void addParticipants(List<User> participants) {
+		this.participants.addAll(participants);
 	}
 
 	public User getOwner() {
@@ -132,6 +138,14 @@ public class Bet extends ModelCache<Bet, Integer> {
 		this.state = state;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
 	// non persistent
 	public Prediction getOwnerPrediction() {
 		return ownerPrediction;
@@ -144,6 +158,11 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	public List<Prediction> getPredictions() {
 		List<Prediction> list = new ArrayList<Prediction>(predictions);
+		return list;
+	}
+	
+	public List<ChatMessage> getChatMessages() {
+		List<ChatMessage> list = new ArrayList<ChatMessage>(chatMessages);
 		return list;
 	}
 
@@ -428,6 +447,54 @@ public class Bet extends ModelCache<Bet, Integer> {
 		ownerPrediction.onLocalCreate();
 		
 		for (User participant : participants) {
+			if(participant.getId()==null) //new friend
+				participant.onLocalCreate(); //locally
+			
+			Prediction prediction = new Prediction();
+			prediction.setUser(participant);
+			prediction.setBet(this);
+			prediction.setPrediction("");
+			prediction.setSendInvite(true);
+			if(prediction.onLocalCreate()!=0) {
+				res += 1;
+			}
+		}
+		
+		try {
+			getDao().refresh(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return res;
+	}
+
+	@Override
+	public int onLocalUpdate() {
+		setUpdated_at(new DateTime());
+
+		int res = 0;
+		try {
+			res = getDao().update(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		ownerPrediction.onLocalUpdate();
+		
+		for (User participant : participants) {
+			Boolean bParticipantExist = false;
+			//check if participant in db else add
+			for (Prediction tmpPrediction : predictions) {
+				if(tmpPrediction.getUser().getId().equals(participant.getId())) {
+					bParticipantExist = true;
+					continue;
+				}
+			}
+			if(bParticipantExist)
+				continue;
+			
 			if(participant.getId()==null) //new friend
 				participant.onLocalCreate(); //locally
 			

@@ -18,6 +18,7 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
+import com.betcha.activity.CreateBetActivityOld;
 import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.SettingsActivity;
 import com.betcha.adapter.BetAdapter;
@@ -50,7 +51,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View view = (ViewGroup) inflater.inflate(R.layout.bets_list, container);
+		View view = (ViewGroup) inflater.inflate(R.layout.bets_list_fragment, container);
 		  
 		lvBets = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_bets_list);
         
@@ -94,7 +95,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		Intent intent;
 		switch (item.getItemId()) {
 	        case R.id.menu_create_bet:
-	             intent = new Intent(getActivity(), CreateBetActivity.class);
+	             //intent = new Intent(getActivity(), CreateBetActivity.class);
+	        	intent = new Intent(getActivity(), CreateBetActivity.class);
 	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);
 	            return true;

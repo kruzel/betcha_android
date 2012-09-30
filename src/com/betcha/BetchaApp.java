@@ -48,7 +48,7 @@ public class BetchaApp extends Application implements IModelListener {
 
 	private User me;
 	private String invite_bet_id = "-1";
-
+	
 	private List<User> friends;
 
 	public static int THEME = R.style.Theme_Sherlock;
@@ -70,6 +70,15 @@ public class BetchaApp extends Application implements IModelListener {
 		} else {
 			initUserParams();
 		}
+		
+		//init friends list
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				getFriends();
+			}
+		});
 
 		super.onCreate();
 	}
@@ -152,8 +161,6 @@ public class BetchaApp extends Application implements IModelListener {
 				friend.setListener(this);
 				friend.getAllForCurUser();
 
-				initFriendList();
-
 				registerToPushNotifications();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -194,90 +201,78 @@ public class BetchaApp extends Application implements IModelListener {
 	}
 
 	public List<User> getFriends() {
-		return friends;
-	}
+		if(friends!=null)
+			return friends;
+		
+		try {
+			// TODO add distinct email
+			if (getMe() != null)
+				friends = User.getModelDao().queryBuilder()
+						.orderBy("name", true).where()
+						.ne("id", getMe().getId()).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 
-	public void initFriendList() {
-		// inviteUsers = fetch all users from DB and contacts list, later from
-		// FB
-		if (friends != null)
-			return;
+		if (friends == null) {
+			friends = new ArrayList<User>();
+		}
 
-		Thread task = new Thread(new Runnable() {
+		User ofer = new User();
+		ofer.setName("a");
+		ofer.setEmail("a@a.com");
+		ofer.setProvider("email");
+		friends.add(ofer);
 
-			@Override
-			public void run() {
-				try {
-					// TODO add distinct email
-					if (getMe() != null)
-						friends = User.getModelDao().queryBuilder()
-								.orderBy("name", true).where()
-								.ne("id", getMe().getId()).query();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
+		// invite users only from pre-loaded friend list should be
+		// loaded ad registration)
+		ContentResolver cr = getContentResolver();
+		Cursor emailCur = cr.query(
+				ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+				new String[] { Contacts._ID, Contacts.PHOTO_ID,
+						ContactsContract.Data.DISPLAY_NAME,
+						ContactsContract.CommonDataKinds.Email.DATA },
+				null, null, "lower("
+						+ ContactsContract.Data.DISPLAY_NAME + ") ASC");
+		while (emailCur.moveToNext()) {
+			// This would allow you get several email addresses
+			// if the email addresses were stored in an array
+			String email = emailCur.getString(emailCur
+					.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+			String name = emailCur.getString(emailCur
+					.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
 
-				if (friends == null) {
-					friends = new ArrayList<User>();
-				}
+			long contact_id = emailCur.getLong(emailCur
+					.getColumnIndex(ContactsContract.Contacts._ID));
+			long photo_id = emailCur.getLong(emailCur
+					.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
 
-				User ofer = new User();
-				ofer.setName("a");
-				ofer.setEmail("a@a.com");
-				ofer.setProvider("email");
-				friends.add(ofer);
-
-				// invite users only from pre-loaded friend list should be
-				// loaded ad registration)
-				ContentResolver cr = getContentResolver();
-				Cursor emailCur = cr.query(
-						ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-						new String[] { Contacts._ID, Contacts.PHOTO_ID,
-								ContactsContract.Data.DISPLAY_NAME,
-								ContactsContract.CommonDataKinds.Email.DATA },
-						null, null, "lower("
-								+ ContactsContract.Data.DISPLAY_NAME + ") ASC");
-				while (emailCur.moveToNext()) {
-					// This would allow you get several email addresses
-					// if the email addresses were stored in an array
-					String email = emailCur.getString(emailCur
-							.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-					String name = emailCur.getString(emailCur
-							.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-
-					long contact_id = emailCur.getLong(emailCur
-							.getColumnIndex(ContactsContract.Contacts._ID));
-					long photo_id = emailCur.getLong(emailCur
-							.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
-
-					// verify this user is not a known user and already included
-					List<User> foundUsers = null;
-					try {
-						foundUsers = User.getModelDao().queryForEq("email",
-								email);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-
-					if ((name != null || email != null)
-							&& (foundUsers == null || foundUsers.size() == 0)) {
-						User tmpUser = new User();
-						tmpUser.setName(name);
-						tmpUser.setEmail(email);
-						tmpUser.setProvider("email");
-						tmpUser.setContact_id(contact_id);
-						tmpUser.setContact_photo_id(photo_id);
-
-						friends.add(tmpUser);
-					}
-				}
-				emailCur.close();
+			// verify this user is not a known user and already included
+			List<User> foundUsers = null;
+			try {
+				foundUsers = User.getModelDao().queryForEq("email",
+						email);
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		});
-		task.run();
 
+			if ((name != null || email != null)
+					&& (foundUsers == null || foundUsers.size() == 0)) {
+				User tmpUser = new User();
+				tmpUser.setName(name);
+				tmpUser.setEmail(email);
+				tmpUser.setProvider("email");
+				tmpUser.setContact_id(contact_id);
+				tmpUser.setContact_photo_id(photo_id);
+
+				friends.add(tmpUser);
+			}
+		}
+		emailCur.close();
+			
+		return friends;
 	}
 
 	public void registerToPushNotifications() {
@@ -315,7 +310,7 @@ public class BetchaApp extends Application implements IModelListener {
 	public void onGetComplete(Class clazz, Boolean success) {
 		if (clazz.getSimpleName().contentEquals("Friend") && success) {
 			// new friedns found
-			initFriendList();
+			friends = null;
 		}
 	}
 

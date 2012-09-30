@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:orientation="vertical" >
+
+	    <FrameLayout
+	        android:id="@+id/fl_message_list" 
+	        android:layout_width="match_parent"
+	        android:layout_height="200dp" >
+		    <ListView
+		        android:id="@+id/lv_chat_messages"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content" >
+		    </ListView>
+	    </FrameLayout>
+
+	    <RelativeLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+
+	        <Button
+	            android:id="@+id/buttonChatMessageSend"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentRight="true"
+	            android:layout_alignParentTop="true"
+	            android:onClick="OnSend"
+	            android:text="Send"
+	            android:textColor="#000000" />
+
+	        <EditText
+	            android:id="@+id/tv_chat_message"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignBaseline="@+id/buttonChatMessageSend"
+	            android:layout_alignBottom="@+id/buttonChatMessageSend"
+	            android:layout_alignParentLeft="true"
+	            android:layout_toLeftOf="@+id/buttonChatMessageSend"
+	            android:ems="10"
+	            android:hint="Chat_message"
+	            android:inputType="text"
+	            android:textAppearance="?android:attr/textAppearanceMedium"
+	            android:textColor="#000000" >
+
+	            <requestFocus />
+	        </EditText>
+
+	    </RelativeLayout>
+    
+    </LinearLayout>
+
+</ScrollView>

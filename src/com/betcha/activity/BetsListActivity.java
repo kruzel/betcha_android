@@ -37,7 +37,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
         	startActivity(intent);
 	    } else {
 			
-			if(app.getBetId()!="-1") {
+			if(!app.getBetId().equals("-1")) {
 				Bet bet = null;
 				try {
 					List<Bet> bets = Bet.getModelDao().queryForEq("id",app.getBetId());
@@ -59,7 +59,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				}
 				
 				if(count==0) {
-					Intent intent = new Intent(this,CreateBetActivity.class);
+					Intent intent = new Intent(this,CreateBetActivityOld.class);
 					startActivity(intent);
 				}
 			} 

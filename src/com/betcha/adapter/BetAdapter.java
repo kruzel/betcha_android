@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -48,15 +49,11 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		            Intent i = new Intent(getContext(), BetDetailsActivity.class);
 		            String betId = (String) v.getTag();
 		            i.putExtra("betId", betId);
-		            //i.putExtra("is_new_bet", isNewBet);
-		            //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
 		            getContext().startActivity(i);
 		        }
 
 		    });
 		}
-		
-		
 		
 		Bet bet = items.get(position);
 		if(bet==null || bet.getOwner()==null)
@@ -67,11 +64,21 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
-		TextView tvBetDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		TextView betDueDate = (TextView) v.findViewById(R.id.tv_bet_date);
 		TextView tvBetOwner = (TextView) v.findViewById(R.id.tv_bet_owner);
 		
 		bet.getOwner().setProfilePhoto(ivProfPic);
-		tvBetDate.setText(fmt.print(bet.getDate()));
+		
+		if(bet.getDueDate().plusHours(24).isAfterNow()) {
+			//less then 24 hours left
+			DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
+			betDueDate.setText(fmtTime.print(bet.getDueDate()));
+		} else {
+			//more then 24 hours left
+			DateTimeFormatter fmtDate = DateTimeFormat.forPattern("MM-dd");
+			betDueDate.setText(fmtDate.print(bet.getDueDate()));
+		} 
+		
 		tvBetOwner.setText(bet.getOwner().getName());
 		
 		// internal frame 
@@ -86,9 +93,14 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		ListView lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
 		List<Prediction> predictions = bet.getPredictions();
 		if(predictions!=null) {
-			PredictionShortAdapter predictionAdapter = new PredictionShortAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
+			PredictionAdapter predictionAdapter = new PredictionAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
 			lvPredictions.setAdapter(predictionAdapter);
 		}
+		
+		//TODO dynamic hieght of list view
+//		LayoutParams layoutParams = lvPredictions.getLayoutParams();
+//		layoutParams.height = layoutParams.height * predictions.size();
+//		lvPredictions.setLayoutParams(layoutParams);
 		
 		return v;
 	}

@@ -1,6 +1,5 @@
 package com.betcha.activity;
 
-import java.sql.SQLException;
 import java.util.regex.Pattern;
 
 import android.app.Dialog;
@@ -12,12 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuInflater;
-
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.Friend;
@@ -166,7 +162,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
 	        	
-	        	me.setListener(this);
+	        	//me.setListener(this);
     		
 	        	res = me.create();
 	        	
@@ -176,7 +172,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
 	        	
-	        	me.setListener(this);
+	        	//me.setListener(this);
     			res = me.update();
     		}
     		
@@ -184,8 +180,9 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
         	
         	if(res==0) {
         		Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-				onCreateComplete(me.getClass(),false);
         	}
+        	
+        	onCreateComplete(me.getClass(),res!=0);
         }
 	}
 	
@@ -279,13 +276,12 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 					
 					@Override
 					public void run() {
-						synchronized (this) {
-							  try {
-								wait(5000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
 						}
+						
 						if(dialog!=null && dialog.isShowing())
 							dialog.dismiss();
 					}
@@ -319,7 +315,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 
 	@Override
 	public void onGetComplete(Class clazz, Boolean success) {
-		app.initFriendList();
+		
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
 	}

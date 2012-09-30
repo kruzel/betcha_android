@@ -40,6 +40,10 @@
 	<string name="settings">Settings</string>
 	<string name="refresh">Refresh</string>
 	
+	<string name="invite">Invite</string>
+	<string name="close">Close</string>
+	<string name="delete">Delete</string>
+	
 	<!-- messages -->
 	<string name="msg_bet_accepted">Bet accepted</string>
 	<string name="msg_bet_rejected">Bet rejected</string>
@@ -67,6 +71,7 @@
     <string name="betsrecords">betsrecords</string>
     <string name="betdetails">betdetails</string>
     <string name="settingsactivity">settings</string>
+    <string name="betcategoryactivity">categories</string>
     
     <!-- file names -->
     <string name="prefs_name">betcha_prefs_name</string>

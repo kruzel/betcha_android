@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+	android:layout_height="match_parent" >
+	
+    <FrameLayout
+        android:id="@+id/friends_list_frame"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" 
+		android:layout_marginBottom="50dp">
+	
+		<ListView 
+		    android:id="@+id/friends_list"
+		    android:layout_width="match_parent"
+		    android:layout_height="match_parent" />
+		
+	</FrameLayout>
+
+    <Button
+        android:id="@+id/buttonOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="5dp"
+        android:text="@string/send" />
+	
+</RelativeLayout>

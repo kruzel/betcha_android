@@ -19,13 +19,11 @@ import com.betcha.R;
 import com.betcha.model.User;
 
 public class FriendAdapter extends ArrayAdapter<User> {
-	BetchaApp app;
 	
 	public FriendAdapter(Context context, int textViewResourceId,
 			List<User> objects) {
 		super(context, textViewResourceId,objects);
 	
-		app = (BetchaApp) context.getApplicationContext();
 	}
 
 	@Override
@@ -36,7 +34,7 @@ public class FriendAdapter extends ArrayAdapter<User> {
 			v = vi.inflate((R.layout.invite_list_item), null);
 		}
 	
-		User user = app.getFriends().get(position); // getItem(position);
+		User user = getItem(position); // getItem(position);
 		
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_invite_user);
 		TextView tvContact = (TextView) v.findViewById(R.id.tv_invite_user_contact);

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="vertical" >   
+	    
+	    <fragment android:name="com.betcha.fragment.BetDetailsFragment"
+	        android:id="@+id/bet_details_fragment"
+	        android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content" />
+			
+	    <LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_horizontal" >
+		
+	        <Button
+	            android:id="@+id/button_invite"
+	            android:layout_width="100dp"
+	            android:layout_height="wrap_content"
+	            android:text="@string/invite" />
+			
+	        <Button
+	            android:id="@+id/button_close"
+	            android:layout_width="100dp"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="center_horizontal"
+	            android:text="@string/close" />
+		
+	        <Button
+	            android:id="@+id/button_delete"
+	            android:layout_width="100dp"
+	            android:layout_height="wrap_content"
+	            android:text="@string/delete" />
+	
+	    </LinearLayout>
+	    
+	    <fragment android:name="com.betcha.fragment.BetChatMessagesFragment"
+	        android:id="@+id/ch"
+	        android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content" />
+	    
+	</LinearLayout>
+</ScrollView>
+	
