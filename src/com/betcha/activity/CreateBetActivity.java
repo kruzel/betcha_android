@@ -3,6 +3,7 @@ package com.betcha.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 
@@ -51,25 +52,8 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
     
 	@Override
 	protected void onResume() {
-		
-		//TODO load categories from model
-		customCategoriesList = new ArrayList<Category>();
-		featuredCategoriesList = new ArrayList<Category>();
-		
-		Category cat1 = new Category();
-		cat1.setCategory("Custom");
-		cat1.setDescription("Any bet you like");
-		customCategoriesList.add(cat1);
-		
-		Category cat2 = new Category();
-		cat2.setCategory("Footbal");
-		cat2.setDescription("....");
-		featuredCategoriesList.add(cat2);
-		
-		Category cat3 = new Category();
-		cat3.setCategory("Soccer");
-		cat3.setDescription("....");
-		featuredCategoriesList.add(cat3);
+		customCategoriesList = Category.getCategories(this,"Custom");
+		featuredCategoriesList = Category.getCategories(this,"Sport");
 				
 		betCategoryFragment.init(newBet, customCategoriesList, featuredCategoriesList);
 		super.onResume();
@@ -94,18 +78,18 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 		transaction.addToBackStack(null);
 		transaction.commit();
 		
-		createBetFragment.init(newBet, app.getMe(),app.getFriends());
+		createBetFragment.init(newBet, app.getMe(),app.getFriends(false));
 	}
 
 	@Override
 	public void OnBetDetailsEntered() {
+		newBet.create();
+		
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 	    ft.remove(createBetFragment);
 	    ft.commit();
 		
 	    finish();
-	    
-	    newBet.create();
 	}
     
 }

@@ -141,7 +141,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	 			betAdapter.addAll(bets);
 	 			betAdapter.notifyDataSetChanged();
  			}
+ 		} else {
+ 			if(betAdapter!=null) {
+ 				betAdapter.clear();
+ 				betAdapter.notifyDataSetChanged();
+ 			}
  		}
+ 			
 	}
 
 

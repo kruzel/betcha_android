@@ -71,7 +71,7 @@ public class CreateBetCategoryFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
-				bet.setCategory(customCategoriesList.get(position).getCategory());
+				bet.setCategoryId(customCategoriesList.get(position).getId());
 				listener.OnBetCategorySelected();
 			}
 		});
@@ -81,7 +81,7 @@ public class CreateBetCategoryFragment extends SherlockFragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 					long arg3) {
-				bet.setCategory(featuredCategoriesList.get(position).getCategory());
+				bet.setCategoryId(featuredCategoriesList.get(position).getId());
 				listener.OnBetCategorySelected();
 			}
 		});

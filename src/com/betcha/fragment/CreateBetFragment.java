@@ -21,9 +21,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -32,8 +38,10 @@ import android.widget.TimePicker;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.R;
 import com.betcha.adapter.FriendAdapter;
+import com.betcha.adapter.RewardsImagesAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
+import com.betcha.model.Reward;
 import com.betcha.model.User;
 
 public class CreateBetFragment extends SherlockFragment {
@@ -49,6 +57,11 @@ public class CreateBetFragment extends SherlockFragment {
 	private EditText betDueDate;
 	private EditText betDueTime;
 	private Button buttonIvite;
+	private ImageView ownerProfPic;
+	private ImageView betRewardImage;
+	
+	private ListView subjectHintList;
+	private Gallery rewardsGallry;
 	
 	DatePickerDialog dateDialog;
 	TimePickerDialog timeDialog;
@@ -100,6 +113,12 @@ public class CreateBetFragment extends SherlockFragment {
         buttonIvite = (Button) view.findViewById(R.id.buttonInvite);
         betDueDate = (EditText) view.findViewById(R.id.bet_due_date);
         betDueTime = (EditText) view.findViewById(R.id.bet_due_time);
+        ownerProfPic = (ImageView) view.findViewById(R.id.iv_bet_owner_profile_pic);
+        betRewardImage = (ImageView) view.findViewById(R.id.iv_bet_reward);
+        
+        subjectHintList = (ListView) view.findViewById(R.id.subject_hints);
+    	rewardsGallry = (Gallery) view.findViewById(R.id.rewards_hints);
+    	rewardsGallry.setEnabled(false);
         
         //initialize values	    	
         DateTimeFormatter fmtDate = DateTimeFormat.forPattern("yyyy-MM-dd");
@@ -109,6 +128,7 @@ public class CreateBetFragment extends SherlockFragment {
 		betDueTime.setText(fmtTime.print(new DateTime()));
 
 		betOwner.setText(loggedInUser.getName());
+		loggedInUser.setProfilePhoto(ownerProfPic);
         
         betSubject.setOnEditorActionListener(new OnEditorActionListener() {
 			
@@ -119,12 +139,36 @@ public class CreateBetFragment extends SherlockFragment {
 				} else {
 					bet.setSubject(betSubject.getText().toString());
 					betReward.setVisibility( View.VISIBLE);
+					betRewardImage.setVisibility( View.VISIBLE);
+					rewardsGallry.setVisibility(View.VISIBLE);
+					rewardsGallry.setClickable(true);
+					rewardsGallry.setEnabled(true);
+					rewardsGallry.setAdapter(new RewardsImagesAdapter(getActivity(),Reward.getRewards(getActivity(), null)));
+					subjectHintList.setVisibility(View.INVISIBLE);
+					subjectHintList.setClickable(false);
 				}
 				return false;
 			}
 		});
         
-        
+        final String[] values = new String[] { "best grade..", "60 m run winner", "which team wins",
+          "anything..." };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+          android.R.layout.simple_list_item_1, android.R.id.text1, values);
+        subjectHintList.setAdapter(adapter);         
+        subjectHintList.setVisibility(View.VISIBLE);
+        subjectHintList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position,
+					long id) {
+				betSubject.setText(values[position]);
+			}
+		});
+        subjectHintList.setClickable(true);
+        betSubject.setSelected(true);
+
         betReward.setOnEditorActionListener(new OnEditorActionListener() {
 			
 			@Override
@@ -134,8 +178,31 @@ public class CreateBetFragment extends SherlockFragment {
 		        } else {
 		        	bet.setReward(betReward.getText().toString());
 		        	betPrediction.setVisibility( View.VISIBLE);
+		        	rewardsGallry.setVisibility(View.INVISIBLE);
+		        	rewardsGallry.setClickable(false);
+		        	rewardsGallry.setEnabled(false);
 		        }
 				return false;
+			}
+		});
+        
+        
+        rewardsGallry.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			public void onItemSelected(AdapterView<?> parent, View v,
+					int position, long id) {
+				Reward reward = Reward.getRewards(getActivity(), null).get(position);
+				if(reward.getName().equals("Custom"))
+					betReward.setText("");
+				else
+					betReward.setText(reward.getName());
+				betRewardImage.setImageBitmap(reward.getImage());
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
        

@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClientException;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 
+import com.betcha.BetchaApp;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
@@ -34,7 +35,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; // owner
 	@DatabaseField
-	private String category;
+	private String categoryId;
 	@DatabaseField
 	private String subject;
 	@DatabaseField
@@ -141,12 +142,12 @@ public class Bet extends ModelCache<Bet, Integer> {
 		this.state = state;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getCategoryId() {
+		return categoryId;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCategoryId(String categoryId) {
+		this.categoryId = categoryId;
 	}
 
 	// non persistent
@@ -448,10 +449,19 @@ public class Bet extends ModelCache<Bet, Integer> {
 		}
 		
 		ownerPrediction.onLocalCreate();
-		
+		int numFriends = 0;
 		for (User participant : participants) {
-			if(participant.getId()==null) //new friend
-				participant.onLocalCreate(); //locally
+			if(participant.getId()==null) { //new friend
+				//verify contact not exist already via mail
+				List<User> foundUsers = null;
+				try {
+					foundUsers = participant.getDao().queryForEq("email", participant.getEmail());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				if(foundUsers.size()==0)
+					numFriends = participant.onLocalCreate(); //locally
+			}
 			
 			Prediction prediction = new Prediction();
 			prediction.setUser(participant);
@@ -468,6 +478,9 @@ public class Bet extends ModelCache<Bet, Integer> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		if(numFriends>0)
+			BetchaApp.getInstance().getFriends(true); //TODO remove dependency to BetchaApp
 
 		return res;
 	}

@@ -71,10 +71,10 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 				dialog.setTitle(getResources().getString(R.string.select_friends));
 								
 				lvFriends = (ListView) dialog.findViewById(R.id.friends_list);
-				friendAdapter = new FriendAdapter(BetDetailsActivity.this, R.layout.invite_list_item, app.getFriends());
+				friendAdapter = new FriendAdapter(BetDetailsActivity.this, R.layout.invite_list_item, app.getFriends(false));
 		        lvFriends.setAdapter(friendAdapter);
 		        
-		        for (User friend : app.getFriends()) {
+		        for (User friend : app.getFriends(false)) {
 					if(friend.getIsInvitedToBet()) {
 						friend.setIsInvitedToBet(false);
 					}
@@ -86,7 +86,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 					@Override
 					public void onClick(View v) {
 						List<User> participants = new ArrayList<User>();
-				    	for (User friend : app.getFriends()) {
+				    	for (User friend : app.getFriends(false)) {
 							if(friend.getIsInvitedToBet()) {
 								participants.add(friend);
 							}
@@ -112,6 +112,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			public void onClick(View v) {
 				bet.setState(Bet.STATE_CLOSED);
 				bet.update();
+				finish();
 			}
 		});
 

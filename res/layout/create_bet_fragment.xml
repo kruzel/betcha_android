@@ -109,7 +109,27 @@
     	</RelativeLayout>
 
     </RelativeLayout>
-    
+    	<ListView 
+	    android:id="@+id/subject_hints"
+	    android:layout_width="match_parent"
+	    android:layout_height="200dp"
+	    android:layout_below="@+id/rl_bet"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="10dp"
+	    android:gravity="center_horizontal" 
+	    android:visibility="invisible"
+	    android:clickable="false" />
+	
+	<Gallery 
+	    android:id="@+id/rewards_hints"
+	    android:layout_width="match_parent"
+	    android:layout_height="50dp"
+	    android:layout_below="@+id/rl_bet"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="10dp"
+	    android:gravity="center_horizontal" 
+	    android:visibility="invisible"
+	    android:clickable="false" />
 	<LinearLayout
 	    android:id="@+id/linearLayoutDateTime"
 	    android:layout_width="wrap_content"

@@ -36,7 +36,7 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
 		
 		//ivCategoryImage.setImageBitmap(bm);
 		tvDescription.setText(category.getDescription());
-		tvCategory.setText(category.getCategory());
+		tvCategory.setText(category.getName());
 		
 		return v;		
 	}

@@ -81,9 +81,10 @@ public class BetchaApp extends Application implements IModelListener {
 			
 			@Override
 			public void run() {
-				getFriends();
+				getFriends(true);
 			}
 		});
+		t.start();
 
 		super.onCreate();
 	}
@@ -186,8 +187,8 @@ public class BetchaApp extends Application implements IModelListener {
 		return invite_bet_id;
 	}
 
-	public List<User> getFriends() {
-		if(friends!=null)
+	public List<User> getFriends(Boolean reload) {
+		if(friends!=null && !reload)
 			return friends;
 		
 		try {
