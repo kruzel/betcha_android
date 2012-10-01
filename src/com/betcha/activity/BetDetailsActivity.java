@@ -21,6 +21,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.FriendAdapter;
+import com.betcha.fragment.BetChatMessagesFragment;
 import com.betcha.fragment.BetDetailsFragment;
 import com.betcha.fragment.CreateBetFragment;
 import com.betcha.model.Bet;
@@ -33,6 +34,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	private Bet bet;
 	private BetDetailsFragment betDetailsFragment;
 	private ProgressDialog dialog;
+	
+	private BetChatMessagesFragment betChatFragment;
 	
 	private Button btnInvite;
 	private Button btnClose;
@@ -52,6 +55,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		app = (BetchaApp) getApplication();
 		
 		betDetailsFragment =  (BetDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.bet_details_fragment);
+		betChatFragment = (BetChatMessagesFragment) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
 		
 		btnInvite = (Button) findViewById(R.id.button_invite);
 		btnClose = (Button) findViewById(R.id.button_close);
@@ -106,19 +110,20 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				
+				bet.setState(Bet.STATE_CLOSED);
+				bet.update();
 			}
 		});
 
 		btnDelete.setOnClickListener(new OnClickListener() {
 	
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		
-	}
-});
+			@Override
+			public void onClick(View v) {
+				bet.delete();
+				finish();
+				
+			}
+		});
 		
 	}
 
@@ -153,7 +158,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		}
 		
 		betDetailsFragment.init(bet);
-
+		betChatFragment.init(bet, app.getMe());
 	}
 
 	@Override

@@ -32,15 +32,15 @@
         android:text="Chat_message"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
-
+
     <TextView
         android:id="@+id/tv_chat_message_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/tv_chat_message"
-        android:text="dd/mm/yy hh:mm"
+        android:hint="date"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
     

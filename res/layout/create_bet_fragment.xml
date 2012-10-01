@@ -148,15 +148,6 @@
 	    android:layout_marginTop="36dp"
 	    android:text="@string/invite"
 	    android:visibility="invisible" />
-
-	<Button
-	    android:id="@+id/buttonPublish"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignRight="@+id/buttonInvite"
-	    android:layout_marginBottom="41dp"
-	    android:text="Publish"
-	    android:visibility="invisible" />
+
 
 </RelativeLayout>

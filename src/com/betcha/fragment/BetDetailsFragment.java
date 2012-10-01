@@ -15,14 +15,12 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.R;
 import com.betcha.adapter.PredictionWithCbxAdapter;
 import com.betcha.model.Bet;
-import com.betcha.model.cache.IModelListener;
 
-public class BetDetailsFragment extends SherlockFragment implements IModelListener {
+public class BetDetailsFragment extends SherlockFragment {
 	private Bet bet;
 	private ListView lvPredictions;
 	private PredictionWithCbxAdapter predictionAdapter;
 	
-	private DateTimeFormatter fmt;
 	private ImageView ivProfPic;
 	private TextView tvBetDate;
 	private TextView tvBetOwner;
@@ -90,43 +88,6 @@ public class BetDetailsFragment extends SherlockFragment implements IModelListen
 		} else {
 			predictionAdapter.notifyDataSetChanged();
 		}
-	}
-
-
-	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -87,6 +87,9 @@ public class Bet extends ModelCache<Bet, Integer> {
 	}
 	
 	public void addParticipants(List<User> participants) {
+		if(this.participants==null) {
+			this.participants = new ArrayList<User>();
+		}
 		this.participants.addAll(participants);
 	}
 
@@ -481,31 +484,8 @@ public class Bet extends ModelCache<Bet, Integer> {
 			return 0;
 		}
 		
-		ownerPrediction.onLocalUpdate();
-		
-		for (User participant : participants) {
-			Boolean bParticipantExist = false;
-			//check if participant in db else add
-			for (Prediction tmpPrediction : predictions) {
-				if(tmpPrediction.getUser().getId().equals(participant.getId())) {
-					bParticipantExist = true;
-					continue;
-				}
-			}
-			if(bParticipantExist)
-				continue;
-			
-			if(participant.getId()==null) //new friend
-				participant.onLocalCreate(); //locally
-			
-			Prediction prediction = new Prediction();
-			prediction.setUser(participant);
-			prediction.setBet(this);
-			prediction.setPrediction("");
-			prediction.setSendInvite(true);
-			if(prediction.onLocalCreate()!=0) {
-				res += 1;
-			}
+		for (Prediction prediction : predictions) {
+			res += prediction.onLocalUpdate();
 		}
 		
 		try {
@@ -514,6 +494,30 @@ public class Bet extends ModelCache<Bet, Integer> {
 			e.printStackTrace();
 		}
 
+		return res;
+	}
+
+	@Override
+	public int onLocalDelete() {
+		int res = 0;
+		
+		for (Prediction prediction : getPredictions()) {
+			//destroy only local, server take care of destroying on its side
+			prediction.onLocalDelete();
+		}
+		
+		for (ChatMessage chatMsg : getChatMessages()) {
+			//destroy only local, server take care of destroying on its side
+			chatMsg.onLocalDelete();
+		}
+		
+		try {
+			res = getDao().delete(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
 		return res;
 	}
 

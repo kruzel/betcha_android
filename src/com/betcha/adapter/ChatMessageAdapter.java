@@ -2,6 +2,9 @@ package com.betcha.adapter;
 
 import java.util.List;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +48,10 @@ public class ChatMessageAdapter extends ArrayAdapter<ChatMessage> {
 			tvUserName.setText(chatMessage.getUser().getEmail());
 		else
 			tvUserName.setText(chatMessage.getUser().getName());
-		tvDate.setText(chatMessage.getMessage()==null ? "" : chatMessage.getMessage() );
-		tvDate.setText(chatMessage.getUpdated_at().toString());
+		tvMessageText.setText(chatMessage.getMessage()==null ? "" : chatMessage.getMessage() );
+		
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
+		tvDate.setText(fmt.print(chatMessage.getUpdated_at()));
 		
 		return v;		
 	}

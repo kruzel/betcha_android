@@ -5,6 +5,7 @@ import java.util.List;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -36,12 +37,14 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		
 		Prediction prediction = items.get(position);
 		
+		v.setTag(prediction);
+		
 		TextView tvBetUser = (TextView) v.findViewById(R.id.tv_user_bet_user);
 		TextView tvBetBet = (TextView) v.findViewById(R.id.tv_user_bet_bet);
 		CheckBox cbResult = (CheckBox) v.findViewById(R.id.cb_user_bet_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
 		
-		if(app.getMe().getId().endsWith(prediction.getBet().getOwner().getId())) {
+		if(app.getMe().getId().equals(prediction.getBet().getOwner().getId())) {
 			cbResult.setClickable(true);
 		} else {
 			cbResult.setClickable(false);
@@ -56,7 +59,22 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		else 
 			cbResult.setChecked(false);
 		
+		cbResult.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Prediction prediction = (Prediction) v.getTag();
+				if(prediction.getResult()==null) {
+					prediction.setResult(true);
+				} else {
+					prediction.setResult(!prediction.getResult());
+				}
+			}
+		});
+		
 		return v;		
 	}
+	
+	
 	
 }

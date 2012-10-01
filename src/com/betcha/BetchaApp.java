@@ -63,12 +63,17 @@ public class BetchaApp extends Application implements IModelListener {
 
 		prefs = getSharedPreferences(getString(R.string.prefs_name),
 				Context.MODE_PRIVATE);
-
-		if (!createDbHelpers()) {
-			Log.e(getClass().getSimpleName(),
-					".initDB() - failed creating helper");
-		} else {
-			initUserParams();
+		
+		if (databaseHelper == null) {
+			databaseHelper = OpenHelperManager.getHelper(this,
+					DatabaseHelper.class);
+			
+			if(databaseHelper==null || !databaseHelper.initModel(this)) {
+				Log.e(getClass().getSimpleName(),
+						".initDB() - failed creating helper");
+			} else {
+				initUserParams();
+			}
 		}
 		
 		//init friends list
@@ -101,26 +106,7 @@ public class BetchaApp extends Application implements IModelListener {
 		if (databaseHelper == null) {
 			databaseHelper = OpenHelperManager.getHelper(this,
 					DatabaseHelper.class);
-
-			ModelCache.setContext(this);
-			ModelCache.disableConnectivityReciever();
-
-			User.setDbHelper(databaseHelper);
-			Bet.setDbHelper(databaseHelper);
-			Prediction.setDbHelper(databaseHelper);
-			Friend.setDbHelper(databaseHelper);
-			ChatMessage.setDbHelper(databaseHelper);
-
-			RestClient.setContext(this);
-			UserRestClient.setUrl(getString(R.string.betcha_api) + "/users");
-			TokenRestClient.setUrl(getString(R.string.betcha_api) + "/tokens");
-			BetRestClient.setUrl(getString(R.string.betcha_api) + "/bets");
-			PredictionRestClient.setUrl(getString(R.string.betcha_api)
-					+ "/bets/{bet_id}/predictions");
-			FriendRestClient.setUrl(getString(R.string.betcha_api)
-					+ "/users/{user_id}/friends");
-			ChatMessageRestClient.setUrl(getString(R.string.betcha_api)
-					+ "/bets/{bet_id}/chat_messages");
+			databaseHelper.initModel(this);
 		}
 
 		return true;

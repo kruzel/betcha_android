@@ -18,7 +18,6 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
-import com.betcha.activity.CreateBetActivityOld;
 import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.SettingsActivity;
 import com.betcha.adapter.BetAdapter;

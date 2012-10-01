@@ -1,5 +1,7 @@
 package com.betcha.fragment;
 
+import java.sql.SQLException;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,21 +11,28 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.R;
 import com.betcha.adapter.ChatMessageAdapter;
 import com.betcha.model.Bet;
-import com.betcha.model.cache.IModelListener;
+import com.betcha.model.ChatMessage;
+import com.betcha.model.User;
 
-public class BetChatMessagesFragment extends SherlockFragment implements IModelListener {
+public class BetChatMessagesFragment extends SherlockFragment {
+	private User curUser;
 	private Bet bet;
 	private ListView lvMessages;
 	private ChatMessageAdapter chatMessageAdapter;
+	
+	private Button btnSend;
+	private EditText etNewMessage;
 
-	public void init(Bet bet) {
+	public void init(Bet bet, User curUser) {
 		this.bet = bet;
+		this.curUser = curUser;
 		populate();
 	}
 	
@@ -45,13 +54,32 @@ public class BetChatMessagesFragment extends SherlockFragment implements IModelL
 		View view = (ViewGroup) inflater.inflate(R.layout.chat_message_fragment, container);
 		lvMessages = (ListView) view.findViewById(R.id.lv_chat_messages);
 		
-		Button btnSend = (Button) view.findViewById(R.id.buttonChatMessageSend);
+		btnSend = (Button) view.findViewById(R.id.buttonChatMessageSend);
+		etNewMessage = (EditText) view.findViewById(R.id.et_chat_message);
+		
 		btnSend.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 	            imm.hideSoftInputFromWindow(getActivity().getWindow().getCurrentFocus().getWindowToken(), 0);
+	            
+	            if(etNewMessage.getText().toString()!=null && etNewMessage.getText().toString().length()>0) {
+					ChatMessage msg = new ChatMessage();
+					msg.setUser(curUser);
+					msg.setBet(bet);
+					msg.setMessage(etNewMessage.getText().toString());
+					msg.create();
+					try {
+						Bet.getModelDao().refresh(bet);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					
+					chatMessageAdapter.add(msg);
+					
+					populate();
+				}
 			}
 		});
 		
@@ -73,42 +101,6 @@ public class BetChatMessagesFragment extends SherlockFragment implements IModelL
 		} else {
 			chatMessageAdapter.notifyDataSetChanged();
 		}
-	}
-
-	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

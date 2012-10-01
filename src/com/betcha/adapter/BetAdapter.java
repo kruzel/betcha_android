@@ -97,7 +97,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			lvPredictions.setAdapter(predictionAdapter);
 		}
 		
-		//TODO dynamic hieght of list view
+		//TODO dynamic height of list view
 //		LayoutParams layoutParams = lvPredictions.getLayoutParams();
 //		layoutParams.height = layoutParams.height * predictions.size();
 //		lvPredictions.setLayoutParams(layoutParams);

@@ -49,7 +49,6 @@ public class CreateBetFragment extends SherlockFragment {
 	private EditText betDueDate;
 	private EditText betDueTime;
 	private Button buttonIvite;
-	private Button buttonPublish;
 	
 	DatePickerDialog dateDialog;
 	TimePickerDialog timeDialog;
@@ -99,7 +98,6 @@ public class CreateBetFragment extends SherlockFragment {
         betDueDateSummary = (TextView) view.findViewById(R.id.et_bet_date);
         betPrediction = (EditText) view.findViewById(R.id.et_bet_prediction);
         buttonIvite = (Button) view.findViewById(R.id.buttonInvite);
-        buttonPublish = (Button) view.findViewById(R.id.buttonPublish);
         betDueDate = (EditText) view.findViewById(R.id.bet_due_date);
         betDueTime = (EditText) view.findViewById(R.id.bet_due_time);
         

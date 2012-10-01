@@ -59,7 +59,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				}
 				
 				if(count==0) {
-					Intent intent = new Intent(this,CreateBetActivityOld.class);
+					Intent intent = new Intent(this,CreateBetActivity.class);
 					startActivity(intent);
 				}
 			} 
