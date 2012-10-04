@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 
+import com.betcha.BetchaApp;
 import com.betcha.model.User;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
@@ -291,6 +292,14 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	protected abstract Dao<T,ID> getDao() throws SQLException;
 	
 	public Boolean setJson(JSONObject json) {
+		
+		try {
+			setId(json.getString("id"));
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false; //must have id on server
+		}
+		
 		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		try {
 			setUpdated_at(formatter.parseDateTime(json.getString("updated_at")));
@@ -439,7 +448,24 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 				ModelCache.enableConnectivityReciever();
 				return false;
 			}
-					
+			
+			if(BetchaApp.getInstance().getMe()==null)
+				return false;
+				
+			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
+				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
+					BetchaApp.getInstance().getMe().setServerCreated(true);
+					BetchaApp.getInstance().getMe().setServerUpdated(true);
+					BetchaApp.getInstance().getMe().onLocalUpdate();
+				} else {
+					return false;
+				}
+			}
+			
+			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
+				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
+					return false;
+			}
 			
 			switch (currMethod) {
 			case CREATE:

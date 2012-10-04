@@ -77,14 +77,7 @@ public class BetchaApp extends Application implements IModelListener {
 		}
 		
 		//init friends list
-		Thread t = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				getFriends(true);
-			}
-		});
-		t.start();
+		loadFriends();
 
 		super.onCreate();
 	}
@@ -134,7 +127,7 @@ public class BetchaApp extends Application implements IModelListener {
 
 		String myUserId = prefs.getString("my_user_id", "-1");
 
-		if (myUserId != "-1") { // load my User from DB
+		if (!myUserId.equals("-1")) { // load my User from DB
 			try {
 				List<User> users = User.getModelDao()
 						.queryForEq("id", myUserId);
@@ -144,9 +137,9 @@ public class BetchaApp extends Application implements IModelListener {
 				String authToken = prefs.getString("auth_token", null);
 				RestClient.SetToken(authToken);
 
-				Friend friend = new Friend(me);
-				friend.setListener(this);
-				friend.getAllForCurUser();
+//				Friend friend = new Friend(me);
+//				friend.setListener(this);
+//				friend.getAllForCurUser();
 
 				registerToPushNotifications();
 			} catch (SQLException e) {
@@ -187,79 +180,80 @@ public class BetchaApp extends Application implements IModelListener {
 		return invite_bet_id;
 	}
 
-	public List<User> getFriends(Boolean reload) {
-		if(friends!=null && !reload)
-			return friends;
-		
-		try {
-			// TODO add distinct email
-			if (getMe() != null)
-				friends = User.getModelDao().queryBuilder()
-						.orderBy("name", true).where()
-						.ne("id", getMe().getId()).query();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-
-		if (friends == null) {
-			friends = new ArrayList<User>();
-		}
-
-		User ofer = new User();
-		ofer.setName("a");
-		ofer.setEmail("a@a.com");
-		ofer.setProvider("email");
-		friends.add(ofer);
-
-		// invite users only from pre-loaded friend list should be
-		// loaded ad registration)
-		ContentResolver cr = getContentResolver();
-		Cursor emailCur = cr.query(
-				ContactsContract.CommonDataKinds.Email.CONTENT_URI,
-				new String[] { Contacts._ID, Contacts.PHOTO_ID,
-						ContactsContract.Data.DISPLAY_NAME,
-						ContactsContract.CommonDataKinds.Email.DATA },
-				null, null, "lower("
-						+ ContactsContract.Data.DISPLAY_NAME + ") ASC");
-		while (emailCur.moveToNext()) {
-			// This would allow you get several email addresses
-			// if the email addresses were stored in an array
-			String email = emailCur.getString(emailCur
-					.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
-			String name = emailCur.getString(emailCur
-					.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
-
-			long contact_id = emailCur.getLong(emailCur
-					.getColumnIndex(ContactsContract.Contacts._ID));
-			long photo_id = emailCur.getLong(emailCur
-					.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
-
-			// verify this user is not a known user and already included
-			List<User> foundUsers = null;
-			try {
-				foundUsers = User.getModelDao().queryForEq("email",
-						email);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-
-			if ((name != null || email != null)
-					&& (foundUsers == null || foundUsers.size() == 0)) {
-				User tmpUser = new User();
-				tmpUser.setName(name);
-				tmpUser.setEmail(email);
-				tmpUser.setProvider("email");
-				tmpUser.setContact_id(contact_id);
-				tmpUser.setContact_photo_id(photo_id);
-
-				friends.add(tmpUser);
-			}
-		}
-		emailCur.close();
-			
+	public List<User> getFriends() {
 		return friends;
+	}
+		
+	public void loadFriends() {
+		Thread t = new Thread(new Runnable() {
+					
+			@Override
+			public void run() {			
+				try {
+					// TODO add distinct email
+					if (getMe() != null)
+						friends = User.getModelDao().queryBuilder()
+								.orderBy("name", true).where()
+								.ne("id", getMe().getId()).query();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+		
+				if (friends == null) {
+					friends = new ArrayList<User>();
+				}
+		
+				// invite users only from pre-loaded friend list should be
+				// loaded ad registration)
+				ContentResolver cr = getContentResolver();
+				Cursor emailCur = cr.query(
+						ContactsContract.CommonDataKinds.Email.CONTENT_URI,
+						new String[] { Contacts._ID, Contacts.PHOTO_ID,
+								ContactsContract.Data.DISPLAY_NAME,
+								ContactsContract.CommonDataKinds.Email.DATA },
+						null, null, "lower("
+								+ ContactsContract.Data.DISPLAY_NAME + ") ASC");
+				while (emailCur.moveToNext()) {
+					// This would allow you get several email addresses
+					// if the email addresses were stored in an array
+					String email = emailCur.getString(emailCur
+							.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+					String name = emailCur.getString(emailCur
+							.getColumnIndex(ContactsContract.Data.DISPLAY_NAME));
+		
+					long contact_id = emailCur.getLong(emailCur
+							.getColumnIndex(ContactsContract.Contacts._ID));
+					long photo_id = emailCur.getLong(emailCur
+							.getColumnIndex(ContactsContract.Contacts.PHOTO_ID));
+		
+					// verify this user is not a known user and already included
+					List<User> foundUsers = null;
+					try {
+						foundUsers = User.getModelDao().queryForEq("email",
+								email);
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+		
+					if ((name != null || email != null)
+							&& (foundUsers == null || foundUsers.size() == 0)) {
+						User tmpUser = new User();
+						tmpUser.setName(name);
+						tmpUser.setEmail(email);
+						tmpUser.setProvider("email");
+						tmpUser.setContact_id(contact_id);
+						tmpUser.setContact_photo_id(photo_id);
+		
+						friends.add(tmpUser);
+					}
+				}
+				emailCur.close();
+			}
+		});
+		t.start();
+		
 	}
 
 	public void registerToPushNotifications() {

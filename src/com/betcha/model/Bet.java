@@ -14,11 +14,13 @@ import org.springframework.web.client.RestClientException;
 
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
+import com.betcha.model.server.api.RestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
@@ -194,11 +196,14 @@ public class Bet extends ModelCache<Bet, Integer> {
 	public int onRestCreate() {
 		int res = 0;
 		
+		//create missing users
 		if(getPredictions()!=null) {
 			for (Prediction prediction : getPredictions()) {
-				if(prediction.getUser().onRestGet()==0) {
-					if(prediction.getUser().restCreateUserAccount()==0)
-						continue;
+				if(!prediction.getUser().isServerCreated()) {
+					if(prediction.getUser().onRestGet()==0) {
+						if(prediction.getUser().restCreateUserAccount()==0)
+							continue;
+					}
 				} 
 			}
 		}
@@ -323,6 +328,9 @@ public class Bet extends ModelCache<Bet, Integer> {
 			if (!tmpBet.setJson(jsonBet))
 				continue;
 
+			tmpBet.setServerCreated(true);
+			tmpBet.setServerUpdated(true);
+			
 			try {
 				tmpBet.createOrUpdateLocal();
 			} catch (SQLException e) {
@@ -349,6 +357,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	}
 
+	//TODO move this task to its own file and call it directly
 	private static class SyncTask extends AsyncTask<Void, Void, Boolean> {
 		private IModelListener modelListener;
 
@@ -358,6 +367,30 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 		@Override
 		protected Boolean doInBackground(Void... params) {
+			
+			if(!RestClient.isOnline()) {
+				ModelCache.enableConnectivityReciever();
+				return false;
+			}
+			
+			if(BetchaApp.getInstance().getMe()==null)
+				return false;
+			
+			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
+				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
+					BetchaApp.getInstance().getMe().setServerCreated(true);
+					BetchaApp.getInstance().getMe().setServerUpdated(true);
+					BetchaApp.getInstance().getMe().onLocalUpdate();
+				} else {
+					return false;
+				}
+			}
+			
+			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
+				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
+					return false;
+			}
+			
 			// get all updates from server (bets and their predictions and chat_messages
 			// TODO - use the show all update for current user
 			Bet.getAllUpdatesForCurUser(Bet.getLastUpdateFromServer());
@@ -376,6 +409,20 @@ public class Bet extends ModelCache<Bet, Integer> {
 			}
 
 			for (Bet bet : bets) {
+				if (!bet.isServerCreated()) {
+					if(bet.onRestCreate()>0) {
+						bet.setServerCreated(true);
+						bet.setServerUpdated(true);
+						try {
+							bet.getDao().update(bet);
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					} 
+
+					continue;
+				}
+				
 				if (!bet.isServerUpdated()) {
 					bet.onRestSync();
 					bet.setServerUpdated(true);
@@ -399,7 +446,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 				for (Prediction prediction : predictions) {
 					if (!prediction.isServerUpdated()) {
-						if(prediction.getId()==null) {
+						if(!prediction.isServerCreated()) {
 							prediction.onRestCreate();
 							prediction.setServerCreated(true);
 							prediction.setServerUpdated(true);
@@ -449,6 +496,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 		}
 		
 		ownerPrediction.onLocalCreate();
+		
 		int numFriends = 0;
 		for (User participant : participants) {
 			if(participant.getId()==null) { //new friend
@@ -459,8 +507,11 @@ public class Bet extends ModelCache<Bet, Integer> {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				if(foundUsers.size()==0)
+				if(foundUsers.size()==0) {
 					numFriends = participant.onLocalCreate(); //locally
+				} else { 
+					participant = foundUsers.get(0);
+				}
 			}
 			
 			Prediction prediction = new Prediction();
@@ -475,13 +526,19 @@ public class Bet extends ModelCache<Bet, Integer> {
 		
 		try {
 			getDao().refresh(this);
+			for (Prediction prediction : getPredictions()) {
+				int n = prediction.getDao().refresh(prediction);
+				if(prediction.getUser()!=null)
+					Log.i("after refresh", "refresh()=" + n + " prediction.user: " + prediction.getUser().getName() + ", " + prediction.getUser().getEmail());
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		if(numFriends>0)
-			BetchaApp.getInstance().getFriends(true); //TODO remove dependency to BetchaApp
-
+		if(numFriends>0) {
+			BetchaApp.getInstance().loadFriends();
+		}
+		
 		return res;
 	}
 
@@ -624,6 +681,10 @@ public class Bet extends ModelCache<Bet, Integer> {
 			} catch (SQLException e) {
 				e.printStackTrace();
 				continue;
+			}
+			
+			if(tmpPrediction.getUser().getId().equals(owner.getId())) {
+				setOwnerPrediction(tmpPrediction);
 			}
 
 		}

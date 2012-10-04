@@ -265,6 +265,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 			
 			if(success) {
 				app.registerToPushNotifications();
+				app.loadFriends();
 				
 				finish();
         		

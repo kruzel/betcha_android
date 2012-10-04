@@ -59,6 +59,10 @@ public class UserRestClient extends RestClient {
 			e1.printStackTrace();
 			return null;
 		}
+		
+		if(res==null)
+			return null;
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);

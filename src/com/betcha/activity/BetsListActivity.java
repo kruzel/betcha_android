@@ -35,9 +35,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
         	Intent intent = new Intent();
         	intent.setClass(this, SettingsActivity.class);
         	startActivity(intent);
-	    } else {
-			
-			if(!app.getBetId().equals("-1")) {
+	    } else if(!app.getBetId().equals("-1")) {
 				Bet bet = null;
 				try {
 					List<Bet> bets = Bet.getModelDao().queryForEq("id",app.getBetId());
@@ -50,21 +48,20 @@ public class BetsListActivity extends SherlockFragmentActivity {
 					openDetailedActivity(bet, false);
 				
 				app.setBetId("-1"); //avoid going here on next resume
-				
-				long count=0;
-				try {
-					count = Bet.getModelDao().countOf();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				
-				if(count==0) {
-					Intent intent = new Intent(this,CreateBetActivity.class);
-					startActivity(intent);
-				}
-			} 
+		} else {
+			long count=0;
+			try {
+				count = Bet.getModelDao().countOf();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			
+			if(count==0) {
+				Intent intent = new Intent(this,CreateBetActivity.class);
+				startActivity(intent);
+			}
 		}
-				
+					
 		super.onResume();
 	}
 

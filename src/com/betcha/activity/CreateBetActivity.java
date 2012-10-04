@@ -6,6 +6,7 @@ import java.util.List;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -72,13 +73,17 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 
 	@Override
 	public void OnBetCategorySelected() {
-		createBetFragment = new CreateBetFragment();
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.create_bet_fragment_container, createBetFragment);
-		transaction.addToBackStack(null);
-		transaction.commit();
+		if(app.getFriends()==null) {
+			Toast.makeText(this, "No friends or contacts found", Toast.LENGTH_LONG);
+		} else {
+			createBetFragment = new CreateBetFragment();
+			createBetFragment.init(newBet, app.getMe(),app.getFriends());
+			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+			transaction.replace(R.id.create_bet_fragment_container, createBetFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+		}
 		
-		createBetFragment.init(newBet, app.getMe(),app.getFriends(false));
 	}
 
 	@Override

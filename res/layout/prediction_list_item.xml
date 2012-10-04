@@ -12,18 +12,9 @@
         android:layout_alignParentTop="false"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_launcher" />
-
-    <CheckBox
-        android:id="@+id/cb_user_bet_win"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="false"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp" />
-
+
     <TextView
-        android:id="@+id/tv_user_bet_user"
+        android:id="@+id/tv_prediction_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -32,16 +23,38 @@
         android:text="user"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
-
-    <TextView
-        android:id="@+id/tv_user_bet_bet"
+
+    <EditText
+        android:id="@+id/tv_prediction_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_margin="5dp"
-        android:layout_toRightOf="@+id/tv_user_bet_user"
+        android:layout_toRightOf="@+id/tv_prediction_user_name"
+        android:ems="10"
+        android:inputType="text"
         android:text="bet"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
+    
+
+    <CheckBox
+        android:id="@+id/cb_prediction_win"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/buttonEdit"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp" />
+    <Button
+        android:id="@+id/buttonEdit"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp" 
+        android:text="ok" />
 
 </RelativeLayout>

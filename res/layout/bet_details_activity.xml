@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content" >
 
-	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical" >   
@@ -11,39 +11,46 @@
 	    <fragment android:name="com.betcha.fragment.BetDetailsFragment"
 	        android:id="@+id/bet_details_fragment"
 	        android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content" />
+	    	android:layout_height="wrap_content" 
+	    	android:layout_alignParentTop="true"/>
 			
 	    <LinearLayout
+	        android:id="@+id/buttons_frame"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_gravity="center_horizontal" >
+	        android:layout_gravity="center_horizontal" 
+	        android:layout_below="@+id/bet_details_fragment">
 		
 	        <Button
 	            android:id="@+id/button_invite"
 	            android:layout_width="100dp"
 	            android:layout_height="wrap_content"
-	            android:text="@string/invite" />
+	            android:text="@string/invite" 
+	            android:visibility="invisible"/>
 			
 	        <Button
 	            android:id="@+id/button_close"
 	            android:layout_width="100dp"
 	            android:layout_height="wrap_content"
 	            android:layout_gravity="center_horizontal"
-	            android:text="@string/close" />
+	            android:text="@string/close"
+	            android:visibility="invisible" />
 		
 	        <Button
 	            android:id="@+id/button_delete"
 	            android:layout_width="100dp"
 	            android:layout_height="wrap_content"
-	            android:text="@string/delete" />
+	            android:text="@string/delete"
+	            android:visibility="invisible" />
 	
 	    </LinearLayout>
 	    
 	    <fragment android:name="com.betcha.fragment.BetChatMessagesFragment"
 	        android:id="@+id/chat_fragment"
 	        android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content" />
+	    	android:layout_height="wrap_content"
+	    	android:layout_below="@+id/bet_details_fragment" />
 	    
-	</LinearLayout>
+	</RelativeLayout>
 </ScrollView>
 	

@@ -240,40 +240,66 @@ public class User extends ModelCache<User,Integer> {
 		
 		String resId = jsonUser.optString("id");
 		if(resId!=null && resId!=getId()) {
-			//oops the user already exist on the server, need to update id locally, 
-			setId(resId);
-			onLocalUpdate();
-			
-			// then update all foreign keys as well
-			// for now the  relevant foreign keys are prediction and friends
-			List<Prediction> predictions = null;
-			try {
-				predictions = Prediction.getModelDao().queryForEq("user_id", getId());
-			} catch (SQLException e) {
-			}
-			
-			if(predictions!=null && predictions.size()>0) {
-				for (Prediction prediction : predictions) {
-					prediction.setUser(this);
-					prediction.onLocalUpdate();
-				}
-			}
-				
-			List<Friend> friends = null;
-			try {
-				friends = Friend.getModelDao().queryForEq("friend_id", getId());
-			} catch (SQLException e) {
-			}
-			
-			if(friends!=null && friends.size()>0) {
-				for (Friend friend : friends) {
-					friend.setUser(this);
-					friend.onLocalUpdate();
-				}
-			}
+			//oops the user already exist on the server, need to update id locally,
+			recreateUser(jsonUser);
 		}
 					
 		return 1;
+	}
+	
+	private void recreateUser(JSONObject jsonUser) {
+		String resId = jsonUser.optString("id");
+		Boolean isLocalUser = BetchaApp.getInstance().getMe()==this;
+	
+		String oldId = getId();
+		onLocalDelete();
+		
+		setId(resId);
+		onLocalCreate();
+		
+		if(isLocalUser)
+			BetchaApp.getInstance().setMe(this);
+		
+		List<Friend> friends = null;
+		try {
+			friends = Friend.getModelDao().queryForEq("friend_id", oldId);
+		} catch (SQLException e) {
+		}
+		
+		if(friends!=null && friends.size()>0) {
+			for (Friend friend : friends) {
+				friend.setUser(this);
+				friend.onLocalUpdate();
+			}
+		}
+		
+		// then update all foreign keys as well
+		// for now the  relevant foreign keys are prediction and friends
+		List<Prediction> predictions = null;
+		try {
+			predictions = Prediction.getModelDao().queryForEq("user_id", oldId);
+		} catch (SQLException e) {
+		}
+		
+		if(predictions!=null && predictions.size()>0) {
+			for (Prediction prediction : predictions) {
+				prediction.setUser(this);
+				prediction.onLocalUpdate();
+			}
+		}
+		
+		List<ChatMessage> chatMessages = null;
+		try {
+			chatMessages = ChatMessage.getModelDao().queryForEq("user_id", oldId);
+		} catch (SQLException e) {
+		}
+		
+		if(chatMessages!=null && chatMessages.size()>0) {
+			for (ChatMessage chatMessage : chatMessages) {
+				chatMessage.setUser(this);
+				chatMessage.onLocalUpdate();
+			}
+		}
 	}
 	
 	public int restCreateToken() {
@@ -326,29 +352,48 @@ public class User extends ModelCache<User,Integer> {
 	public int onRestGet() {
 		UserRestClient userClient = new UserRestClient();
 		JSONObject jsonUser = null;
-		try {
-			if(isServerCreated())
+		
+		if(isServerCreated()) {
+			try {
 				jsonUser = userClient.show(getId());
-			else if(getProvider().equals("email"))
-				jsonUser = userClient.showViaEmail(getEmail());
-			else if(getProvider().equals("facebook"))
-				jsonUser = userClient.showViaUid(getUid());
+			} catch (RestClientException e) {
+				e.printStackTrace();
+				return 0;
+			}
+			
+			setJson(jsonUser);
+			onLocalUpdate();
+			return 1;
+		} 
+		
+		try {
+			if(getProvider()!=null) {
+				if(getProvider().equals("email"))
+					jsonUser = userClient.showViaEmail(getEmail());
+				else if(getProvider().equals("facebook"))
+					jsonUser = userClient.showViaUid(getUid());
+				
+				if(jsonUser==null)
+					return 0;
+				
+				String resId = jsonUser.optString("id");
+				if(resId!=null && resId!=getId()) {
+					//oops the user already exist on the server, need to update id locally,
+					recreateUser(jsonUser);
+					return 1;
+				}
+				
+			} else {
+				//may happen when we recover user account from the server so need to reload predictions users
+				jsonUser = userClient.show(getId());
+			}
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return 0;
 		}
 		if(jsonUser==null)
 			return 0;
-		
-		if(getId()!=null) {
-			//remove current from DB before creating the one from the server locally
-			try {
-				getDao().delete(this);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
+				
 		setJson(jsonUser);
 				
 		try {
@@ -389,11 +434,6 @@ public class User extends ModelCache<User,Integer> {
 	public Boolean setJson(JSONObject json) {
 		super.setJson(json);
 		
-		try {
-			setId(json.getString("id")); //override existing with id from server
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
 		try {
 			setProvider(json.getString("provider"));
 		} catch (JSONException e1) {
@@ -488,7 +528,7 @@ public class User extends ModelCache<User,Integer> {
 	        .build();
 		}
 		
-		if(getProvider().equals("facebook")) {	
+		if(getProvider().equals("facebook") && getUid()!=null) {	
 			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
 			imageLoader.displayImage(url, image,defaultOptions);
 			return;

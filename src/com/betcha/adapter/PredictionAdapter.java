@@ -36,11 +36,14 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		TextView tvParticipantName = (TextView) v.findViewById(R.id.tv_participant_name);
 		TextView tvParticipantPrediction = (TextView) v.findViewById(R.id.tv_participant_prediction);
 		
-		prediction.getUser().setProfilePhoto(ivParticipantProfPic);
-		if(prediction.getUser().getName()==null)
-			tvParticipantName.setText(prediction.getUser().getEmail());
-		else
-			tvParticipantName.setText(prediction.getUser().getName());
+		if(prediction.getUser()!=null) { //should not happen
+			prediction.getUser().setProfilePhoto(ivParticipantProfPic);
+			if(prediction.getUser().getName()==null)
+				tvParticipantName.setText(prediction.getUser().getEmail());
+			else
+				tvParticipantName.setText(prediction.getUser().getName());
+		}
+		
 		tvParticipantPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
 		
 		return v;		
