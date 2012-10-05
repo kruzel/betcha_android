@@ -171,22 +171,22 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 		if(json==null)
 			return 0;
 		
-		Prediction prediction = null;
-		try {
-			List<Prediction> predictions = Prediction.getModelDao().queryForEq(
-					"id", json.getString("id"));
-			if (predictions != null && predictions.size() > 0)
-				prediction = predictions.get(0);
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return 0;
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return 0;
-		}
-
-		if (prediction == null)
-			return 0;
+//		Prediction prediction = null;
+//		try {
+//			List<Prediction> predictions = Prediction.getModelDao().queryForEq(
+//					"id", json.getString("id"));
+//			if (predictions != null && predictions.size() > 0)
+//				prediction = predictions.get(0);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//			return 0;
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//			return 0;
+//		}
+//
+//		if (prediction == null)
+//			return 0;
 
 		User user = null;
 		try {
@@ -222,21 +222,16 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 		if (bet == null)
 			return 0;
 
-		prediction.setJson(json);
+		setJson(json);
 
 		try {
-			prediction.createOrUpdateLocal();
+			createOrUpdateLocal();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return 0;
 		}
 
-		if (prediction == null)
-			return 0;
-		else {
-			setPrediction(prediction);
-			return 1;
-		}
+		return 1;
 	}
 
 	@Override

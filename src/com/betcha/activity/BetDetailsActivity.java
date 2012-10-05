@@ -8,10 +8,13 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager.LayoutParams;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -78,12 +81,35 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 					lvFriends = (ListView) dialog.findViewById(R.id.friends_list);
 					friendAdapter = new FriendAdapter(BetDetailsActivity.this, R.layout.invite_list_item, app.getFriends());
 			        lvFriends.setAdapter(friendAdapter);
+			        lvFriends.setTextFilterEnabled(true);
 			        
 			        for (User friend : app.getFriends()) {
 						if(friend.getIsInvitedToBet()) {
 							friend.setIsInvitedToBet(false);
 						}
 					}
+			        
+			        EditText et = (EditText) dialog.findViewById(R.id.editTextSearch);
+			        et.addTextChangedListener(new TextWatcher() {
+						
+						@Override
+						public void onTextChanged(CharSequence s, int start, int before, int count) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void beforeTextChanged(CharSequence s, int start, int count,
+								int after) {
+							// TODO Auto-generated method stub
+							
+						}
+						
+						@Override
+						public void afterTextChanged(Editable s) {
+							friendAdapter.getFilter().filter(s);
+						}
+					});
 			        
 			        Button dialogButton = (Button) dialog.findViewById(R.id.buttonOK);
 					// if button is clicked, close the custom dialog
@@ -172,7 +198,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		}
 
 		if (isNewBet) {
-			dialog = ProgressDialog.show(BetDetailsActivity.this.getParent(),
+			dialog = ProgressDialog.show(BetDetailsActivity.this,
 					"", getString(R.string.msg_bet_loading), true);
 		}
 		
@@ -191,6 +217,16 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
         case android.R.id.home:
             finish();
             return true;
+        case R.id.menu_refresh:
+        	if (dialog != null && dialog.isShowing()) {
+    			dialog.dismiss();
+    			dialog = null;
+    		}
+        	dialog = ProgressDialog.show(BetDetailsActivity.this,
+					"", getString(R.string.msg_bet_loading), true);
+        	bet.setListener(this);
+        	bet.get();
+        	return true;
         default:
             return super.onOptionsItemSelected(item);
 		}
@@ -241,15 +277,11 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			dialog.dismiss();
 			dialog = null;
 		}
-	}
-
-	@Override
-	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
-		if (dialog != null && dialog.isShowing()) {
-			dialog.dismiss();
-			dialog = null;
-		}
 		
+		if(success) {
+			betDetailsFragment.refresh();
+	    	betChatFragment.refresh();
+		}
 	}
 
 	@Override

@@ -57,7 +57,6 @@ public class Bet extends ModelCache<Bet, Integer> {
  
 	private List<User> participants;
 	
-
 	// non persistent
 	public static final String STATE_OPEN = "open";
 	public static final String STATE_DUE = "due";
@@ -235,20 +234,20 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	@Override
 	public int onRestGet() {
-		Bet tmpBet = null;
-		try {
-			List<Bet> bets = Bet.getModelDao().queryForEq("id", getId());
-			if (bets == null || bets.size() == 0)
-				return 0;
-			tmpBet = bets.get(0);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return 0;
-		}
-
-		if (tmpBet == null) {
-			tmpBet = new Bet();
-		}
+//		Bet tmpBet = null;
+//		try {
+//			List<Bet> bets = Bet.getModelDao().queryForEq("id", getId());
+//			if (bets == null || bets.size() == 0)
+//				return 0;
+//			tmpBet = bets.get(0);
+//		} catch (SQLException e1) {
+//			e1.printStackTrace();
+//			return 0;
+//		}
+//
+//		if (tmpBet == null) {
+//			tmpBet = new Bet();
+//		}
 
 		BetRestClient betClient = new BetRestClient();
 		JSONObject jsonBet = null;
@@ -261,9 +260,19 @@ public class Bet extends ModelCache<Bet, Integer> {
 		if (jsonBet == null)
 			return 0;
 
-		if (tmpBet.setJson(jsonBet)) {
+		JSONObject jsonBetContent=null;
+		try {
+			jsonBetContent = jsonBet.getJSONObject("bet");
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		
+		if(jsonBetContent==null)
+			return 0;
+		
+		if (setJson(jsonBetContent)) {
 			try {
-				tmpBet.createOrUpdateLocal();
+				createOrUpdateLocal();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return 0;
@@ -282,7 +291,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 		List<Bet> bets = new ArrayList<Bet>();
 
 		BetRestClient restClient = new BetRestClient();
-		JSONArray jsonBets = null;
+		JSONObject jsonBets = null;
 		try {
 			if (lastUpdate == null)
 				jsonBets = restClient.show_for_user(); // for logged in user
@@ -298,12 +307,23 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 		if (jsonBets == null)
 			return 0;
+		
+		JSONArray jsonBetsArray = null;
+		try {
+			jsonBetsArray = jsonBets.getJSONArray("bets");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		for (int i = 0; i < jsonBets.length(); i++) {
+		if (jsonBetsArray == null)
+			return 0;
+
+		for (int i = 0; i < jsonBetsArray.length(); i++) {
 			JSONObject jsonBet;
 
 			try {
-				jsonBet = jsonBets.getJSONObject(i);
+				jsonBet = jsonBetsArray.getJSONObject(i);
 			} catch (JSONException e3) {
 				e3.printStackTrace();
 				continue;
@@ -653,19 +673,30 @@ public class Bet extends ModelCache<Bet, Integer> {
 				e3.printStackTrace();
 				continue;
 			}
-
+			
 			Prediction tmpPrediction = null;
-			try {
-				List<Prediction> tmpPredictions = Prediction.getModelDao()
-						.queryForEq("id", jsonPrediction.getString("id"));
-				if (tmpPredictions != null && tmpPredictions.size() > 0) {
-					tmpPrediction = tmpPredictions.get(0);
+			if(predictions!=null && predictions.size()>0) {
+				for (Prediction prediction : predictions) {
+					String predictionId = jsonPrediction.optString("id");
+					if(predictionId!=null && prediction.getId().equals(predictionId)) {
+						tmpPrediction = prediction;
+						continue;
+					}
 				}
-			} catch (SQLException e2) {
-				e2.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+
+//			Prediction tmpPrediction = null;
+//			try {
+//				List<Prediction> tmpPredictions = Prediction.getModelDao()
+//						.queryForEq("id", jsonPrediction.getString("id"));
+//				if (tmpPredictions != null && tmpPredictions.size() > 0) {
+//					tmpPrediction = tmpPredictions.get(0);
+//				}
+//			} catch (SQLException e2) {
+//				e2.printStackTrace();
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
 
 			if (tmpPrediction == null) {
 				tmpPrediction = new Prediction();
@@ -675,6 +706,9 @@ public class Bet extends ModelCache<Bet, Integer> {
 				continue;
 
 			tmpPrediction.setBet(this);
+			
+			tmpPrediction.setServerCreated(true);
+			tmpPrediction.setServerUpdated(true);
 
 			try {
 				tmpPrediction.createOrUpdateLocal();
@@ -687,6 +721,13 @@ public class Bet extends ModelCache<Bet, Integer> {
 				setOwnerPrediction(tmpPrediction);
 			}
 
+		}
+		
+		try {
+			if(predictions!=null)
+				predictions.refreshCollection();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
 
 		JSONArray jsonChatMessages = null;
@@ -711,17 +752,27 @@ public class Bet extends ModelCache<Bet, Integer> {
 			}
 
 			ChatMessage tmpChatMessage = null;
-			try {
-				List<ChatMessage> tmpChatMessages = ChatMessage.getModelDao()
-						.queryForEq("id", jsonChatMessage.getString("id"));
-				if (tmpChatMessages != null && tmpChatMessages.size() > 0) {
-					tmpChatMessage = tmpChatMessages.get(0);
+			if(chatMessages!=null && predictions.size()>0) {
+				for (ChatMessage chatMessage : chatMessages) {
+					String chatMessageId = jsonChatMessage.optString("id");
+					if(chatMessageId!=null && chatMessage.getId().equals(chatMessageId)) {
+						tmpChatMessage = chatMessage;
+						continue;
+					}
 				}
-			} catch (SQLException e2) {
-				e2.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
 			}
+			
+//			try {
+//				List<ChatMessage> tmpChatMessages = ChatMessage.getModelDao()
+//						.queryForEq("id", jsonChatMessage.getString("id"));
+//				if (tmpChatMessages != null && tmpChatMessages.size() > 0) {
+//					tmpChatMessage = tmpChatMessages.get(0);
+//				}
+//			} catch (SQLException e2) {
+//				e2.printStackTrace();
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
 
 			if (tmpChatMessage == null) {
 				tmpChatMessage = new ChatMessage();
@@ -752,6 +803,13 @@ public class Bet extends ModelCache<Bet, Integer> {
 				continue;
 			}
 
+		}
+		
+		try {
+			if(chatMessages!=null)
+				chatMessages.refreshCollection();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 		return true;

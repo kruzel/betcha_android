@@ -242,12 +242,12 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 
             @Override
             public void onFacebookError(FacebookError error) {
-            	onCreateComplete(app.getMe().getClass(),false);
+            	onCreateComplete(User.class,false);
             }
 
             @Override
             public void onError(DialogError e) {
-            	onCreateComplete(app.getMe().getClass(),false);
+            	onCreateComplete(User.class,false);
             }
 
             @Override
@@ -320,12 +320,4 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
 	}
-
-	@Override
-	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
-		if(dialog!=null && dialog.isShowing())
-			dialog.dismiss();
-	}
-	
-	
 }

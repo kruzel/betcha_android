@@ -35,7 +35,8 @@ public class BetDetailsFragment extends SherlockFragment {
 	}
 	
 	public void refresh() {
-		lvPredictions.invalidate();
+		predictionAdapter = null;
+		populate();
 	}
 
 	/** Called when the activity is first created. */

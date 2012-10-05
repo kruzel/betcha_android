@@ -61,23 +61,21 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				Bet.syncAllWithServer(BetsListFragment.this);
 			}
 		});        
-        
-        if(app.getMe()!=null) {
-			if(app.getMe().getId()!=null && isFirstBetsLoad) {
-				isFirstBetsLoad = false;
-	        	//lvBets.setRefreshing();
-	        	Bet.syncAllWithServer(this);
-	        }
-			
-        }
-		
+        		
 		return view;
 	}
 	
 	@Override
 	public void onResume() {
 		if(app.getMe()!=null) {
-			populate();
+			if(app.getMe().getId()!=null && isFirstBetsLoad) {
+				isFirstBetsLoad = false;
+	        	lvBets.setRefreshing();
+	        	Bet.syncAllWithServer(this);
+	        }
+        } else {
+        	//refresh from local cache
+        	populate();
         }
 		
 		super.onResume();
@@ -165,27 +163,6 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 	@Override
 	public void onGetComplete(Class clazz, Boolean success) {
-		if(dialog!=null && dialog.isShowing()) {
-			dialog.dismiss();
-			dialog = null;
-		}
-		
-		lvBets.onRefreshComplete();
-		
-		if(success ) {
-			populate();
-						
-			if(app.getBetId()!="-1") {
-				app.setBetId("-1"); //avoid going here on next resume
-				openDetailedActivity(newBet, true);
-			}
-		} else {
-			Toast.makeText(getActivity(), R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
-		}
-	}
-
-	@Override
-	public void onGetWithDependentsComplete(Class clazz, Boolean success) {
 		if(dialog!=null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;

@@ -55,22 +55,17 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 			cbWinner.setClickable(false);
 		}
 		
-		prediction.getUser().setProfilePhoto(ivProfPic);
-		tvUserName.setText(prediction.getUser().getName());
+		if(prediction.getUser()!=null) { //should not happen
+			prediction.getUser().setProfilePhoto(ivProfPic);
+			if(prediction.getUser().getName()==null)
+				tvUserName.setText(prediction.getUser().getEmail().substring(0, prediction.getUser().getEmail().indexOf('@')));
+			else
+				tvUserName.setText(prediction.getUser().getName());
+		}
+		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
 		if(app.getMe().getId().equals(prediction.getUser().getId())) {
-			tvPrediction.requestFocus();
-			tvPrediction.setInputType(InputType.TYPE_CLASS_TEXT);
-			
-			tvPrediction.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-			         imm.toggleSoftInput( InputMethodManager.SHOW_FORCED, 0);
-			         imm.showSoftInput(v, InputMethodManager.SHOW_FORCED);
-				}
-			});
-			
+				
 			tvPrediction.setOnFocusChangeListener(new OnFocusChangeListener() {
 				
 				@Override
@@ -79,6 +74,7 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 						EditText et = (EditText) v;
 						Prediction p = (Prediction) v.getTag();
 						p.setPrediction(et.getText().toString());
+						et.clearFocus();
 					}
 					
 				}
@@ -94,8 +90,8 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 				}
 			});
 		} else {
+			tvPrediction.setEnabled(false);
 			btnOK.setVisibility(View.INVISIBLE);
-			
 		}
 		
 		Boolean res = prediction.getResult();

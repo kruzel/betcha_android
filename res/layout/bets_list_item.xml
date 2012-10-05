@@ -88,7 +88,7 @@
 	            android:layout_below="@id/ll_bet_reward"
 	            android:layout_centerHorizontal="true"
 	            android:layout_margin="5dp" 
-	            android:descendantFocusability="blocksDescendants">  
+	            >  
 	        </ListView>
 
 	        <ImageView

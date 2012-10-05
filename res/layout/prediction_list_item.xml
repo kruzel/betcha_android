@@ -23,7 +23,7 @@
         android:text="user"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
-
+
     <EditText
         android:id="@+id/tv_prediction_text"
         android:layout_width="wrap_content"
@@ -32,11 +32,12 @@
         android:layout_margin="5dp"
         android:layout_toRightOf="@+id/tv_prediction_user_name"
         android:ems="10"
+        android:imeOptions="actionDone"
+        android:singleLine="true"
         android:inputType="text"
         android:text="bet"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
-    
 
     <CheckBox
         android:id="@+id/cb_prediction_win"

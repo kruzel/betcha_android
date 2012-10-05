@@ -39,7 +39,7 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		if(prediction.getUser()!=null) { //should not happen
 			prediction.getUser().setProfilePhoto(ivParticipantProfPic);
 			if(prediction.getUser().getName()==null)
-				tvParticipantName.setText(prediction.getUser().getEmail());
+				tvParticipantName.setText(prediction.getUser().getEmail().substring(0, prediction.getUser().getEmail().indexOf('@')));
 			else
 				tvParticipantName.setText(prediction.getUser().getName());
 		}

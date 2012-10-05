@@ -37,7 +37,8 @@ public class BetChatMessagesFragment extends SherlockFragment {
 	}
 	
 	public void refresh() {
-		lvMessages.invalidate();
+		chatMessageAdapter = null;
+		populate();
 	}
 
 	/** Called when the activity is first created. */
@@ -56,6 +57,7 @@ public class BetChatMessagesFragment extends SherlockFragment {
 		
 		btnSend = (Button) view.findViewById(R.id.buttonChatMessageSend);
 		etNewMessage = (EditText) view.findViewById(R.id.et_chat_message);
+		etNewMessage.clearFocus();
 		
 		btnSend.setOnClickListener(new OnClickListener() {
 			
@@ -79,6 +81,9 @@ public class BetChatMessagesFragment extends SherlockFragment {
 					chatMessageAdapter.add(msg);
 					
 					populate();
+					
+					etNewMessage.clearFocus();
+					etNewMessage.setText("");
 				}
 			}
 		});

@@ -18,6 +18,7 @@ import com.betcha.model.Bet;
  */
 public class BetsListActivity extends SherlockFragmentActivity {
 	private BetchaApp app;
+	private Boolean firstResume = true;
 		
 	/** Called when the activity is first created. */
     @Override
@@ -56,9 +57,10 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				e.printStackTrace();
 			}
 			
-			if(count==0) {
+			if(count==0 && firstResume) {
 				Intent intent = new Intent(this,CreateBetActivity.class);
 				startActivity(intent);
+				firstResume=false;
 			}
 		}
 					

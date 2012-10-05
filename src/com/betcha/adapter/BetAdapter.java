@@ -1,5 +1,6 @@
 package com.betcha.adapter;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.format.DateTimeFormat;
@@ -30,6 +31,20 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 	public BetAdapter(Context context, int textViewResourceId, List<Bet> bets) {
 		super(context, textViewResourceId, bets);
 		this.items = bets;
+	}
+
+	@Override
+	public void addAll(Bet... items) {
+		for (Bet bet : items) {
+			add(bet);
+		}
+	}
+
+	@Override
+	public void addAll(Collection<? extends Bet> collection) {
+		for (Bet bet : collection) {
+			add(bet);
+		}
 	}
 
 	@Override

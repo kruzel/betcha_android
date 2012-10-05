@@ -47,7 +47,7 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONArray show_for_user() {
+	public JSONObject show_for_user() {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
@@ -55,9 +55,9 @@ public class BetRestClient extends RestClient {
 			e1.printStackTrace();
 			return null;
 		}
-		JSONArray json = null;
+		JSONObject json = null;
 		try {
-			json = new JSONArray(res);
+			json = new JSONObject(res);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -66,7 +66,7 @@ public class BetRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONArray show_updates_for_user(DateTime lastUpdate) {
+	public JSONObject show_updates_for_user(DateTime lastUpdate) {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_updates_for_user.json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class);
@@ -74,9 +74,9 @@ public class BetRestClient extends RestClient {
 			e1.printStackTrace();
 			return null;
 		}
-		JSONArray json = null;
+		JSONObject json = null;
 		try {
-			json = new JSONArray(res);
+			json = new JSONObject(res);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

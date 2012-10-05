@@ -505,6 +505,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 			case GET:
 				if(model.onRestGet()>0) {
 					model.setServerUpdated(true);
+					model.setServerCreated(true);
 					model.onLocalUpdate();
 					return true;
 				}
@@ -512,6 +513,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 			case GET_FOR_CUR_USER:
 				if(model.onRestGetAllForCurUser()>0) {
 					model.setServerUpdated(true);
+					model.setServerCreated(true);
 					model.onLocalUpdate();
 					return true;
 				}

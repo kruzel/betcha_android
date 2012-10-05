@@ -2,14 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
 	android:layout_height="match_parent" >
-	
+	
     <FrameLayout
         android:id="@+id/friends_list_frame"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent" 
-		android:layout_marginBottom="50dp">
-	
-		<ListView 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="55dp"
+        android:layout_marginTop="40dp" >
+	
+		<ListView
 		    android:id="@+id/friends_list"
 		    android:layout_width="match_parent"
 		    android:layout_height="match_parent" />
@@ -24,5 +25,21 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
         android:text="@string/send" />
+
+    <EditText
+        android:id="@+id/editTextSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:ems="10"
+        android:hint="Search"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"
+        android:imeActionId="100" >
+
+        <requestFocus />
+    </EditText>
 	
 </RelativeLayout>

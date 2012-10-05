@@ -16,6 +16,8 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -274,6 +276,37 @@ public class CreateBetFragment extends SherlockFragment {
 						friend.setIsInvitedToBet(false);
 					}
 				}
+		        
+		        EditText et = (EditText) dialog.findViewById(R.id.editTextSearch);
+		        et.addTextChangedListener(new TextWatcher() {
+					
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count,
+							int after) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void afterTextChanged(Editable s) {
+						friendAdapter.getFilter().filter(s);
+					}
+				});
+		        
+		        et.setOnEditorActionListener(new OnEditorActionListener() {
+					
+					@Override
+					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+						v.clearFocus();
+						return true;
+					}
+				});
 		        
 		        Button dialogButton = (Button) dialog.findViewById(R.id.buttonOK);
 				// if button is clicked, close the custom dialog

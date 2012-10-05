@@ -7,19 +7,23 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical" >   
-	    
-	    <fragment android:name="com.betcha.fragment.BetDetailsFragment"
+	    
+	    <fragment
 	        android:id="@+id/bet_details_fragment"
+	        android:name="com.betcha.fragment.BetDetailsFragment"
 	        android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content" 
-	    	android:layout_alignParentTop="true"/>
-			
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:layout_margin="5dp" />
+			
 	    <LinearLayout
 	        android:id="@+id/buttons_frame"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_gravity="center_horizontal" 
-	        android:layout_below="@+id/bet_details_fragment">
+	        android:layout_below="@+id/bet_details_fragment"
+	        android:layout_centerHorizontal="true"
+	        android:layout_gravity="center_horizontal"
+	        android:layout_margin="5dp" >
 		
 	        <Button
 	            android:id="@+id/button_invite"
@@ -44,12 +48,14 @@
 	            android:visibility="invisible" />
 	
 	    </LinearLayout>
-	    
-	    <fragment android:name="com.betcha.fragment.BetChatMessagesFragment"
+	    
+	    <fragment
 	        android:id="@+id/chat_fragment"
+	        android:name="com.betcha.fragment.BetChatMessagesFragment"
 	        android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content"
-	    	android:layout_below="@+id/bet_details_fragment" />
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/bet_details_fragment"
+	        android:layout_margin="5dp" />
 	    
 	</RelativeLayout>
 </ScrollView>
