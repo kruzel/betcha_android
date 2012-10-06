@@ -13,25 +13,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.os.Debug;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 
 import com.betcha.model.Bet;
-import com.betcha.model.ChatMessage;
-import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
 import com.betcha.model.cache.IModelListener;
-import com.betcha.model.cache.ModelCache;
-import com.betcha.model.server.api.BetRestClient;
-import com.betcha.model.server.api.ChatMessageRestClient;
-import com.betcha.model.server.api.FriendRestClient;
-import com.betcha.model.server.api.PredictionRestClient;
 import com.betcha.model.server.api.RestClient;
-import com.betcha.model.server.api.TokenRestClient;
-import com.betcha.model.server.api.UserRestClient;
 import com.google.android.gcm.GCMRegistrar;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
@@ -57,7 +49,8 @@ public class BetchaApp extends Application implements IModelListener {
 
 	@Override
 	public void onCreate() {
-
+		//Debug.startMethodTracing("dropabet");
+		
 		ACRA.init(this);
 
 		app = this;

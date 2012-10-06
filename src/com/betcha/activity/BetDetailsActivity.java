@@ -202,7 +202,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 					"", getString(R.string.msg_bet_loading), true);
 		}
 		
-		betDetailsFragment.init(bet);
+		betDetailsFragment.init(bet, app.getMe());
 		betChatFragment.init(bet, app.getMe());
 	}
 

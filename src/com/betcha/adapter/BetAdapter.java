@@ -1,10 +1,7 @@
 package com.betcha.adapter;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -19,7 +16,8 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.betcha.R;
@@ -30,7 +28,6 @@ import com.betcha.model.Prediction;
 public class BetAdapter extends ArrayAdapter<Bet> {
 	
 	private List<Bet> items;
-	private Map<Integer,PredictionHolder> predictionHolders = new HashMap<Integer, BetAdapter.PredictionHolder>();
 	
 	public BetAdapter(Context context, int textViewResourceId, List<Bet> bets) {
 		super(context, textViewResourceId, bets);
@@ -60,6 +57,12 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		if(bet==null || bet.getOwner()==null)
 			return v;
 		
+		List<Prediction> predictions = bet.getPredictions();
+		if(predictions==null || predictions.size()==0)
+			return v;
+		
+		int predictionSize = predictions.size();
+		
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
 	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
@@ -73,8 +76,24 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
 		    holder.ivNavArrow = (ImageView) v.findViewById(R.id.image_view_nav);
-			
-		    holder.lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
+		    
+		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
+		    		    
+		    holder.rlPredictionItems = new PredictionHolder[predictionSize];
+		    
+		    for(int i = 0; i<predictionSize ; i++ ) {
+		    	holder.rlPredictionItems[i] = new PredictionHolder();
+		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item, holder.lvPredictions, false);
+		    	holder.rlPredictionItems[i].ivParticipantProfPic = (ImageView) holder.rlPredictionItems[i].layout.findViewById(R.id.iv_participant_pic);
+		    	holder.rlPredictionItems[i].tvParticipantName = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_name);
+		    	holder.rlPredictionItems[i].tvParticipantPrediction = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_prediction);
+		    	holder.lvPredictions.addView(holder.rlPredictionItems[i].layout);
+		    }
+		    
+		    LayoutParams itemLayoutParams = holder.rlPredictionItems[0].layout.getLayoutParams();
+		    LayoutParams layoutParams = holder.lvPredictions.getLayoutParams();
+		    layoutParams.height = itemLayoutParams.height * predictionSize;
+		    holder.lvPredictions.setLayoutParams(layoutParams);
 					    
 		 	// associate the holder with the view for later lookup
             v.setTag(holder);
@@ -118,23 +137,18 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		holder.tvBetSubject.setText(bet.getSubject());
 		holder.tvBetReward.setText(bet.getReward());
 		
-		PredictionHolder predHolder = predictionHolders.get(position);
-		if(predHolder==null) {
-			predHolder = new PredictionHolder();
-			predHolder.predictions = bet.getPredictions();
-			if(predHolder.predictions!=null) {
-				predHolder.predictionAdapter = new PredictionAdapter(getContext(), R.layout.bet_prediction_short_item, predHolder.predictions);
-				holder.lvPredictions.setAdapter(predHolder.predictionAdapter);
-			}
-			predictionHolders.put(position, predHolder);
-		}
+		for(int i = 0; i<predictionSize ; i++ ) {
+			Prediction prediction = predictions.get(i);
+			prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
+	    	holder.rlPredictionItems[i].tvParticipantName.setText(prediction.getUser().getName());
+	    	holder.rlPredictionItems[i].tvParticipantPrediction.setText(prediction.getPrediction());
+	    }
 		
 		return v;
 	}
 	
 	private class ViewHolder {
-		Integer betId;
-		
+				
 		ImageView ivProfPic;
 		TextView betDueDate;
 		TextView tvBetOwner;
@@ -144,12 +158,15 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		TextView tvBetReward;
 		ImageView ivNavArrow;
 		
-		ListView lvPredictions;
+		LinearLayout lvPredictions;
+		PredictionHolder[] rlPredictionItems;
 	}
 	
 	private class PredictionHolder {
-		List<Prediction> predictions;
-		PredictionAdapter predictionAdapter;
+		RelativeLayout layout;
+		ImageView ivParticipantProfPic;
+		TextView tvParticipantName;
+		TextView tvParticipantPrediction;
 	}
 
 }
