@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,16 +68,15 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	
 	@Override
 	public void onResume() {
-		if(app.getMe()!=null) {
-			if(app.getMe().getId()!=null && isFirstBetsLoad) {
+		if(app.getMe()!=null && app.getMe().getId()!=null) {
+			if(isFirstBetsLoad) {
 				isFirstBetsLoad = false;
 	        	lvBets.setRefreshing();
 	        	Bet.syncAllWithServer(this);
 	        }
-        } else {
-        	//refresh from local cache
-        	populate();
-        }
+			
+			populate();
+        } 
 		
 		super.onResume();
 	}
@@ -89,6 +89,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	@Override
 	public boolean onOptionsItemSelected(
 			com.actionbarsherlock.view.MenuItem item) {
+		//Debug.stopMethodTracing();
+		
 		Intent intent;
 		switch (item.getItemId()) {
 	        case R.id.menu_create_bet:
