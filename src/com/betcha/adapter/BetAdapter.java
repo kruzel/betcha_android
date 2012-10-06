@@ -1,7 +1,10 @@
 package com.betcha.adapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -27,6 +30,7 @@ import com.betcha.model.Prediction;
 public class BetAdapter extends ArrayAdapter<Bet> {
 	
 	private List<Bet> items;
+	private Map<Integer,PredictionHolder> predictionHolders = new HashMap<Integer, BetAdapter.PredictionHolder>();
 	
 	public BetAdapter(Context context, int textViewResourceId, List<Bet> bets) {
 		super(context, textViewResourceId, bets);
@@ -50,14 +54,35 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
+        ViewHolder holder = null; // to reference the child views for later actions
+        
+        Bet bet = items.get(position);
+		if(bet==null || bet.getOwner()==null)
+			return v;
 		
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
 	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
-	        v.setClickable(false);
-		    v.setFocusable(false);
-		    v.setBackgroundResource(android.R.drawable.menuitem_background);
-		    v.setOnClickListener(new OnClickListener() {
+		    		    
+		    holder = new ViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDueDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvBetOwner = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    
+		    // internal frame 
+		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
+		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
+		    holder.ivNavArrow = (ImageView) v.findViewById(R.id.image_view_nav);
+			
+		    holder.lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
+					    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            holder.ivNavArrow.setClickable(false);
+            holder.ivNavArrow.setFocusable(false);
+            holder.ivNavArrow.setBackgroundResource(android.R.drawable.menuitem_background);
+            holder.ivNavArrow.setOnClickListener(new OnClickListener() {
 
 		        @Override
 		        public void onClick(View v) {
@@ -68,56 +93,63 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		        }
 
 		    });
-		}
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (ViewHolder)v.getTag();
+        }
+			
+		holder.ivNavArrow.setTag(bet.getId());
 		
-		Bet bet = items.get(position);
-		if(bet==null || bet.getOwner()==null)
-			return v;
-		
-		v.setTag(bet.getId());
-		
-		//bet owner and other details (outer frame)
-		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
-		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
-		TextView betDueDate = (TextView) v.findViewById(R.id.tv_bet_date);
-		TextView tvBetOwner = (TextView) v.findViewById(R.id.tv_bet_owner);
-		
-		bet.getOwner().setProfilePhoto(ivProfPic);
+		bet.getOwner().setProfilePhoto(holder.ivProfPic);
 		
 		if(bet.getDueDate().plusHours(24).isAfterNow()) {
 			//less then 24 hours left
 			DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
-			betDueDate.setText(fmtTime.print(bet.getDueDate()));
+			holder.betDueDate.setText(fmtTime.print(bet.getDueDate()));
 		} else {
 			//more then 24 hours left
 			DateTimeFormatter fmtDate = DateTimeFormat.forPattern("MM-dd");
-			betDueDate.setText(fmtDate.print(bet.getDueDate()));
+			holder.betDueDate.setText(fmtDate.print(bet.getDueDate()));
 		} 
 		
-		tvBetOwner.setText(bet.getOwner().getName());
+		holder.tvBetOwner.setText(bet.getOwner().getName());
 		
-		// internal frame 
-		TextView tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
-		TextView tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
+		holder.tvBetSubject.setText(bet.getSubject());
+		holder.tvBetReward.setText(bet.getReward());
 		
-		tvBetSubject.setText(bet.getSubject());
-		tvBetReward.setText(bet.getReward());
-		
-		ViewGroup vg = (ViewGroup) v;
-		
-		ListView lvPredictions = (ListView) v.findViewById(R.id.lv_bet_predictions);
-		List<Prediction> predictions = bet.getPredictions();
-		if(predictions!=null) {
-			PredictionAdapter predictionAdapter = new PredictionAdapter(getContext(), R.layout.bet_prediction_short_item, predictions);
-			lvPredictions.setAdapter(predictionAdapter);
+		PredictionHolder predHolder = predictionHolders.get(position);
+		if(predHolder==null) {
+			predHolder = new PredictionHolder();
+			predHolder.predictions = bet.getPredictions();
+			if(predHolder.predictions!=null) {
+				predHolder.predictionAdapter = new PredictionAdapter(getContext(), R.layout.bet_prediction_short_item, predHolder.predictions);
+				holder.lvPredictions.setAdapter(predHolder.predictionAdapter);
+			}
+			predictionHolders.put(position, predHolder);
 		}
 		
-		//TODO dynamic height of list view
-//		LayoutParams layoutParams = lvPredictions.getLayoutParams();
-//		layoutParams.height = layoutParams.height * predictions.size();
-//		lvPredictions.setLayoutParams(layoutParams);
-		
 		return v;
+	}
+	
+	private class ViewHolder {
+		Integer betId;
+		
+		ImageView ivProfPic;
+		TextView betDueDate;
+		TextView tvBetOwner;
+		
+		// internal frame 
+		TextView tvBetSubject;
+		TextView tvBetReward;
+		ImageView ivNavArrow;
+		
+		ListView lvPredictions;
+	}
+	
+	private class PredictionHolder {
+		List<Prediction> predictions;
+		PredictionAdapter predictionAdapter;
 	}
 
 }

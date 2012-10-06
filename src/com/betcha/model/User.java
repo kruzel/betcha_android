@@ -479,7 +479,7 @@ public class User extends ModelCache<User,Integer> {
 			default_pic = BitmapFactory.decodeResource(context.getResources(), com.betcha.R.drawable.ic_launcher);
 				
 		//default image
-		image.setImageBitmap(Bitmap.createScaledBitmap(default_pic, 48, 48, false));
+		image.setImageBitmap(Bitmap.createScaledBitmap(default_pic, 100, 100, false));
 		
 		ContentResolver cr = context.getContentResolver();
 		
@@ -489,7 +489,7 @@ public class User extends ModelCache<User,Integer> {
 		    if (input != null) 
 		    {
 		    	profile_pic_bitmap = BitmapFactory.decodeStream(input);
-		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 48, 48, false));
+		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 100, 100, false));
 		    	return;
 		    }
 		}
@@ -513,7 +513,7 @@ public class User extends ModelCache<User,Integer> {
 	
 		    if (photoBytes != null) {
 		    	profile_pic_bitmap = BitmapFactory.decodeByteArray(photoBytes,0,photoBytes.length);
-		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 48, 48, false));
+		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 100, 100, false));
 		    	return;
 		    }
 		}
@@ -534,7 +534,7 @@ public class User extends ModelCache<User,Integer> {
 			return;
     	}
 		
-		String url = "http://robohash.org/" + getEmail() + ".png?set=set3&size=48x48";
+		String url = "http://robohash.org/" + getEmail() + ".png?set=set3&size=100x100";
 		imageLoader.displayImage(url, image,defaultOptions);
 		
 	}

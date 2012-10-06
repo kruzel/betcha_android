@@ -183,6 +183,9 @@ public class BetchaApp extends Application implements IModelListener {
 
 	public List<User> getFriends() {
 		synchronized (friendsLock) {
+			if(friends==null)
+				loadFriends();
+				
 			return friends;
 		}
 	}

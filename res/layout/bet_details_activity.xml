@@ -7,14 +7,13 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical" >   
-	    
+	    
 	    <fragment
 	        android:id="@+id/bet_details_fragment"
 	        android:name="com.betcha.fragment.BetDetailsFragment"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_alignParentTop="true"
-	        android:layout_margin="5dp" />
+	        android:layout_alignParentTop="true" />
 			
 	    <LinearLayout
 	        android:id="@+id/buttons_frame"
@@ -48,14 +47,13 @@
 	            android:visibility="invisible" />
 	
 	    </LinearLayout>
-	    
+	    
 	    <fragment
 	        android:id="@+id/chat_fragment"
 	        android:name="com.betcha.fragment.BetChatMessagesFragment"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@+id/bet_details_fragment"
-	        android:layout_margin="5dp" />
+	        android:layout_below="@+id/bet_details_fragment" />
 	    
 	</RelativeLayout>
 </ScrollView>
