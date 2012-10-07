@@ -71,7 +71,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 		//populate();
 		
 		Intent i = new Intent(this, BetDetailsActivity.class);
-        i.putExtra("betId", bet.getId());
+        i.putExtra("bet_id", bet.getId());
         i.putExtra("is_new_bet", isNewBet);
         //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         startActivity(i);

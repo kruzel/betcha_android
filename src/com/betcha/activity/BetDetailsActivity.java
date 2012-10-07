@@ -165,7 +165,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		super.onResume();
 
 		Intent intent = getIntent();
-		String betId = intent.getStringExtra("betId");
+		String betId = intent.getStringExtra("bet_id");
 		Boolean isNewBet = intent.getBooleanExtra("is_new_bet", false);
 
 		if (betId==null || betId.equals("-1"))

@@ -117,7 +117,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		        public void onClick(View v) {
 		            Intent i = new Intent(getContext(), BetDetailsActivity.class);
 		            String betId = (String) v.getTag();
-		            i.putExtra("betId", betId);
+		            i.putExtra("bet_id", betId);
 		            getContext().startActivity(i);
 		        }
 
