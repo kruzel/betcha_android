@@ -1,4 +1,4 @@
-package com.betcha.service;
+package com.betcha;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.R.drawable;
 import com.betcha.activity.BetDetailsActivity;
@@ -36,16 +35,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 		// If the message has a payload, its contents are available as extras in the intent.
 		Bundle bundle = intent.getExtras();
 		String msgType = bundle.getString("type");
-		Integer ownerId = Integer.valueOf(bundle.getString("owner_id"));
-		Integer userId = Integer.valueOf(bundle.getString("user_id"));
+		String ownerId = bundle.getString("owner_id");
+		String userId = bundle.getString("user_id");
 		String betId = bundle.getString("bet_id");
-		String pred = bundle.getString("prediction_id");
-		Integer predictionId = null;
-		if(pred != null) {
-			predictionId = Integer.valueOf(pred);
-		}
-		
-		Log.e("GCMIntentService.onMessage()", "type:" + msgType + ", owner: " + ownerId + ", user: " + userId + ", bet: " + betId + ", prediction: " + predictionId );
+		String predictionId = bundle.getString("prediction_id");
+				
+		Log.i("GCMIntentService.onMessage()", "type:" + msgType + ", owner: " + ownerId + ", user: " + userId + ", bet: " + betId + ", prediction: " + predictionId );
 		
 		if(msgType.equals("invite")) {
 			Bet bet = new Bet();

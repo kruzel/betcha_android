@@ -49,6 +49,16 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 	}
 
 	@Override
+	public int getItemViewType(int position) {
+		return items.get(position).getPredictionsCount();
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 6;
+	}
+
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
         ViewHolder holder = null; // to reference the child views for later actions

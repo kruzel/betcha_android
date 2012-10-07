@@ -20,10 +20,10 @@ import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 
 import com.betcha.BetchaApp;
+import com.betcha.ConnectivityReceiver;
 import com.betcha.model.User;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
-import com.betcha.service.ConnectivityReceiver;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
 import com.j256.ormlite.field.DatabaseField;

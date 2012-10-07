@@ -166,6 +166,10 @@ public class Bet extends ModelCache<Bet, Integer> {
 		return list;
 	}
 	
+	public int getPredictionsCount() {
+		return predictions.size();
+	}
+	
 	public List<ChatMessage> getChatMessages() {
 		List<ChatMessage> list = new ArrayList<ChatMessage>(chatMessages);
 		return list;
@@ -226,7 +230,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 	public int onRestSync() {
 		int res = 0;
 		if (!isServerUpdated()) {
-			getBetClient().updateOrCreate(this);
+			onRestCreate();
 		}
 
 		return res;

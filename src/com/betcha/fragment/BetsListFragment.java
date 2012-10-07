@@ -59,6 +59,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 			@Override
 			public void onRefresh() {
+				lvBets.setRefreshing();
 				Bet.syncAllWithServer(BetsListFragment.this);
 			}
 		});        
@@ -165,10 +166,6 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 	@Override
 	public void onGetComplete(Class clazz, Boolean success) {
-		if(dialog!=null && dialog.isShowing()) {
-			dialog.dismiss();
-			dialog = null;
-		}
 		
 		lvBets.onRefreshComplete();
 		

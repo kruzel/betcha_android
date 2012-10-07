@@ -1,4 +1,4 @@
-package com.betcha.service;
+package com.betcha;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
