@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
@@ -167,31 +168,34 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 	@Override
 	public int onRestGet() {
 		PredictionRestClient predictionRestClient = new PredictionRestClient(id);
-		JSONObject json = predictionRestClient.show(id);
-		if(json==null)
+		JSONObject jsonPredictions = predictionRestClient.show(id);
+		if(jsonPredictions==null)
 			return 0;
 		
-//		Prediction prediction = null;
-//		try {
-//			List<Prediction> predictions = Prediction.getModelDao().queryForEq(
-//					"id", json.getString("id"));
-//			if (predictions != null && predictions.size() > 0)
-//				prediction = predictions.get(0);
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return 0;
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//			return 0;
-//		}
-//
-//		if (prediction == null)
-//			return 0;
+		JSONArray jsonArray = null;
+		try {
+			jsonArray = jsonPredictions.getJSONArray("predictions");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		if(jsonArray==null)
+			return 0;
+
+		JSONObject jsonContent = null;
+		try {
+			jsonContent = jsonArray.getJSONObject(0);
+		} catch (JSONException e1) {
+		}
+		
+		if(jsonContent==null)
+			return 0;
 
 		User user = null;
 		try {
 			List<User> users = User.getModelDao().queryForEq("id",
-					json.getString("user_id"));
+					jsonContent.getString("user_id"));
 			if (users != null && users.size() > 0)
 				user = users.get(0);
 		} catch (SQLException e) {
@@ -208,7 +212,7 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 		Bet bet = null;
 		try {
 			List<Bet> bets = Bet.getModelDao().queryForEq("id",
-					json.getString("bet_id"));
+					jsonContent.getString("bet_id"));
 			if (bets != null && bets.size() > 0)
 				bet = bets.get(0);
 		} catch (SQLException e) {
@@ -222,7 +226,7 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 		if (bet == null)
 			return 0;
 
-		setJson(json);
+		setJson(jsonContent);
 
 		try {
 			createOrUpdateLocal();

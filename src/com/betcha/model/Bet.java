@@ -174,6 +174,10 @@ public class Bet extends ModelCache<Bet, Integer> {
 		List<ChatMessage> list = new ArrayList<ChatMessage>(chatMessages);
 		return list;
 	}
+	
+	public int getChatMessagesCount() {
+		return chatMessages.size();
+	}
 
 	/**
 	 * static methods that must be implemented by derived class
@@ -238,37 +242,32 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	@Override
 	public int onRestGet() {
-//		Bet tmpBet = null;
-//		try {
-//			List<Bet> bets = Bet.getModelDao().queryForEq("id", getId());
-//			if (bets == null || bets.size() == 0)
-//				return 0;
-//			tmpBet = bets.get(0);
-//		} catch (SQLException e1) {
-//			e1.printStackTrace();
-//			return 0;
-//		}
-//
-//		if (tmpBet == null) {
-//			tmpBet = new Bet();
-//		}
-
 		BetRestClient betClient = new BetRestClient();
-		JSONObject jsonBet = null;
+		JSONObject jsonBets = null;
 		try {
-			jsonBet = betClient.show(getId());
+			jsonBets = betClient.show(getId());
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return 0;
 		}
-		if (jsonBet == null)
+		if (jsonBets == null)
+			return 0;
+		
+		JSONArray jsonBetsArray = null;
+		try {
+			jsonBetsArray = jsonBets.getJSONArray("bets");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		if(jsonBetsArray==null)
 			return 0;
 
-		JSONObject jsonBetContent=null;
+		JSONObject jsonBetContent = null;
 		try {
-			jsonBetContent = jsonBet.getJSONObject("bet");
+			jsonBetContent = jsonBetsArray.getJSONObject(0);
 		} catch (JSONException e1) {
-			e1.printStackTrace();
 		}
 		
 		if(jsonBetContent==null)
@@ -689,19 +688,6 @@ public class Bet extends ModelCache<Bet, Integer> {
 				}
 			}
 
-//			Prediction tmpPrediction = null;
-//			try {
-//				List<Prediction> tmpPredictions = Prediction.getModelDao()
-//						.queryForEq("id", jsonPrediction.getString("id"));
-//				if (tmpPredictions != null && tmpPredictions.size() > 0) {
-//					tmpPrediction = tmpPredictions.get(0);
-//				}
-//			} catch (SQLException e2) {
-//				e2.printStackTrace();
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//			}
-
 			if (tmpPrediction == null) {
 				tmpPrediction = new Prediction();
 			}
@@ -765,18 +751,6 @@ public class Bet extends ModelCache<Bet, Integer> {
 					}
 				}
 			}
-			
-//			try {
-//				List<ChatMessage> tmpChatMessages = ChatMessage.getModelDao()
-//						.queryForEq("id", jsonChatMessage.getString("id"));
-//				if (tmpChatMessages != null && tmpChatMessages.size() > 0) {
-//					tmpChatMessage = tmpChatMessages.get(0);
-//				}
-//			} catch (SQLException e2) {
-//				e2.printStackTrace();
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//			}
 
 			if (tmpChatMessage == null) {
 				tmpChatMessage = new ChatMessage();

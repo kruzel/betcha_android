@@ -142,9 +142,6 @@ public class Friend extends ModelCache<Friend, Integer> {
 						retries++;
 						try {
 							Thread.sleep(10000);
-//							synchronized (this) {
-//								  this.wait(10000);
-//								}
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -180,19 +177,18 @@ public class Friend extends ModelCache<Friend, Integer> {
 				e.printStackTrace();
 			}
 			
-			if(tmpNewUser!=null) 
-				continue; //known user
-			
-			tmpNewUser = new User();
-							
-			if(!tmpNewUser.setJson(jsonFriend))
-				continue;
-			
-			try {
-				tmpNewUser.createOrUpdateLocal();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
+			if(tmpNewUser==null) {
+				tmpNewUser = new User();
+								
+				if(!tmpNewUser.setJson(jsonFriend))
+					continue;
+				
+				try {
+					tmpNewUser.createOrUpdateLocal();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					continue;
+				}
 			}
 			
 			if(user.getId().equals(tmpNewUser.getId()))

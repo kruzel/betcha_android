@@ -3,6 +3,7 @@ package com.betcha.model;
 import java.sql.SQLException;
 
 import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
@@ -95,17 +96,37 @@ public class ChatMessage extends ModelCache<ChatMessage, Integer> {
 
 	@Override
 	public int onRestGet() {
-		JSONObject jsonUser = null;
+		JSONObject jsonChatMessage = null;
 		try {
-			jsonUser = getChatMessageRestClient().show(getId());
+			jsonChatMessage = getChatMessageRestClient().show(getId());
 		} catch (RestClientException e) {
 			e.printStackTrace();
 			return 0;
 		}
-		if(jsonUser==null)
+		if(jsonChatMessage==null)
+			return 0;
+		
+		JSONArray jsonArray = null;
+		try {
+			jsonArray = jsonChatMessage.getJSONArray("chat_messages");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		if(jsonArray==null)
+			return 0;
+
+		JSONObject jsonContent = null;
+		try {
+			jsonContent = jsonArray.getJSONObject(0);
+		} catch (JSONException e1) {
+		}
+		
+		if(jsonContent==null)
 			return 0;
 	
-		setJson(jsonUser);
+		setJson(jsonContent);
 		
 		try {
 			createOrUpdateLocal();

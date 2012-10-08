@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -24,6 +26,7 @@ import com.betcha.model.User;
 public class BetChatMessagesFragment extends SherlockFragment {
 	private User curUser;
 	private Bet bet;
+	private FrameLayout frmMessagesContainer;
 	private ListView lvMessages;
 	private ChatMessageAdapter chatMessageAdapter;
 	
@@ -53,6 +56,7 @@ public class BetChatMessagesFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		
 		View view = (ViewGroup) inflater.inflate(R.layout.chat_message_fragment, container);
+		frmMessagesContainer = (FrameLayout) view.findViewById(R.id.fl_message_list);
 		lvMessages = (ListView) view.findViewById(R.id.lv_chat_messages);
 		
 		btnSend = (Button) view.findViewById(R.id.buttonChatMessageSend);
@@ -100,6 +104,11 @@ public class BetChatMessagesFragment extends SherlockFragment {
 	}
 
 	protected void populate() {
+		int size = bet.getChatMessagesCount();
+		LayoutParams msgFramelayoutParams = frmMessagesContainer.getLayoutParams();
+		msgFramelayoutParams.height = 100 * size;
+		frmMessagesContainer.setLayoutParams(msgFramelayoutParams);
+		
 		if(chatMessageAdapter==null) {
 			chatMessageAdapter = new ChatMessageAdapter(getActivity(), R.layout.chat_message_item, bet.getChatMessages());
 			lvMessages.setAdapter(chatMessageAdapter);

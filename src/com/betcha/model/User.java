@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
@@ -361,7 +362,27 @@ public class User extends ModelCache<User,Integer> {
 				return 0;
 			}
 			
-			setJson(jsonUser);
+			JSONArray jsonArray = null;
+			try {
+				jsonArray = jsonUser.getJSONArray("users");
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return 0;
+			}
+			
+			if(jsonArray==null)
+				return 0;
+
+			JSONObject jsonContent = null;
+			try {
+				jsonContent = jsonArray.getJSONObject(0);
+			} catch (JSONException e1) {
+			}
+			
+			if(jsonContent==null)
+				return 0;
+			
+			setJson(jsonContent);
 			onLocalUpdate();
 			return 1;
 		} 
