@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+	<RelativeLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="5dp"
+	    android:background="#848484" >
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_alignParentTop="true"
+		    android:layout_margin="5dp"
+		    android:src="@drawable/ic_launcher" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_owner"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@id/iv_bet_owner_profile_pic"
+	        android:text="owner"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textColor="#000000" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_date"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/rl_bet_details"
+	        android:layout_margin="5dp"
+	        android:text="date"
+	        android:textAppearance="?android:attr/textAppearanceMedium"
+	        android:textColor="#000000" />
+        
+	    <RelativeLayout
+	        android:id="@+id/rl_bet_details"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_pic"
+	        android:background="#FFFFFF" >
+  
+	        <TextView
+	            android:id="@+id/tv_bet_topic"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="5dp"
+	            android:text="subject"
+	            android:textAppearance="?android:attr/textAppearanceMedium"
+	            android:textColor="#000000" />
+		        
+	        <LinearLayout
+	            android:id="@+id/ll_bet_reward"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="5dp" >
+	            
+	            <ImageView
+				    android:id="@+id/iv_bet_reward"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:layout_margin="5dp"
+				    android:src="@drawable/ic_launcher" />
+	            <TextView
+	                android:id="@+id/tv_bet_reward"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_gravity="center_vertical"
+	                android:layout_margin="5dp"
+	                android:text="Reward"
+	                android:textAppearance="?android:attr/textAppearanceMedium"
+	                android:textColor="#000000" />
+		        
+	        </LinearLayout>
+				<FrameLayout 
+			    android:id="@+id/frm_bet_predictions_container"
+	            android:layout_width="match_parent"
+	            android:layout_height="200dp"
+	            android:layout_margin="5dp"
+	            android:layout_below="@id/ll_bet_reward"
+		        android:layout_centerHorizontal="true">
+	            
+		        <ListView
+		            android:id="@+id/lv_bet_predictions"
+		            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
+		            android:orientation="vertical" >
+	  
+		        </ListView>
+			</FrameLayout>
+	        <ImageView
+	            android:id="@+id/image_view_nav"
+	            android:layout_width="20dp"
+	            android:layout_height="30dp"
+	            android:layout_alignParentRight="true"
+	            android:layout_centerVertical="true"
+	            android:src="@drawable/ic_ab_select" />
+  
+    	</RelativeLayout>
+
+    </RelativeLayout>
+</RelativeLayout>

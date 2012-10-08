@@ -123,9 +123,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 								}
 							}
 					    	
-					    	bet.setParticipants(participants);
-					    	bet.update();
-					    	
+					    	bet.addPredictions(participants);
+					    						    	
 					    	betDetailsFragment.refresh();
 					    	
 					    	dialog.dismiss();
@@ -202,7 +201,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 					"", getString(R.string.msg_bet_loading), true);
 		}
 		
-		betDetailsFragment.init(bet, app.getMe());
+		betDetailsFragment.init(bet);
 		betChatFragment.init(bet, app.getMe());
 	}
 

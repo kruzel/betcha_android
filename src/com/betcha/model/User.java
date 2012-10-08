@@ -226,6 +226,7 @@ public class User extends ModelCache<User,Integer> {
 		return 1;
 	}
 	
+	//TODO try to unify with OnRestGet()
 	public int restCreateUserAccount() {
 		int res = 0;
 		JSONObject jsonUser = null;
@@ -239,23 +240,43 @@ public class User extends ModelCache<User,Integer> {
 		if(jsonUser==null)
 			return 0;
 		
-		String resId = jsonUser.optString("id");
+		JSONArray jsonArray = null;
+		try {
+			jsonArray = jsonUser.getJSONArray("users");
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		if(jsonArray==null)
+			return 0;
+
+		JSONObject jsonContent = null;
+		try {
+			jsonContent = jsonArray.getJSONObject(0);
+		} catch (JSONException e1) {
+		}
+		
+		if(jsonContent==null)
+			return 0;
+		
+		String resId = jsonContent.optString("id");
 		if(resId!=null && resId!=getId()) {
 			//oops the user already exist on the server, need to update id locally,
-			recreateUser(jsonUser);
+			recreateUser(jsonContent);
 		}
 					
 		return 1;
 	}
 	
 	private void recreateUser(JSONObject jsonUser) {
-		String resId = jsonUser.optString("id");
+	
 		Boolean isLocalUser = BetchaApp.getInstance().getMe()==this;
 	
 		String oldId = getId();
 		onLocalDelete();
 		
-		setId(resId);
+		setJson(jsonUser);
 		onLocalCreate();
 		
 		if(isLocalUser)
@@ -361,67 +382,65 @@ public class User extends ModelCache<User,Integer> {
 				e.printStackTrace();
 				return 0;
 			}
-			
-			JSONArray jsonArray = null;
+		} else { 
 			try {
-				jsonArray = jsonUser.getJSONArray("users");
-			} catch (JSONException e) {
+				if(getProvider()!=null) {
+					if(getProvider().equals("email"))
+						jsonUser = userClient.showViaEmail(getEmail());
+					else if(getProvider().equals("facebook"))
+						jsonUser = userClient.showViaUid(getUid());
+					
+					if(jsonUser==null)
+						return 0;
+									
+				} else {
+					//may happen when we recover user account from the server so need to reload predictions users
+					jsonUser = userClient.show(getId());
+				}
+			} catch (RestClientException e) {
 				e.printStackTrace();
 				return 0;
 			}
-			
-			if(jsonArray==null)
-				return 0;
-
-			JSONObject jsonContent = null;
-			try {
-				jsonContent = jsonArray.getJSONObject(0);
-			} catch (JSONException e1) {
-			}
-			
-			if(jsonContent==null)
-				return 0;
-			
-			setJson(jsonContent);
-			onLocalUpdate();
-			return 1;
-		} 
+		}
 		
+		if(jsonUser==null)
+			return 0;
+		
+		JSONArray jsonArray = null;
 		try {
-			if(getProvider()!=null) {
-				if(getProvider().equals("email"))
-					jsonUser = userClient.showViaEmail(getEmail());
-				else if(getProvider().equals("facebook"))
-					jsonUser = userClient.showViaUid(getUid());
-				
-				if(jsonUser==null)
-					return 0;
-				
-				String resId = jsonUser.optString("id");
-				if(resId!=null && resId!=getId()) {
-					//oops the user already exist on the server, need to update id locally,
-					recreateUser(jsonUser);
-					return 1;
-				}
-				
-			} else {
-				//may happen when we recover user account from the server so need to reload predictions users
-				jsonUser = userClient.show(getId());
-			}
-		} catch (RestClientException e) {
+			jsonArray = jsonUser.getJSONArray("users");
+		} catch (JSONException e) {
 			e.printStackTrace();
 			return 0;
 		}
-		if(jsonUser==null)
+		
+		if(jsonArray==null)
 			return 0;
-				
-		setJson(jsonUser);
-				
+
+		JSONObject jsonContent = null;
 		try {
-			createOrUpdateLocal();
-		} catch (SQLException e) {
-			e.printStackTrace();
+			jsonContent = jsonArray.getJSONObject(0);
+		} catch (JSONException e1) {
+		}
+		
+		if(jsonContent==null)
 			return 0;
+				
+		String resId = jsonContent.optString("id");
+		if(resId!=null && resId!=getId()) {
+			//oops the user already exist on the server, need to replace with new id
+			recreateUser(jsonContent);
+			return 1;
+		} else {
+			//update existing user
+			setJson(jsonContent);
+			
+			try {
+				createOrUpdateLocal();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return 0;
+			}
 		}
 		
 		return 1;
@@ -549,7 +568,7 @@ public class User extends ModelCache<User,Integer> {
 	        .build();
 		}
 		
-		if(getProvider().equals("facebook") && getUid()!=null) {	
+		if(getProvider()!=null && getProvider().equals("facebook") && getUid()!=null) {	
 			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
 			imageLoader.displayImage(url, image,defaultOptions);
 			return;

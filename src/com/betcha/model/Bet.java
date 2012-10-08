@@ -502,6 +502,59 @@ public class Bet extends ModelCache<Bet, Integer> {
 		}
 
 	}
+	
+	public int addPredictions(List<User> newParticipants) {
+		int res = 0;
+		for (User participant : newParticipants) {
+			if(participant.getId()==null) { //new friend
+				//verify contact not exist already via mail
+				List<User> foundUsers = null;
+				try {
+					foundUsers = participant.getDao().queryForEq("email", participant.getEmail());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				if(foundUsers.size()==0) {
+					if(isServerCreated()) { 
+						//bet already created on server, so need to add the specific usres individually
+						participant.create();
+					} else {
+						participant.onLocalCreate(); //locally
+					}
+					//participants.add(participant); - temp variable for certain operations
+					res += 1;
+				} else { 
+					participant = foundUsers.get(0);
+				}
+			}
+			
+			Prediction prediction = new Prediction();
+			prediction.setUser(participant);
+			prediction.setBet(this);
+			prediction.setPrediction("");
+			prediction.setSendInvite(true);
+			if(isServerCreated()) { 
+				//bet already created on server, so need to add the specific predictions individually
+				prediction.create();
+			} else {
+				//will be created on the server together with the bet
+				prediction.onLocalCreate();
+			}
+		}
+		
+		try {
+			getDao().refresh(this);
+			for (Prediction prediction : getPredictions()) {
+				int n = prediction.getDao().refresh(prediction);
+				if(prediction.getUser()!=null)
+					Log.i("after refresh", "refresh()=" + n + " prediction.user: " + prediction.getUser().getName() + ", " + prediction.getUser().getEmail());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
 
 	// nested object creation
 	@Override
@@ -520,45 +573,9 @@ public class Bet extends ModelCache<Bet, Integer> {
 		
 		ownerPrediction.onLocalCreate();
 		
-		int numFriends = 0;
-		for (User participant : participants) {
-			if(participant.getId()==null) { //new friend
-				//verify contact not exist already via mail
-				List<User> foundUsers = null;
-				try {
-					foundUsers = participant.getDao().queryForEq("email", participant.getEmail());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				if(foundUsers.size()==0) {
-					numFriends = participant.onLocalCreate(); //locally
-				} else { 
-					participant = foundUsers.get(0);
-				}
-			}
-			
-			Prediction prediction = new Prediction();
-			prediction.setUser(participant);
-			prediction.setBet(this);
-			prediction.setPrediction("");
-			prediction.setSendInvite(true);
-			if(prediction.onLocalCreate()!=0) {
-				res += 1;
-			}
-		}
+		int numNewFriends = addPredictions(participants);
 		
-		try {
-			getDao().refresh(this);
-			for (Prediction prediction : getPredictions()) {
-				int n = prediction.getDao().refresh(prediction);
-				if(prediction.getUser()!=null)
-					Log.i("after refresh", "refresh()=" + n + " prediction.user: " + prediction.getUser().getName() + ", " + prediction.getUser().getEmail());
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		if(numFriends>0) {
+		if(numNewFriends>0) {
 			BetchaApp.getInstance().loadFriends();
 		}
 		

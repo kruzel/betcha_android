@@ -104,9 +104,8 @@ public class BetChatMessagesFragment extends SherlockFragment {
 	}
 
 	protected void populate() {
-		int size = bet.getChatMessagesCount();
 		LayoutParams msgFramelayoutParams = frmMessagesContainer.getLayoutParams();
-		msgFramelayoutParams.height = 100 * size;
+		msgFramelayoutParams.height = bet.getChatMessagesCount() > 4 ? 100 * bet.getChatMessagesCount() : 200;
 		frmMessagesContainer.setLayoutParams(msgFramelayoutParams);
 		
 		if(chatMessageAdapter==null) {
