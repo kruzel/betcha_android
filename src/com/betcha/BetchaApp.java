@@ -281,33 +281,33 @@ public class BetchaApp extends Application implements IModelListener {
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
+	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
+	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
-		if (clazz.getSimpleName().contentEquals("Friend") && success) {
+	public void onGetComplete(Class clazz, ErrorCode errorCode) {
+		if (clazz.getSimpleName().contentEquals("Friend") && errorCode==ErrorCode.OK) {
 			// new friedns found
 			friends = null;
 		}
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
+	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
+	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 
 	}

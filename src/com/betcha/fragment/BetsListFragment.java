@@ -153,23 +153,23 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 
 	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
+	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
+	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
+	public void onGetComplete(Class clazz, ErrorCode errorCode) {
 		
 		lvBets.onRefreshComplete();
 		
-		if(success ) {
+		if(errorCode==ErrorCode.OK ) {
 			populate();
 						
 			if(app.getBetId()!="-1") {
@@ -182,13 +182,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
+	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
+	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}

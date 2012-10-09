@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -162,7 +161,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
 	        	
-	        	//me.setListener(this);
+	        	me.setListener(this);
     		
 	        	res = me.create();
 	        	
@@ -172,17 +171,15 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	        	me.setName(etName.getText().toString());
 	        	me.setPassword(etPass.getText().toString());
 	        	
-	        	//me.setListener(this);
+	        	me.setListener(this);
     			res = me.update();
     		}
     		
         	app.setMe(me);
         	
         	if(res==0) {
-        		Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-        	}
-        	
-        	onCreateComplete(me.getClass(),res!=0);
+        		onCreateComplete(me.getClass(),ErrorCode.ERR_INTERNAL);
+        	}        	
         }
 	}
 	
@@ -196,14 +193,13 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
                 "Registering. Please wait...", true);
 		
 		int res = 0;
+		me.setListener(this);
 		res = me.create();
 		
-		if(res>1) {
+		if(res>0) {
 			app.setMe(me);
-			onCreateComplete(me.getClass(),true);
 		} else {
-			Toast.makeText(this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-			onCreateComplete(me.getClass(),false);
+			onCreateComplete(me.getClass(),ErrorCode.ERR_INTERNAL);
 		}
 			
 	}
@@ -230,8 +226,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
         		if(res>0)
         			app.setMe(me);
         		else {
-        			Toast.makeText(SettingsActivity.this, R.string.error_registration_failed, Toast.LENGTH_LONG).show();
-					onCreateComplete(app.getMe().getClass(),false);
+					onCreateComplete(app.getMe().getClass(),ErrorCode.ERR_INTERNAL);
         		}
         		
         		etEmail.setText(app.getMe().getEmail());
@@ -242,12 +237,12 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 
             @Override
             public void onFacebookError(FacebookError error) {
-            	onCreateComplete(User.class,false);
+            	onCreateComplete(User.class,ErrorCode.ERR_SERVER_ERROR);
             }
 
             @Override
             public void onError(DialogError e) {
-            	onCreateComplete(User.class,false);
+            	onCreateComplete(User.class,ErrorCode.ERR_UNAUTHOTISED);
             }
 
             @Override
@@ -257,65 +252,80 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
+	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
 		
 		if(clazz.getSimpleName().contentEquals("User")) {
+			String msg = "";
 			if(dialog!=null && dialog.isShowing())
 				dialog.dismiss();
 			
-			if(success) {
+			switch (errorCode) {
+			case OK:
 				app.registerToPushNotifications();
 				app.loadFriends();
-				
 				finish();
-        		
-			} else {
-				
-				dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
-						getString(R.string.error_registration_existing_user_failed), true);
-				Thread t = new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						try {
-							Thread.sleep(5000);
-						} catch (InterruptedException e1) {
-							e1.printStackTrace();
-						}
-						
-						if(dialog!=null && dialog.isShowing())
-							dialog.dismiss();
-					}
-				});
-				t.start();
-				return;
+				msg = getString(R.string.error_registration_succeeded);
+				break;
+			case ERR_CONNECTIVITY:
+				msg = getString(R.string.error_connectivity_error);
+				break;
+			case ERR_SERVER_ERROR:
+				msg = getString(R.string.error_server_error);
+				break;
+			case ERR_UNAUTHOTISED:
+				msg = getString(R.string.error_authorization_error);
+				break;
+			case ERR_INTERNAL:msg = getString(R.string.error_internal_error);
+				break;
+			default:
+				msg = getString(R.string.error_internal_error);
+				break;
 			}
+			
+			dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
+					msg, true);
+			Thread t = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+					
+					if(dialog!=null && dialog.isShowing())
+						dialog.dismiss();
+				}
+			});
+			t.start();
+			
 		}
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
+	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
 		
-		if(success)
+		if(errorCode==ErrorCode.OK)
 			finish();
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
+	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
+	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
+	public void onGetComplete(Class clazz, ErrorCode errorCode) {
 		
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();

@@ -1024,27 +1024,28 @@ containing a value of this type.
         public static final int bet_you_on=0x7f050012;
         public static final int bet_you_on_hint=0x7f050013;
         public static final int bet_you_that=0x7f050010;
-        public static final int betcategoryactivity=0x7f05004b;
-        /**      <string name="betcha_api">http://api.dropabet.com:3000</string> 
-         */
+        public static final int betcategoryactivity=0x7f05004f;
         public static final int betcha_api=0x7f05000e;
-        public static final int betdetails=0x7f050049;
-        public static final int betsrecords=0x7f050048;
-        public static final int betsrecordsgroup=0x7f050047;
+        public static final int betdetails=0x7f05004d;
+        public static final int betsrecords=0x7f05004c;
+        public static final int betsrecordsgroup=0x7f05004b;
         /**  activities 
          */
-        public static final int bettabactivity=0x7f050045;
+        public static final int bettabactivity=0x7f050049;
         public static final int close=0x7f050033;
         public static final int close_bet=0x7f05001b;
-        public static final int createbet=0x7f050046;
+        public static final int createbet=0x7f05004a;
         public static final int delete=0x7f050034;
         public static final int email_address=0x7f050025;
         public static final int email_address_hint=0x7f050026;
+        public static final int error_authorization_error=0x7f050046;
         public static final int error_bad_date_format=0x7f05003c;
         public static final int error_bad_email=0x7f05003e;
         public static final int error_bad_time_format=0x7f05003d;
         public static final int error_bet_not_found=0x7f050040;
+        public static final int error_connectivity_error=0x7f050045;
         public static final int error_failed_publishing_bet=0x7f050044;
+        public static final int error_internal_error=0x7f050048;
         public static final int error_missing_bet=0x7f05003a;
         public static final int error_missing_bet_reward=0x7f05003b;
         /**  error messages 
@@ -1055,6 +1056,7 @@ containing a value of this type.
         public static final int error_registration_existing_user_failed=0x7f050042;
         public static final int error_registration_failed=0x7f050041;
         public static final int error_registration_succeeded=0x7f050038;
+        public static final int error_server_error=0x7f050047;
         public static final int fb_Connect=0x7f05002f;
         public static final int hello=0x7f05000f;
         public static final int invite=0x7f050032;
@@ -1076,7 +1078,7 @@ containing a value of this type.
         public static final int pending=0x7f050020;
         /**  file names 
          */
-        public static final int prefs_name=0x7f05004c;
+        public static final int prefs_name=0x7f050050;
         public static final int ptr_pull_to_refresh=0x7f050001;
         public static final int ptr_refreshing=0x7f050003;
         public static final int ptr_release_to_refresh=0x7f050002;
@@ -1089,7 +1091,7 @@ containing a value of this type.
         public static final int send=0x7f050024;
         public static final int set_bet_result=0x7f050021;
         public static final int settings=0x7f050030;
-        public static final int settingsactivity=0x7f05004a;
+        public static final int settingsactivity=0x7f05004e;
         public static final int skip=0x7f05002a;
         public static final int submit=0x7f050016;
         public static final int update=0x7f050029;

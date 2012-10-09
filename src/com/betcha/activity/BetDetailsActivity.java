@@ -12,7 +12,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -259,38 +258,38 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, Boolean success) {
+	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, Boolean success) {
+	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, Boolean success) {
+	public void onGetComplete(Class clazz, ErrorCode errorCode) {
 		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
 		
-		if(success) {
+		if(errorCode == ErrorCode.OK) {
 			betDetailsFragment.refresh();
 	    	betChatFragment.refresh();
 		}
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, Boolean success) {
+	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, Boolean success) {
+	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
 	}

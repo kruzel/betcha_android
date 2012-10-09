@@ -22,6 +22,7 @@ import android.os.AsyncTask.Status;
 import com.betcha.BetchaApp;
 import com.betcha.ConnectivityReceiver;
 import com.betcha.model.User;
+import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
 import com.j256.ormlite.dao.Dao;
@@ -417,7 +418,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	 * @author ofer
 	 *
 	 */
-	public static class RestTask extends  AsyncTask<RestMethod, Void, Boolean> {
+	public static class RestTask extends  AsyncTask<RestMethod, Void, ErrorCode> {
 		public enum RestMethod { CREATE, UPDATE, DELETE, GET, GET_FOR_CUR_USER }
 		RestMethod currMethod;
 		
@@ -437,20 +438,20 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 			this.modelListener = modelListener;
 		}
 
-		protected Boolean doInBackground(RestMethod... params) {
+		protected ErrorCode doInBackground(RestMethod... params) {
 			if (model==null){
-				return false;
+				return ErrorCode.ERR_INTERNAL;
 			}
 			
 			currMethod = params[0];
 			
 			if(!RestClient.isOnline()) {
 				ModelCache.enableConnectivityReciever();
-				return false;
+				return ErrorCode.ERR_CONNECTIVITY;
 			}
 			
 			if(BetchaApp.getInstance().getMe()==null)
-				return false;
+				return ErrorCode.ERR_NOT_REGISTERED;
 				
 			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
 				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
@@ -458,13 +459,13 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					BetchaApp.getInstance().getMe().setServerUpdated(true);
 					BetchaApp.getInstance().getMe().onLocalUpdate();
 				} else {
-					return false;
+					return ErrorCode.ERR_NOT_REGISTERED;
 				}
 			}
 			
 			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
 				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-					return false;
+					return ErrorCode.ERR_UNAUTHOTISED;
 			}
 			
 			switch (currMethod) {
@@ -473,7 +474,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					model.setServerCreated(true);
 					model.setServerUpdated(true);
 					model.onLocalUpdate();
-					return true;
+					return ErrorCode.OK;
 				}
 				break;
 			case UPDATE:
@@ -481,14 +482,14 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					if(model.onRestUpdate()>0) {
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return true;
+						return ErrorCode.OK;
 					}
 				} else {
 					if (model.onRestCreate()>0) {
 						model.setServerCreated(true);
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return true;
+						return ErrorCode.OK;
 					}
 				}	
 				break;
@@ -497,17 +498,17 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					if(model.onRestDelete()>0) {
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return true;
+						return ErrorCode.OK;
 					}
 				} else
-					return true;
+					return ErrorCode.OK;
 				break;
 			case GET:
 				if(model.onRestGet()>0) {
 					model.setServerUpdated(true);
 					model.setServerCreated(true);
 					model.onLocalUpdate();
-					return true;
+					return ErrorCode.OK;
 				}
 				break;
 			case GET_FOR_CUR_USER:
@@ -515,17 +516,17 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					model.setServerUpdated(true);
 					model.setServerCreated(true);
 					model.onLocalUpdate();
-					return true;
+					return ErrorCode.OK;
 				}
 				break;
 			default:
 				break;
 			}
-			return false;
+			return ErrorCode.ERR_INTERNAL;
 		}
 		
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void onPostExecute(ErrorCode result) {
 			if(modelListener!=null) {
 				switch (currMethod) {
 				case CREATE:

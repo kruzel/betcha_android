@@ -63,6 +63,10 @@
 	<string name="error_registration_existing_user_failed">User exist, password reset email sent</string>
 	<string name="error_pass_short">Password to short</string>
 	<string name="error_failed_publishing_bet">Failed creatign bet</string>
+	<string name="error_connectivity_error">Connectivity error</string>
+	<string name="error_authorization_error">Authorization error</string>
+	<string name="error_server_error">Server error</string>
+	<string name="error_internal_error">Internal error</string>
 	
 	<!-- activities -->
     <string name="bettabactivity">bettabactivity</string>

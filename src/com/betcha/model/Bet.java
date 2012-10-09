@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.RestClient;
@@ -381,7 +382,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 	}
 
 	//TODO move this task to its own file and call it directly
-	private static class SyncTask extends AsyncTask<Void, Void, Boolean> {
+	private static class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
 		private IModelListener modelListener;
 
 		public void setListener(IModelListener modelListener) {
@@ -389,15 +390,15 @@ public class Bet extends ModelCache<Bet, Integer> {
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected ErrorCode doInBackground(Void... params) {
 			
 			if(!RestClient.isOnline()) {
 				ModelCache.enableConnectivityReciever();
-				return false;
+				return ErrorCode.ERR_CONNECTIVITY;
 			}
 			
 			if(BetchaApp.getInstance().getMe()==null)
-				return false;
+				return ErrorCode.ERR_INTERNAL;
 			
 			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
 				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
@@ -405,13 +406,13 @@ public class Bet extends ModelCache<Bet, Integer> {
 					BetchaApp.getInstance().getMe().setServerUpdated(true);
 					BetchaApp.getInstance().getMe().onLocalUpdate();
 				} else {
-					return false;
+					return ErrorCode.ERR_SERVER_ERROR;
 				}
 			}
 			
 			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
 				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-					return false;
+					return ErrorCode.ERR_UNAUTHOTISED;
 			}
 			
 			// get all updates from server (bets and their predictions and chat_messages
@@ -424,11 +425,11 @@ public class Bet extends ModelCache<Bet, Integer> {
 			List<Bet> bets = null;
 			try {
 				bets = Bet.getModelDao().queryForEq("server_updated", false);
-				if (bets == null || bets.size() == 0) {
-					return true;
-				}
 			} catch (SQLException e1) {
-				return true;
+			}
+			
+			if (bets == null || bets.size() == 0) {
+				return ErrorCode.OK;
 			}
 
 			for (Bet bet : bets) {
@@ -491,14 +492,14 @@ public class Bet extends ModelCache<Bet, Integer> {
 				}
 			}
 
-			return true;
+			return ErrorCode.OK;
 		}
 
 		@Override
-		protected void onPostExecute(Boolean result) {
+		protected void onPostExecute(ErrorCode errorCode) {
 			if (modelListener != null)
-				modelListener.onGetComplete(Bet.class, result);
-			super.onPostExecute(result);
+				modelListener.onGetComplete(Bet.class, errorCode);
+			super.onPostExecute(errorCode);
 		}
 
 	}
