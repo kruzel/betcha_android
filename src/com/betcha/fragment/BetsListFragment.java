@@ -6,7 +6,6 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.betcha.activity.SettingsActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.task.SyncTask;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
@@ -60,7 +60,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 			@Override
 			public void onRefresh() {
 				lvBets.setRefreshing();
-				Bet.syncAllWithServer(BetsListFragment.this);
+				SyncTask.run(BetsListFragment.this);
 			}
 		});        
         		
@@ -73,7 +73,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 			if(isFirstBetsLoad) {
 				isFirstBetsLoad = false;
 	        	lvBets.setRefreshing();
-	        	Bet.syncAllWithServer(this);
+	        	SyncTask.run(this);
 	        }
 			
 			populate();
@@ -107,7 +107,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	            return true;
 	        case R.id.menu_refresh:
 	        	lvBets.setRefreshing();
-	        	Bet.syncAllWithServer(this);
+	        	SyncTask.run(this);
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);

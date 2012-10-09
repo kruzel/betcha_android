@@ -56,7 +56,6 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	private RestTask restTask;
 	protected IModelListener listener;
 	protected static Context context;
-	private static DateTime lastUpdateFromServer;
 	
 	public String getId() {
 		return id;
@@ -70,14 +69,6 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		UUID uuid = UUID.randomUUID();
 		id = uuid.toString();
 		return id;
-	}
-
-	public static DateTime getLastUpdateFromServer() {
-		return lastUpdateFromServer;
-	}
-
-	public static void setLastUpdateFromServer(DateTime lastUpdateFromServer) {
-		ModelCache.lastUpdateFromServer = lastUpdateFromServer;
 	}
 
 	public static void setContext(Context context) {

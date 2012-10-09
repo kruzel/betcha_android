@@ -843,7 +843,6 @@ containing a value of this type.
         public static final int bet_subject=0x7f06005d;
         public static final int bets_categories=0x7f06004a;
         public static final int bets_list=0x7f06003f;
-        public static final int button2=0x7f06007d;
         public static final int button3=0x7f06007c;
         public static final int buttonChatMessageSend=0x7f060043;
         public static final int buttonEdit=0x7f06003c;
@@ -897,9 +896,9 @@ containing a value of this type.
         public static final int ll_bet_reward=0x7f060032;
         public static final int lv_bet_predictions=0x7f060036;
         public static final int lv_chat_messages=0x7f060042;
-        public static final int menu_create_bet=0x7f06007f;
-        public static final int menu_refresh=0x7f06007e;
-        public static final int menu_settings=0x7f060080;
+        public static final int menu_create_bet=0x7f06007e;
+        public static final int menu_refresh=0x7f06007d;
+        public static final int menu_settings=0x7f06007f;
         public static final int normal=0x7f060001;
         public static final int pull_to_refresh_bets_list=0x7f060040;
         public static final int rewards_hints=0x7f060057;

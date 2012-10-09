@@ -43,6 +43,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	private EditText etName;
 	
 	private Dialog dialog = null;
+	private ErrorCode lastErrorCode = ErrorCode.OK;
 	
 	private Friend friend;
 	
@@ -107,7 +108,8 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
         case android.R.id.home:
-            finish();
+        	if(app.getMe()!=null)
+        		finish();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -242,7 +244,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 
             @Override
             public void onError(DialogError e) {
-            	onCreateComplete(User.class,ErrorCode.ERR_UNAUTHOTISED);
+            	onCreateComplete(User.class,ErrorCode.ERR_CONNECTIVITY);
             }
 
             @Override
@@ -263,24 +265,32 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 			case OK:
 				app.registerToPushNotifications();
 				app.loadFriends();
-				finish();
+				
 				msg = getString(R.string.error_registration_succeeded);
 				break;
 			case ERR_CONNECTIVITY:
+				app.setMe(null);
 				msg = getString(R.string.error_connectivity_error);
 				break;
 			case ERR_SERVER_ERROR:
+				app.setMe(null);
 				msg = getString(R.string.error_server_error);
 				break;
 			case ERR_UNAUTHOTISED:
+				app.setMe(null);
 				msg = getString(R.string.error_authorization_error);
 				break;
-			case ERR_INTERNAL:msg = getString(R.string.error_internal_error);
+			case ERR_INTERNAL:
+				app.setMe(null);
+				msg = getString(R.string.error_internal_error);
 				break;
 			default:
+				app.setMe(null);
 				msg = getString(R.string.error_internal_error);
 				break;
 			}
+			
+			lastErrorCode = errorCode;
 			
 			dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
 					msg, true);
@@ -296,6 +306,9 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 					
 					if(dialog!=null && dialog.isShowing())
 						dialog.dismiss();
+					
+					if(lastErrorCode==ErrorCode.OK)
+						finish();
 				}
 			});
 			t.start();

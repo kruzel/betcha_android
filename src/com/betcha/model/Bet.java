@@ -12,16 +12,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
-import android.os.AsyncTask;
-import android.os.AsyncTask.Status;
 import android.util.Log;
 
 import com.betcha.BetchaApp;
-import com.betcha.model.cache.IModelListener;
-import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.BetRestClient;
-import com.betcha.model.server.api.RestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
@@ -66,7 +61,6 @@ public class Bet extends ModelCache<Bet, Integer> {
 	// private static GetUserBetsTask getUserBetsTask;
 	private static BetRestClient betClient;
 	private static Dao<Bet, Integer> dao;
-	private static SyncTask syncThread;
 
 	public void setBet(Bet bet) {
 		this.id = bet.getId();
@@ -367,141 +361,6 @@ public class Bet extends ModelCache<Bet, Integer> {
 		}
 
 		return bets.size();
-	}
-
-	public static void syncAllWithServer(IModelListener modelListener) {
-		if (syncThread != null
-				&& (syncThread.getStatus() == Status.RUNNING || syncThread
-						.getStatus() == Status.PENDING))
-			return;
-
-		syncThread = new SyncTask();
-		syncThread.setListener(modelListener);
-		syncThread.execute();
-
-	}
-
-	//TODO move this task to its own file and call it directly
-	private static class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
-		private IModelListener modelListener;
-
-		public void setListener(IModelListener modelListener) {
-			this.modelListener = modelListener;
-		}
-
-		@Override
-		protected ErrorCode doInBackground(Void... params) {
-			
-			if(!RestClient.isOnline()) {
-				ModelCache.enableConnectivityReciever();
-				return ErrorCode.ERR_CONNECTIVITY;
-			}
-			
-			if(BetchaApp.getInstance().getMe()==null)
-				return ErrorCode.ERR_INTERNAL;
-			
-			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
-				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
-					BetchaApp.getInstance().getMe().setServerCreated(true);
-					BetchaApp.getInstance().getMe().setServerUpdated(true);
-					BetchaApp.getInstance().getMe().onLocalUpdate();
-				} else {
-					return ErrorCode.ERR_SERVER_ERROR;
-				}
-			}
-			
-			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
-				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-					return ErrorCode.ERR_UNAUTHOTISED;
-			}
-			
-			// get all updates from server (bets and their predictions and chat_messages
-			// TODO - use the show all update for current user
-			Bet.getAllUpdatesForCurUser(Bet.getLastUpdateFromServer());
-
-			// push all bets that not yet pushed to server
-			
-			//TODO change to one call with all updates in one json
-			List<Bet> bets = null;
-			try {
-				bets = Bet.getModelDao().queryForEq("server_updated", false);
-			} catch (SQLException e1) {
-			}
-			
-			if (bets == null || bets.size() == 0) {
-				return ErrorCode.OK;
-			}
-
-			for (Bet bet : bets) {
-				if (!bet.isServerCreated()) {
-					if(bet.onRestCreate()>0) {
-						bet.setServerCreated(true);
-						bet.setServerUpdated(true);
-						try {
-							bet.getDao().update(bet);
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
-					} 
-
-					continue;
-				}
-				
-				if (!bet.isServerUpdated()) {
-					bet.onRestSync();
-					bet.setServerUpdated(true);
-					try {
-						bet.getDao().update(bet);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-
-				List<Prediction> predictions = null;
-				try {
-					predictions = Prediction.getModelDao().queryForEq(
-							"server_updated", false);
-					if (predictions == null || predictions.size() == 0) {
-						continue;
-					}
-				} catch (SQLException e1) {
-					continue;
-				}
-
-				for (Prediction prediction : predictions) {
-					if (!prediction.isServerUpdated()) {
-						if(!prediction.isServerCreated()) {
-							prediction.onRestCreate();
-							prediction.setServerCreated(true);
-							prediction.setServerUpdated(true);
-							try {
-								prediction.getDao().update(prediction);
-							} catch (SQLException e) {
-								e.printStackTrace();
-							}
-						} else {
-							prediction.onRestUpdate(); 
-							prediction.setServerUpdated(true);
-							try {
-								prediction.getDao().update(prediction);
-							} catch (SQLException e) {
-								e.printStackTrace();
-							}
-						} 
-					}
-				}
-			}
-
-			return ErrorCode.OK;
-		}
-
-		@Override
-		protected void onPostExecute(ErrorCode errorCode) {
-			if (modelListener != null)
-				modelListener.onGetComplete(Bet.class, errorCode);
-			super.onPostExecute(errorCode);
-		}
-
 	}
 	
 	public int addPredictions(List<User> newParticipants) {

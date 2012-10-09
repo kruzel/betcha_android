@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.betcha.model.Bet;
 import com.betcha.model.cache.ModelCache;
+import com.betcha.model.task.SyncTask;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
 
@@ -17,7 +17,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
 		//stop receiving network state changes events
 		ModelCache.disableConnectivityReciever();
 		
-		Bet.syncAllWithServer(null);
+		SyncTask.run(null);
 	}
 
 }

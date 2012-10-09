@@ -6,6 +6,10 @@ import java.util.List;
 
 import org.acra.ACRA;
 import org.acra.annotation.ReportsCrashes;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.json.JSONException;
 
 import android.app.Application;
 import android.content.ContentResolver;
@@ -40,6 +44,8 @@ public class BetchaApp extends Application implements IModelListener {
 
 	private User me;
 	private String invite_bet_id = "-1";
+	
+	private DateTime lastSyncTime;
 	
 	private List<User> friends;
 	private Object friendsLock = new Object();
@@ -130,11 +136,13 @@ public class BetchaApp extends Application implements IModelListener {
 
 				String authToken = prefs.getString("auth_token", null);
 				RestClient.SetToken(authToken);
-
-//				Friend friend = new Friend(me);
-//				friend.setListener(this);
-//				friend.getAllForCurUser();
-
+				
+				String strLastSyncTime = prefs.getString("last_synch_time", null);
+				if(strLastSyncTime!=null) {
+					DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+					lastSyncTime = formatter.parseDateTime(strLastSyncTime);
+				}
+				
 				registerToPushNotifications();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
@@ -156,6 +164,17 @@ public class BetchaApp extends Application implements IModelListener {
 		this.me = me;
 		Editor editor = prefs.edit();
 		editor.putString("my_user_id", me.getId());
+		editor.commit();
+	}
+
+	public DateTime getLastSyncTime() {
+		return lastSyncTime;
+	}
+
+	public void setLastSyncTime(DateTime lastSyncTime) {
+		this.lastSyncTime = lastSyncTime;
+		Editor editor = prefs.edit();
+		editor.putString("last_synch_time", lastSyncTime.toString());
 		editor.commit();
 	}
 

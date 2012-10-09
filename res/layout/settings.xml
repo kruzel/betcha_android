@@ -2,14 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical" >
-
+
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
         android:text="@string/email_address"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:layout_marginTop="10dp"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#C0C0C0" />
 
     <EditText
         android:id="@+id/editTextEmail"
@@ -19,26 +23,34 @@
 
         <requestFocus />
     </EditText>
-
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
         android:text="@string/password"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:layout_margin="10dp"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#C0C0C0" />
 
     <EditText
         android:id="@+id/editTextPass"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword" android:layout_marginTop="10dp" android:layout_marginRight="10dp" android:layout_marginLeft="10dp" android:hint="@string/password_hint"/>
-
+
     <TextView
         android:id="@+id/textViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:text="@string/name"
-        android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#C0C0C0" />
 
     <EditText
         android:id="@+id/editTextName"
@@ -55,17 +67,23 @@
         android:layout_marginTop="10dp"
         android:onClick="onSubmit"
         android:text="@string/login" />
-
+
     <Button
         android:id="@+id/button3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/fb_Connect" android:onClick="OnFBConnect" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF0000"
+        android:onClick="OnFBConnect"
+        android:text="@string/fb_Connect"
+        android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/skip" android:layout_gravity="center_horizontal" android:onClick="onSkip" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp"/>
+<!--     <Button -->
+<!--         android:id="@+id/button2" -->
+<!--         android:layout_width="fill_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:text="@string/skip" android:layout_gravity="center_horizontal" android:onClick="onSkip" android:layout_marginLeft="10dp" android:layout_marginRight="10dp" android:layout_marginTop="10dp"/> -->
 
 </LinearLayout>

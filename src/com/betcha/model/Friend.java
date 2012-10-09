@@ -129,9 +129,9 @@ public class Friend extends ModelCache<Friend, Integer> {
 		int res = 0;
 		
 		FriendRestClient restClient = new FriendRestClient(user.getId());
-		JSONArray friends = restClient.show_for_user();
+		JSONObject friendsObj = restClient.show_for_user();
 		
-		if(friends==null || friends.length()==0) {
+		if(friendsObj==null || friendsObj.length()==0) {
 			if(retries<3) {
 			
 				//try again in 10 sec
@@ -155,6 +155,16 @@ public class Friend extends ModelCache<Friend, Integer> {
 				
 			return 0;
 		}
+		
+		JSONArray friends = null;
+		try {
+			friends = friendsObj.getJSONArray("friends");
+		} catch (JSONException e3) {
+			e3.printStackTrace();
+		}
+		
+		if(friends==null)
+			return 0;
 		
 		JSONObject jsonFriend = null;
 		for (int i = 0; i < friends.length(); i++) {

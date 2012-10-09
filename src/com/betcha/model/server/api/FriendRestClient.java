@@ -5,6 +5,7 @@ package com.betcha.model.server.api;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.web.client.RestClientException;
 
 /**
@@ -25,7 +26,7 @@ public class FriendRestClient extends RestClient {
 		FriendRestClient.url = url;
 	}
 		
-	public JSONArray show_for_user() {
+	public JSONObject show_for_user() {
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class, user_id);
@@ -33,9 +34,9 @@ public class FriendRestClient extends RestClient {
 			e1.printStackTrace();
 			return null;
 		}
-		JSONArray json = null;
+		JSONObject json = null;
 		try {
-			json = new JSONArray(res);
+			json = new JSONObject(res);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
