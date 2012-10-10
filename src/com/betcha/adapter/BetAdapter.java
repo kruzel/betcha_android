@@ -15,6 +15,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -86,6 +87,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
 		    holder.ivNavArrow = (ImageView) v.findViewById(R.id.image_view_nav);
+		    holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
 		    
 		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
 		    		    
@@ -122,6 +124,17 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		        }
 
 		    });
+            
+            holder.buttonHide.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Bet bet = (Bet) v.getTag();
+					bet.delete();
+					items.remove(bet);
+					BetAdapter.this.notifyDataSetChanged();
+				}
+			});
 		    
 		} else {
             // view already exists, get the holder instance from the view
@@ -129,6 +142,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
         }
 			
 		holder.ivNavArrow.setTag(bet.getId());
+		holder.buttonHide.setTag(bet);
 		
 		bet.getOwner().setProfilePhoto(holder.ivProfPic);
 		
@@ -167,6 +181,8 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		TextView tvBetSubject;
 		TextView tvBetReward;
 		ImageView ivNavArrow;
+		
+		Button buttonHide;
 		
 		LinearLayout lvPredictions;
 		PredictionHolder[] rlPredictionItems;

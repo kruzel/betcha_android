@@ -172,9 +172,11 @@ public class BetchaApp extends Application implements IModelListener {
 	}
 
 	public void setLastSyncTime(DateTime lastSyncTime) {
+		DateTimeFormatter formatter = DateTimeFormat
+				.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		this.lastSyncTime = lastSyncTime;
 		Editor editor = prefs.edit();
-		editor.putString("last_synch_time", lastSyncTime.toString());
+		editor.putString("last_synch_time", formatter.print(lastSyncTime));
 		editor.commit();
 	}
 
