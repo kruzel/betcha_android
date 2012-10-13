@@ -4,13 +4,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:padding="8dp">
-
+
     <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
         style="@style/BetFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:padding="2dp">
+        android:padding="2dp" >
         
 	    <ImageView
 		    android:id="@+id/iv_bet_owner_profile_pic"

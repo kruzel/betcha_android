@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
@@ -34,7 +36,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetsListFragment extends SherlockFragment  implements IModelListener {
+public class BetsListFragment extends SherlockFragment  implements IModelListener, OnItemClickListener {
 	enum Filter { ALL_BETS, NEW_BETS, MY_BETS };
 	Filter betsFiler = Filter.ALL_BETS;
 	
@@ -74,6 +76,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				SyncTask.run(BetsListFragment.this);
 			}
 		});  
+        
+        lvBets.setOnItemClickListener(this);
         
         rgBetsFilterGrou = (RadioGroup) view.findViewById(R.id.bet_list_filter_group);
         
@@ -260,5 +264,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+		Intent i = new Intent(getActivity(), BetDetailsActivity.class);
+        String betId = bets.get(position).getId();
+        i.putExtra("bet_id", betId);
+        getActivity().startActivity(i);
 	}
 }

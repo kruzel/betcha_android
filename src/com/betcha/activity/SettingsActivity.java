@@ -231,9 +231,6 @@ public class SettingsActivity extends SherlockActivity implements
 									ErrorCode.ERR_INTERNAL);
 						}
 
-						etEmail.setText(app.getMe().getEmail());
-						etName.setText(app.getMe().getName());
-
 						return;
 					}
 
@@ -265,6 +262,11 @@ public class SettingsActivity extends SherlockActivity implements
 			switch (errorCode) {
 			case OK:
 				app.setMe(tmpMe);
+				if(tmpMe.getEmail()!=null)
+					etEmail.setText(tmpMe.getEmail());
+				if(tmpMe.getName()!=null)
+					etName.setText(tmpMe.getName());
+				
 				app.registerToPushNotifications();
 				app.loadFriends();
 

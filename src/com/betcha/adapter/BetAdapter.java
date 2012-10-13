@@ -89,7 +89,6 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    // internal frame 
 		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
-		    holder.ivNavArrow = (ImageView) v.findViewById(R.id.image_view_nav);
 		    holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
 		    
 		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
@@ -118,22 +117,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
             FontUtils.setTextViewTypeface(holder.betDueDate, CustomFont.HELVETICA_CONDENSED);
             FontUtils.setTextViewTypeface(holder.tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
             FontUtils.setTextViewTypeface(holder.tvBetReward, CustomFont.HELVETICA_CONDENSED);
-            
-            holder.ivNavArrow.setClickable(false);
-            holder.ivNavArrow.setFocusable(false);
-            holder.ivNavArrow.setBackgroundResource(android.R.drawable.menuitem_background);
-            holder.ivNavArrow.setOnClickListener(new OnClickListener() {
-
-		        @Override
-		        public void onClick(View v) {
-		            Intent i = new Intent(getContext(), BetDetailsActivity.class);
-		            String betId = (String) v.getTag();
-		            i.putExtra("bet_id", betId);
-		            getContext().startActivity(i);
-		        }
-
-		    });
-            
+                     
             holder.buttonHide.setOnClickListener(new OnClickListener() {
 				
 				@Override
@@ -150,7 +134,6 @@ public class BetAdapter extends ArrayAdapter<Bet> {
             holder = (ViewHolder)v.getTag();
         }
 			
-		holder.ivNavArrow.setTag(bet.getId());
 		holder.buttonHide.setTag(bet);
 		
 		// XXX
@@ -197,7 +180,6 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		// internal frame 
 		TextView tvBetSubject;
 		TextView tvBetReward;
-		ImageView ivNavArrow;
 		
 		Button buttonHide;
 		
