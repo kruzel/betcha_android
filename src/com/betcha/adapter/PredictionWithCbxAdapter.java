@@ -44,10 +44,8 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		EditText tvPrediction = (EditText) v.findViewById(R.id.tv_prediction_text);
 		CheckBox cbWinner = (CheckBox) v.findViewById(R.id.cb_prediction_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
-		Button btnOK = (Button) v.findViewById(R.id.buttonEdit);
 		
 		tvPrediction.setTag(prediction);
-		btnOK.setTag(prediction);
 		
 		if(app.getMe().getId().equals(prediction.getBet().getOwner().getId())) {
 			cbWinner.setClickable(true);
@@ -74,24 +72,15 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 						EditText et = (EditText) v;
 						Prediction p = (Prediction) v.getTag();
 						p.setPrediction(et.getText().toString());
+						p.update();
 						et.clearFocus();
 					}
 					
 				}
 			});
 			
-			btnOK.setVisibility(View.VISIBLE);
-			btnOK.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Prediction p = (Prediction) v.getTag();
-					p.update();
-				}
-			});
 		} else {
 			tvPrediction.setEnabled(false);
-			btnOK.setVisibility(View.INVISIBLE);
 		}
 		
 		Boolean res = prediction.getResult();
