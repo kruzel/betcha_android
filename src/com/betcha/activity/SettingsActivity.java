@@ -35,6 +35,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 	      );
 	
 	private BetchaApp app;
+	private User tmpMe;
 	
 	private Facebook facebook = new Facebook("299434100154215");
 	
@@ -145,7 +146,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
     	}
 		
         if(errorFound == false) {
-        	User me = app.getMe();
+        	tmpMe = app.getMe();
         	int res = 0;
         	
         	if(dialog!=null && dialog.isShowing())
@@ -153,41 +154,41 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
         	dialog = ProgressDialog.show(this, getResources().getString(R.string.register), 
                     "Registering. Please wait...", true);
         	        	
-        	if(me==null || me.getId()==null) {
-        		if(me==null) {
-        			me = new User();
+        	if(tmpMe==null || tmpMe.getId()==null) {
+        		if(tmpMe==null) {
+        			tmpMe = new User();
         		}
         		        
-        		me.setProvider("email");
-	        	me.setEmail(etEmail.getText().toString());
-	        	me.setName(etName.getText().toString());
-	        	me.setPassword(etPass.getText().toString());
+        		tmpMe.setProvider("email");
+	        	tmpMe.setEmail(etEmail.getText().toString());
+	        	tmpMe.setName(etName.getText().toString());
+	        	tmpMe.setPassword(etPass.getText().toString());
 	        	
-	        	me.setListener(this);
+	        	tmpMe.setListener(this);
     		
-	        	res = me.create();
+	        	res = tmpMe.create();
 	        	
     		} else {
     			
-    			me.setEmail(etEmail.getText().toString());
-	        	me.setName(etName.getText().toString());
-	        	me.setPassword(etPass.getText().toString());
+    			tmpMe.setEmail(etEmail.getText().toString());
+	        	tmpMe.setName(etName.getText().toString());
+	        	tmpMe.setPassword(etPass.getText().toString());
 	        	
-	        	me.setListener(this);
-    			res = me.update();
+	        	tmpMe.setListener(this);
+    			res = tmpMe.update();
     		}
     		
-        	app.setMe(me);
+        	//app.setMe(me);
         	
         	if(res==0) {
-        		onCreateComplete(me.getClass(),ErrorCode.ERR_INTERNAL);
+        		onCreateComplete(tmpMe.getClass(),ErrorCode.ERR_INTERNAL);
         	}        	
         }
 	}
 	
 	public void onSkip(View v) {
-		User me = new User();
-		me.setProvider("email");
+		tmpMe = new User();
+		tmpMe.setProvider("email");
 		
 		if(dialog!=null && dialog.isShowing())
 			dialog.dismiss();
@@ -195,13 +196,11 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
                 "Registering. Please wait...", true);
 		
 		int res = 0;
-		me.setListener(this);
-		res = me.create();
+		tmpMe.setListener(this);
+		res = tmpMe.create();
 		
-		if(res>0) {
-			app.setMe(me);
-		} else {
-			onCreateComplete(me.getClass(),ErrorCode.ERR_INTERNAL);
+		if(res==0) {
+			onCreateComplete(tmpMe.getClass(),ErrorCode.ERR_INTERNAL);
 		}
 			
 	}
@@ -218,16 +217,14 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
             	//TODO on registration - load contacts to friends list
             	String token = facebook.getAccessToken();
             	
-            	User me = new User();
-        		me.setProvider("facebook");
-        		me.setAccess_token(token);
-        		me.setListener(SettingsActivity.this);
+            	tmpMe = new User();
+        		tmpMe.setProvider("facebook");
+        		tmpMe.setAccess_token(token);
+        		tmpMe.setListener(SettingsActivity.this);
         		
-        		int res = me.create();
+        		int res = tmpMe.create();
         		
-        		if(res>0)
-        			app.setMe(me);
-        		else {
+        		if(res==0) {
 					onCreateComplete(app.getMe().getClass(),ErrorCode.ERR_INTERNAL);
         		}
         		
@@ -263,6 +260,7 @@ public class SettingsActivity extends SherlockActivity implements IModelListener
 			
 			switch (errorCode) {
 			case OK:
+				app.setMe(tmpMe);
 				app.registerToPushNotifications();
 				app.loadFriends();
 				
