@@ -94,7 +94,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject create(String id, String full_name, String email, String password, String profile_picture_path)   {		
+	public JSONObject create(String id, String full_name, String email, String password, Bitmap bm)   {		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -132,21 +132,16 @@ public class UserRestClient extends RestClient {
 			e1.printStackTrace();
 		}
 		
-		if(profile_picture_path!=null) {
-			Bitmap bm = BitmapFactory.decodeFile(profile_picture_path);
-			if(bm==null) {
-				Log.e("UserRestClient.create()", "profile picture not found in path: " + profile_picture_path);
-			} else {
-				ByteArrayOutputStream output = new ByteArrayOutputStream();  
-				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
-				byte[] bytes = output.toByteArray();
-				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-				try {
-					jsonContent.put("avatar", base64Image);
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+		if(bm!=null) {
+			ByteArrayOutputStream output = new ByteArrayOutputStream();  
+			bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
+			byte[] bytes = output.toByteArray();
+			String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+			try {
+				jsonContent.put("avatar", base64Image);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
 		}
 		

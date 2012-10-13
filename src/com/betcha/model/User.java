@@ -233,7 +233,7 @@ public class User extends ModelCache<User,Integer> {
 		JSONObject jsonUser = null;
 		
 		if (provider.equals("email")) {
-			jsonUser = getUserClient().create(getId(), name, email, password, profile_pic_url);
+			jsonUser = getUserClient().create(getId(), name, email, password, getProfilePhotoBitmap());
 		} else if (provider.equals("facebook")) {
 			jsonUser = getUserClient().createOAuth(getId(), provider, uid, access_token);
 		}
@@ -522,6 +522,36 @@ public class User extends ModelCache<User,Integer> {
 		//default image
 		image.setImageBitmap(Bitmap.createScaledBitmap(default_pic, 100, 100, false));
 		
+		profile_pic_bitmap = getProfilePhotoBitmap();
+		if(profile_pic_bitmap!=null) {
+			image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 100, 100, false));
+	    	return;
+		}
+				
+		if(imageLoader==null) {
+			imageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+			defaultOptions = new DisplayImageOptions.Builder()
+	        .cacheInMemory()
+	        .cacheOnDisc()
+	        .build();
+		}
+		
+		if(getProvider()!=null && getProvider().equals("facebook") && getUid()!=null) {	
+			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
+			imageLoader.displayImage(url, image,defaultOptions);
+			return;
+    	}
+		
+		String url = "http://robohash.org/" + getEmail() + ".png?set=set3&size=100x100";
+		imageLoader.displayImage(url, image,defaultOptions);
+		
+	}
+	
+	private Bitmap getProfilePhotoBitmap() {
+		Bitmap profile_pic_bitmap = null;
+		
 		ContentResolver cr = context.getContentResolver();
 		
 		if(getContact_id()!=null) {
@@ -530,8 +560,6 @@ public class User extends ModelCache<User,Integer> {
 		    if (input != null) 
 		    {
 		    	profile_pic_bitmap = BitmapFactory.decodeStream(input);
-		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 100, 100, false));
-		    	return;
 		    }
 		}
 
@@ -554,30 +582,10 @@ public class User extends ModelCache<User,Integer> {
 	
 		    if (photoBytes != null) {
 		    	profile_pic_bitmap = BitmapFactory.decodeByteArray(photoBytes,0,photoBytes.length);
-		    	image.setImageBitmap(Bitmap.createScaledBitmap(profile_pic_bitmap, 100, 100, false));
-		    	return;
-		    }
+		    }    
 		}
 		
-		if(imageLoader==null) {
-			imageLoader = ImageLoader.getInstance();
-			// Initialize ImageLoader with configuration. Do it once.
-			imageLoader.init(ImageLoaderConfiguration.createDefault(context));
-			defaultOptions = new DisplayImageOptions.Builder()
-	        .cacheInMemory()
-	        .cacheOnDisc()
-	        .build();
-		}
-		
-		if(getProvider()!=null && getProvider().equals("facebook") && getUid()!=null) {	
-			String url = "http://graph.facebook.com/" + getUid() + "/picture?type=square";
-			imageLoader.displayImage(url, image,defaultOptions);
-			return;
-    	}
-		
-		String url = "http://robohash.org/" + getEmail() + ".png?set=set3&size=100x100";
-		imageLoader.displayImage(url, image,defaultOptions);
-		
+		return profile_pic_bitmap;
 	}
 
 }

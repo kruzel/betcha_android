@@ -441,7 +441,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 				return ErrorCode.ERR_CONNECTIVITY;
 			}
 			
-			if(BetchaApp.getInstance().getMe()!=null && RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
+			if(BetchaApp.getInstance().getMe()!=null && ( RestClient.GetToken()==null || RestClient.GetToken().length()==0)) {
 				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
 					return ErrorCode.ERR_UNAUTHOTISED;
 			}
