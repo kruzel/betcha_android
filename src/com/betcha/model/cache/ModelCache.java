@@ -444,20 +444,20 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 			if(BetchaApp.getInstance().getMe()==null)
 				return ErrorCode.ERR_NOT_REGISTERED;
 				
-			if(!BetchaApp.getInstance().getMe().isServerCreated()) {
-				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
-					BetchaApp.getInstance().getMe().setServerCreated(true);
-					BetchaApp.getInstance().getMe().setServerUpdated(true);
-					BetchaApp.getInstance().getMe().onLocalUpdate();
-				} else {
-					return ErrorCode.ERR_NOT_REGISTERED;
-				}
-			}
-			
-			if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
-				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-					return ErrorCode.ERR_UNAUTHOTISED;
-			}
+//			if(modelClass!=User.class || !BetchaApp.getInstance().getMe().isServerCreated()) {
+//				if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
+//					BetchaApp.getInstance().getMe().setServerCreated(true);
+//					BetchaApp.getInstance().getMe().setServerUpdated(true);
+//					BetchaApp.getInstance().getMe().onLocalUpdate();
+//				} else {
+//					return ErrorCode.ERR_NOT_REGISTERED;
+//				}
+//			}
+//			
+//			if(modelClass!=User.class || RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
+//				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
+//					return ErrorCode.ERR_UNAUTHOTISED;
+//			}
 			
 			switch (currMethod) {
 			case CREATE:

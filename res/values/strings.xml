@@ -44,6 +44,10 @@
 	<string name="close">Close</string>
 	<string name="delete">Delete</string>
 	
+	<string name="all_bets">All bets</string>
+	<string name="new_bets">New bets</string>
+	<string name="my_bets">My bets</string>
+	
 	<!-- messages -->
 	<string name="msg_bet_accepted">Bet accepted</string>
 	<string name="msg_bet_rejected">Bet rejected</string>

@@ -163,7 +163,10 @@ public class BetchaApp extends Application implements IModelListener {
 	public void setMe(User me) {
 		this.me = me;
 		Editor editor = prefs.edit();
-		editor.putString("my_user_id", me.getId());
+		if(me==null)
+			editor.remove("my_user_id");
+		else
+			editor.putString("my_user_id", me.getId());
 		editor.commit();
 	}
 
