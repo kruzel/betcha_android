@@ -1,6 +1,7 @@
 package com.betcha.fragment;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
@@ -10,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -22,13 +25,19 @@ import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.SettingsActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
+import com.betcha.model.Prediction;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.task.SyncTask;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
 public class BetsListFragment extends SherlockFragment  implements IModelListener {
+	enum Filter { ALL_BETS, NEW_BETS, MY_BETS };
+	Filter betsFiler = Filter.ALL_BETS;
+	
 	private BetchaApp app;
 	private BetAdapter betAdapter;
 	private List<Bet> bets;
@@ -37,6 +46,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	private PullToRefreshListView lvBets;
 	private ProgressDialog dialog;
 	private Boolean isFirstBetsLoad = true;
+	
+	private RadioGroup rgBetsFilterGrou;
 		
 	/** Called when the activity is first created. */
     @Override
@@ -62,7 +73,30 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				lvBets.setRefreshing();
 				SyncTask.run(BetsListFragment.this);
 			}
-		});        
+		});  
+        
+        rgBetsFilterGrou = (RadioGroup) view.findViewById(R.id.bet_list_filter_group);
+        
+        rgBetsFilterGrou.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.all_bets_filter:
+					betsFiler = Filter.ALL_BETS;
+					break;
+				case R.id.new_bet_filter:
+					betsFiler = Filter.NEW_BETS;
+					break;
+				case R.id.my_bet_filter:
+					betsFiler = Filter.MY_BETS;
+					break;
+				default:
+					betsFiler = Filter.ALL_BETS;	
+				}
+				populate();
+			}
+		});
         		
 		return view;
 	}
@@ -127,7 +161,42 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public void populate() {
 		// query for all of the bets objects in the database
  		try {
- 			bets = Bet.getModelDao().queryForAll();
+ 			QueryBuilder<Bet, Integer> betsQueryBuilder = Bet.getModelDao().queryBuilder();
+// 			QueryBuilder<Prediction, Integer> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
+ 			PreparedQuery<Bet> preparedQuery = null;
+ 			switch (betsFiler) {				
+			case NEW_BETS:			//un-met invitations
+				betsQueryBuilder.where().ne("user_id", app.getMe().getId());
+//				predictionQueryBuilder.where().eq("user_id",app.getMe().getId());
+//				betsQueryBuilder.join(predictionQueryBuilder);
+				betsQueryBuilder.orderBy("dueDate", false);
+	 			preparedQuery = betsQueryBuilder.prepare();
+				List<Bet> tmpBets = Bet.getModelDao().query(preparedQuery);
+				bets = new ArrayList<Bet>();
+				for (Bet bet : tmpBets) {
+					for (Prediction prediction : bet.getPredictions()) {
+						if(prediction.getUser()==app.getMe() && prediction.equals("")) {
+							bets.add(bet);
+						}
+					}
+				}
+				break;
+			case MY_BETS:	//bets I created
+				betsQueryBuilder.where().eq("user_id", app.getMe().getId());
+				betsQueryBuilder.orderBy("dueDate", false);
+	 			preparedQuery = betsQueryBuilder.prepare();
+				bets = Bet.getModelDao().query(preparedQuery);
+				break;
+			case ALL_BETS:
+			default:
+				betsQueryBuilder = Bet.getModelDao().queryBuilder();
+				betsQueryBuilder.orderBy("dueDate", false);
+	 			preparedQuery = betsQueryBuilder.prepare();
+				bets = Bet.getModelDao().query(preparedQuery);
+			}
+ 			
+ 			
+ 			
  		} catch (SQLException e) {
  			Log.e(getClass().getSimpleName(), ".onCreate() - failed getting bet list");
  			e.printStackTrace();
