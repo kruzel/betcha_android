@@ -1,0 +1,12 @@
+[submodule "vendor/ActionBarSherlock"]
+	path = vendor/ActionBarSherlock
+	url = git://github.com/JakeWharton/ActionBarSherlock.git
+	ignore = dirty
+[submodule "vendor/Facebook"]
+	path = vendor/Facebook
+	url = git://github.com/facebook/facebook-android-sdk.git
+	ignore = dirty
+[submodule "vendor/PullToRefresh"]
+	path = vendor/PullToRefresh
+	url = git://github.com/erikwt/PullToRefresh-ListView.git
+	ignore = dirty
