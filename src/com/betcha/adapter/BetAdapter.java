@@ -9,6 +9,7 @@ import org.joda.time.format.DateTimeFormatter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.betcha.FontUtils;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
@@ -76,7 +79,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
-	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
+	        v = inflater.inflate(R.layout.bets_list_item2, parent, false);
 		    		    
 		    holder = new ViewHolder();
 		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
@@ -95,10 +98,12 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    
 		    for(int i = 0; i<predictionSize ; i++ ) {
 		    	holder.rlPredictionItems[i] = new PredictionHolder();
-		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item, holder.lvPredictions, false);
+		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item2, holder.lvPredictions, false);
 		    	holder.rlPredictionItems[i].ivParticipantProfPic = (ImageView) holder.rlPredictionItems[i].layout.findViewById(R.id.iv_participant_pic);
 		    	holder.rlPredictionItems[i].tvParticipantName = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_name);
 		    	holder.rlPredictionItems[i].tvParticipantPrediction = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_prediction);
+	            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantName, CustomFont.HELVETICA_CONDENSED);
+	            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantPrediction, CustomFont.HELVETICA_CONDENSED);
 		    	holder.lvPredictions.addView(holder.rlPredictionItems[i].layout);
 		    }
 		    
@@ -109,6 +114,10 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 					    
 		 	// associate the holder with the view for later lookup
             v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDueDate, CustomFont.HELVETICA_CONDENSED);
+            FontUtils.setTextViewTypeface(holder.tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
+            FontUtils.setTextViewTypeface(holder.tvBetReward, CustomFont.HELVETICA_CONDENSED);
             
             holder.ivNavArrow.setClickable(false);
             holder.ivNavArrow.setFocusable(false);
@@ -144,7 +153,8 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		holder.ivNavArrow.setTag(bet.getId());
 		holder.buttonHide.setTag(bet);
 		
-		bet.getOwner().setProfilePhoto(holder.ivProfPic);
+		// XXX
+		// bet.getOwner().setProfilePhoto(holder.ivProfPic);
 		
 		if(bet.getDueDate().plusHours(24).isAfterNow()) {
 			//less then 24 hours left
@@ -154,7 +164,10 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			//more then 24 hours left
 			DateTimeFormatter fmtDate = DateTimeFormat.forPattern("MM-dd");
 			holder.betDueDate.setText(fmtDate.print(bet.getDueDate()));
-		} 
+		}
+		
+		// XXX
+		holder.betDueDate.setText("11h");
 		
 		holder.tvBetOwner.setText(bet.getOwner().getName());
 		
@@ -163,9 +176,13 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		
 		for(int i = 0; i<predictionSize ; i++ ) {
 			Prediction prediction = predictions.get(i);
-			prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
+			//prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
 	    	holder.rlPredictionItems[i].tvParticipantName.setText(prediction.getUser().getName());
-	    	holder.rlPredictionItems[i].tvParticipantPrediction.setText(prediction.getPrediction());
+	    	if (!TextUtils.isEmpty(prediction.getPrediction())) {
+	            holder.rlPredictionItems[i].tvParticipantPrediction.setText(prediction.getPrediction());
+	    	} else {
+	            holder.rlPredictionItems[i].tvParticipantPrediction.setText("Obama"); // XXX
+	    	}
 	    }
 		
 		return v;
