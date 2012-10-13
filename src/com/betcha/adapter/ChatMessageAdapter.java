@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.betcha.R;
 import com.betcha.model.ChatMessage;
-import com.betcha.model.Prediction;
 
 public class ChatMessageAdapter extends ArrayAdapter<ChatMessage> {
 	private List<ChatMessage> items;

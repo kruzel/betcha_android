@@ -2,7 +2,6 @@ package com.betcha.model;
 
 import java.sql.SQLException;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

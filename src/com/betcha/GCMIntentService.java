@@ -8,8 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.betcha.R;
-import com.betcha.R.drawable;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
 import com.google.android.gcm.GCMBaseIntentService;

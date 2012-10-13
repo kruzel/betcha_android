@@ -19,7 +19,6 @@ import com.betcha.model.server.api.PredictionRestClient;
 import com.betcha.model.server.api.RestClient;
 import com.betcha.model.server.api.TokenRestClient;
 import com.betcha.model.server.api.UserRestClient;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;

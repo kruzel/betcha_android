@@ -21,7 +21,6 @@ import android.os.AsyncTask.Status;
 
 import com.betcha.BetchaApp;
 import com.betcha.ConnectivityReceiver;
-import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
