@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.Prediction;
-import com.betcha.model.User;
 
 
 public class PredictionRestClient extends RestClient {

@@ -3,13 +3,13 @@
 
     <item>
         <bitmap
-            android:src="@drawable/actionbar_bg_fill"
+            android:src="@drawable/abr_bg_fill"
             android:tileMode="repeat" />
     </item>
     
     <item>
         <nine-patch
-            android:src="@drawable/actionbar_bg_border" />
+            android:src="@drawable/abr_bg_border" />
     </item>
 
 </layer-list>

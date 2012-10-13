@@ -1,7 +1,6 @@
 package com.betcha.model.server.api;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 
 import org.json.JSONArray;
 import org.json.JSONException;

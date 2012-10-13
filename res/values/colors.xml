@@ -17,5 +17,15 @@
 -->
 
 <resources>
-    <color name="pressed_betcha">#CC92979e</color>
+    
+    <!-- Generic Colors -->
+    <color name="text_deepocean">#ff2a2c2b</color>
+    <color name="text_lightfabric">#ff7f848c</color>
+    <color name="text_fabric">#ff636970</color>
+    
+    <!-- Action Bar -->
+    <color name="abr_bg_pressed">#cc92979e</color>
+    
+    <!-- Bet List Item -->
+    
 </resources>

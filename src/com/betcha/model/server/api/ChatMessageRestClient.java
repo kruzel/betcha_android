@@ -1,7 +1,5 @@
 package com.betcha.model.server.api;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.ChatMessage;
-import com.betcha.model.Prediction;
-import com.betcha.model.User;
 
 
 public class ChatMessageRestClient extends RestClient {
