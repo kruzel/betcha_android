@@ -50,13 +50,14 @@ public class User extends ModelCache<User,Integer> {
 	private String push_notifications_device_id; 
 	@DatabaseField
 	private String profile_pic_url;
+	@DatabaseField
+	private Long contact_id;
+	@DatabaseField
+	private Long contact_photo_id;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Bet>  bets;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Friend>  friends;
-
-	private Long contact_id;
-	private Long contact_photo_id;
 	
 	//non persistent
 	private static UserRestClient userClient;
