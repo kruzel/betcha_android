@@ -301,4 +301,8 @@ public class UserRestClient extends RestClient {
 			e.printStackTrace();
 		}
 	}
+	
+	public void resetPassword(String email) {
+		restTemplate.put(url + "/reset_password.json?email=" + email,null);
+	}
 }

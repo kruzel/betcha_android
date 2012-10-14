@@ -587,5 +587,10 @@ public class User extends ModelCache<User,Integer> {
 		
 		return profile_pic_bitmap;
 	}
+	
+	public int resetPassword() {
+		getUserClient().resetPassword(getEmail());
+		return 1;
+	}
 
 }

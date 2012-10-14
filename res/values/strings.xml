@@ -31,6 +31,7 @@
 	<string name="login">Login</string>
 	<string name="update">Update</string>
 	<string name="skip">Skip</string>
+	<string name="reset">Rest Password</string>
 	<string name="name">Nick name</string>
 	<string name="name_hint">user</string>
 	<string name="password">Password</string>

@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -188,24 +189,33 @@ public class SettingsActivity extends SherlockActivity implements
 		}
 	}
 
-	public void onSkip(View v) {
+	public void onResetPassword(View v) {
+		if(etEmail.getText().toString()==null || etEmail.getText().toString().length()==0) {
+			Toast.makeText(this, "missing email", Toast.LENGTH_LONG);
+			return;
+		}
+			
 		tmpMe = new User();
 		tmpMe.setProvider("email");
+		tmpMe.setEmail(etEmail.getText().toString());
 
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 		dialog = ProgressDialog.show(this,
 				getResources().getString(R.string.register),
-				"Registering. Please wait...", true);
+				"Sending password email. Please wait...", true);
 
-		int res = 0;
-		tmpMe.setListener(this);
-		res = tmpMe.create();
-
-		if (res == 0) {
-			onCreateComplete(tmpMe.getClass(), ErrorCode.ERR_INTERNAL);
-		}
-
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				tmpMe.resetPassword();
+				
+				if (dialog != null && dialog.isShowing())
+					dialog.dismiss();
+			}
+		});
+		t.start();
 	}
 
 	public void OnFBConnect(View v) {
