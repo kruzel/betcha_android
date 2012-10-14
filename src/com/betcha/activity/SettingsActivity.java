@@ -1,6 +1,11 @@
 package com.betcha.activity;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.regex.Pattern;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -216,20 +221,52 @@ public class SettingsActivity extends SherlockActivity implements
 				new DialogListener() {
 					@Override
 					public void onComplete(Bundle values) {
-						// TODO on registration - load contacts to friends list
-						String token = facebook.getAccessToken();
+						
+						Thread t = new Thread(new Runnable() {
+							
+							@Override
+							public void run() {
+								// TODO on registration - load contacts to friends list
+								String token = facebook.getAccessToken();
+								
+								String resp = null;
+								try {
+									resp = facebook.request("me");
+								} catch (MalformedURLException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								
+								if(resp==null)
+									onCreateComplete(app.getMe().getClass(),ErrorCode.ERR_UNAUTHOTISED);
+								
+								JSONObject json = null;
+								try {
+									json = new JSONObject(resp);											
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+								
+								if(json==null)
+									onCreateComplete(app.getMe().getClass(), ErrorCode.ERR_UNAUTHOTISED);
 
-						tmpMe = new User();
-						tmpMe.setProvider("facebook");
-						tmpMe.setAccess_token(token);
-						tmpMe.setListener(SettingsActivity.this);
+								tmpMe = new User();
+								tmpMe.setProvider("facebook");
+								tmpMe.setUid(json.optString("id"));
+								tmpMe.setAccess_token(token);
+								tmpMe.setListener(SettingsActivity.this);
 
-						int res = tmpMe.create();
+								int res = tmpMe.create();
 
-						if (res == 0) {
-							onCreateComplete(app.getMe().getClass(),
-									ErrorCode.ERR_INTERNAL);
-						}
+								if (res == 0) {
+									onCreateComplete(app.getMe().getClass(),
+											ErrorCode.ERR_INTERNAL);
+								}
+							}
+						});
+						t.start();
 
 						return;
 					}
