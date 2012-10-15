@@ -72,6 +72,7 @@
 	<string name="error_authorization_error">Authorization error</string>
 	<string name="error_server_error">Server error</string>
 	<string name="error_internal_error">Internal error</string>
+	<string name="error_facebook_error">facebook error</string>
 	
 	<!-- activities -->
     <string name="bettabactivity">bettabactivity</string>

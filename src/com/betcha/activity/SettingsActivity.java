@@ -190,11 +190,12 @@ public class SettingsActivity extends SherlockActivity implements
 	}
 
 	public void onResetPassword(View v) {
-		if(etEmail.getText().toString()==null || etEmail.getText().toString().length()==0) {
-			Toast.makeText(this, "missing email", Toast.LENGTH_LONG);
+		// validations
+		if (etEmail.getText().length() == 0) {
+			etEmail.setError(getString(R.string.error_bad_email));
 			return;
 		}
-			
+					
 		tmpMe = new User();
 		tmpMe.setProvider("email");
 		tmpMe.setEmail(etEmail.getText().toString());
@@ -283,12 +284,12 @@ public class SettingsActivity extends SherlockActivity implements
 
 					@Override
 					public void onFacebookError(FacebookError error) {
-						onCreateComplete(User.class, ErrorCode.ERR_SERVER_ERROR);
+						onCreateComplete(User.class, ErrorCode.ERR_FACEBOOK_ERROR);
 					}
 
 					@Override
 					public void onError(DialogError e) {
-						onCreateComplete(User.class, ErrorCode.ERR_CONNECTIVITY);
+						onCreateComplete(User.class, ErrorCode.ERR_FACEBOOK_ERROR);
 					}
 
 					@Override
@@ -334,6 +335,10 @@ public class SettingsActivity extends SherlockActivity implements
 			case ERR_INTERNAL:
 				app.setMe(null);
 				msg = getString(R.string.error_internal_error);
+				break;
+			case ERR_FACEBOOK_ERROR:
+				app.setMe(null);
+				msg = getString(R.string.error_facebook_error);
 				break;
 			default:
 				app.setMe(null);

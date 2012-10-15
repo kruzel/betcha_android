@@ -3,6 +3,7 @@ package com.betcha.adapter;
 import java.util.Collection;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -136,35 +137,33 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			
 		holder.buttonHide.setTag(bet);
 		
-		// XXX
-		// bet.getOwner().setProfilePhoto(holder.ivProfPic);
+		bet.getOwner().setProfilePhoto(holder.ivProfPic);
 		
 		if(bet.getDueDate().plusHours(24).isAfterNow()) {
-			//less then 24 hours left
-			DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
-			holder.betDueDate.setText(fmtTime.print(bet.getDueDate()));
+			if(bet.getDueDate().plusMinutes(60).isAfterNow()) {
+				//less then 1 hr
+				holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/60) + " m");
+			} else {
+				//less then 24 hours left
+				holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/3600) + " hr");
+			}
 		} else {
 			//more then 24 hours left
-			DateTimeFormatter fmtDate = DateTimeFormat.forPattern("MM-dd");
-			holder.betDueDate.setText(fmtDate.print(bet.getDueDate()));
-		}
-		
-		// XXX
-		holder.betDueDate.setText("11h");
-		
-		holder.tvBetOwner.setText(bet.getOwner().getName());
-		
+			holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/3600/24) + " d");
+ 		}
+				
+		holder.tvBetOwner.setText(bet.getOwner().getName());		
 		holder.tvBetSubject.setText(bet.getSubject());
 		holder.tvBetReward.setText(bet.getReward());
 		
 		for(int i = 0; i<predictionSize ; i++ ) {
 			Prediction prediction = predictions.get(i);
-			//prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
+			prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
 	    	holder.rlPredictionItems[i].tvParticipantName.setText(prediction.getUser().getName());
 	    	if (!TextUtils.isEmpty(prediction.getPrediction())) {
 	            holder.rlPredictionItems[i].tvParticipantPrediction.setText(prediction.getPrediction());
 	    	} else {
-	            holder.rlPredictionItems[i].tvParticipantPrediction.setText("Obama"); // XXX
+	            holder.rlPredictionItems[i].tvParticipantPrediction.setText("----"); 
 	    	}
 	    }
 		

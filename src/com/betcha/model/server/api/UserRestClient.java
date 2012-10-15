@@ -131,18 +131,18 @@ public class UserRestClient extends RestClient {
 			e1.printStackTrace();
 		}
 		
-		if(bm!=null) {
-			ByteArrayOutputStream output = new ByteArrayOutputStream();  
-			bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
-			byte[] bytes = output.toByteArray();
-			String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-			try {
-				jsonContent.put("avatar", base64Image);
-			} catch (JSONException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		}
+//		if(bm!=null) {
+//			ByteArrayOutputStream output = new ByteArrayOutputStream();  
+//			bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
+//			byte[] bytes = output.toByteArray();
+//			String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+//			try {
+//				jsonContent.put("avatar", base64Image);
+//			} catch (JSONException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//		}
 		
 		try {
 			jsonParent.put("user", jsonContent);
