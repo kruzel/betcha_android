@@ -131,6 +131,7 @@ public class UserRestClient extends RestClient {
 			e1.printStackTrace();
 		}
 		
+		//TODO paperclip - profile picture support
 //		if(bm!=null) {
 //			ByteArrayOutputStream output = new ByteArrayOutputStream();  
 //			bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
