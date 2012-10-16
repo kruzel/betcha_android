@@ -4,6 +4,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
+import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -139,18 +143,22 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		
 		bet.getOwner().setProfilePhoto(holder.ivProfPic);
 		
-		if(bet.getDueDate().plusHours(24).isAfterNow()) {
-			if(bet.getDueDate().plusMinutes(60).isAfterNow()) {
-				//less then 1 hr
-				holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/60) + " m");
+		if(bet.getDueDate().isAfterNow()) {
+			if(bet.getDueDate().minusHours(24).isBeforeNow()) {
+				if(bet.getDueDate().minusMinutes(60).isBeforeNow()) {
+					//less then 1 hr
+					holder.betDueDate.setText(Integer.toString(Minutes.minutesBetween(DateTime.now(), bet.getDueDate()).getMinutes()) + " m");
+				} else {
+					//less then 24 hours left
+					holder.betDueDate.setText(Integer.toString(Hours.hoursBetween(DateTime.now(), bet.getDueDate()).getHours()) + " hr");
+				}
 			} else {
-				//less then 24 hours left
-				holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/3600) + " hr");
-			}
+				//more then 24 hours left
+				holder.betDueDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), bet.getDueDate()).getDays()) + " d");
+	 		}
 		} else {
-			//more then 24 hours left
-			holder.betDueDate.setText(Integer.toString(DateTime.now().compareTo(bet.getDueDate())/1000/3600/24) + " d");
- 		}
+			holder.betDueDate.setText("--");
+		}
 				
 		holder.tvBetOwner.setText(bet.getOwner().getName());		
 		holder.tvBetSubject.setText(bet.getSubject());

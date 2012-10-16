@@ -15,7 +15,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.betcha.BetchaApp;
+import com.betcha.FontUtils;
 import com.betcha.R;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.model.Prediction;
 
 public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
@@ -41,6 +43,9 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		EditText tvPrediction = (EditText) v.findViewById(R.id.tv_participant_prediction);
 		CheckBox cbWinner = (CheckBox) v.findViewById(R.id.cb_prediction_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
+		
+		FontUtils.setTextViewTypeface(tvUserName, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvPrediction, CustomFont.HELVETICA_CONDENSED);
 		
 		tvPrediction.setTag(prediction);
 		

@@ -31,13 +31,12 @@
 
         
     </RelativeLayout>
-
+
     <FrameLayout
         style="@style/PredictionFrame"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="24dp"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="74dp"
         android:layout_toLeftOf="@+id/cb_prediction_win"
         android:layout_toRightOf="@+id/relativeLayout1"
         android:minWidth="80dp"

@@ -1,5 +1,9 @@
 package com.betcha.fragment;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.Hours;
+import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -86,8 +90,24 @@ public class BetDetailsFragment extends SherlockFragment {
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
 		bet.getOwner().setProfilePhoto(ivProfPic);
-		tvBetDate.setText(fmt.print(bet.getDate()));
 		tvBetOwner.setText(bet.getOwner().getName());
+		
+		if(bet.getDueDate().isAfterNow()) {
+			if(bet.getDueDate().minusHours(24).isBeforeNow()) {
+				if(bet.getDueDate().minusMinutes(60).isBeforeNow()) {
+					//less then 1 hr
+					tvBetDate.setText(Integer.toString(Minutes.minutesBetween(DateTime.now(), bet.getDueDate()).getMinutes()) + " m");
+				} else {
+					//less then 24 hours left
+					tvBetDate.setText(Integer.toString(Hours.hoursBetween(DateTime.now(), bet.getDueDate()).getHours()) + " hr");
+				}
+			} else {
+				//more then 24 hours left
+				tvBetDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), bet.getDueDate()).getDays()) + " d");
+	 		}
+		} else {
+			tvBetDate.setText("--");
+		}
 		
 		tvBetSubject.setText(bet.getSubject());
 		tvBetReward.setText(bet.getReward());
