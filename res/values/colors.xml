@@ -28,4 +28,8 @@
     
     <!-- Bet List Item -->
     
+    <!-- Create Menu -->
+    <color name="create_divider_top">#ffffffff</color>
+    <color name="create_divider_bottom">#ffe9e9e9</color>
+    
 </resources>

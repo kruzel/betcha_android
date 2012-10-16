@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     
+    <style name="Text">
+	    <item name="android:textSize">16sp</item>
+	    <item name="android:textColor">@color/text_deepocean</item>
+	    <item name="android:textStyle">normal</item>
+    </style>
+    
     <!-- Bets List Item -->
 
 	<style name="BetContainer">
@@ -8,34 +14,32 @@
 	</style>    
     
 	<style name="BetFrame">
-	    <item name="android:background">@drawable/bet_bg_frame</item>
+	    <item name="android:background">@drawable/dark_frame_full</item>
 	</style>    
     
 	<style name="BetContent">
-	    <item name="android:background">@drawable/bet_bg_content</item>
+	    <item name="android:background">@drawable/offwhite_bg_selector_full</item>
 	</style>
 	
-	<style name="BetDate">
+	<style name="BetDate" parent="@style/Text">
 	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@color/text_lightfabric</item>
 	</style>
 	
-	<style name="BetSubject">
+	<style name="BetSubject" parent="@style/Text">
 	    <item name="android:textSize">22sp</item>
-	    <item name="android:textColor">@color/text_deepocean</item>
 	    <item name="android:textStyle">bold</item>
 	</style>
 	
-	<style name="BetReward">
+	<style name="BetReward" parent="@style/Text">
 	    <item name="android:textSize">18sp</item>
-	    <item name="android:textColor">@color/text_deepocean</item>
   	</style>
   	
 	<style name="PredictionPerson">
 	    <item name="android:background">@drawable/prediction_border</item>
 	</style>
   	
-	<style name="PredictionName">
+	<style name="PredictionName" parent="@style/Text">
 	    <item name="android:textSize">14sp</item>
 	    <item name="android:textColor">@color/text_fabric</item>
 	</style>
@@ -44,7 +48,7 @@
 	    <item name="android:background">@drawable/bet_bg_prediction</item>
 	</style>
   	
-	<style name="PredictionText">
+	<style name="PredictionText" parent="@style/Text">
 	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@android:color/white</item>
 	    <item name="android:shadowColor">@android:color/black</item>
@@ -52,5 +56,36 @@
 	    <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">-2</item>
 	</style>
-  	
+	
+	<!-- Create Menu -->
+	
+	<style name="CreateMenuContainer">
+	    <item name="android:background">@drawable/pastelblue_noise_tiled</item>
+	    <item name="android:cacheColorHint">@null</item>
+	    <item name="android:divider">@null</item>
+	    <item name="android:listSelector">@android:color/transparent</item>
+	</style>    
+
+	<style name="CreateMenuFrame">
+	    <item name="android:background">@drawable/dark_frame_mid</item>
+	</style>    
+    
+	<style name="CreateMenuContent">
+	    <item name="android:background">@drawable/offwhite_bg_selector_mid</item>
+	</style>    
+    
+	<style name="CreateMenuCategory" parent="@style/Text">
+	    <item name="android:textSize">18sp</item>
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:ellipsize">end</item>
+	    <item name="android:lines">1</item>
+  	</style>	
+		
+	<style name="CreateMenuDescription" parent="@style/Text">
+	    <item name="android:textSize">18sp</item>
+	    <item name="android:color">@color/text_lightfabric</item>
+	    <item name="android:ellipsize">end</item>
+	    <item name="android:lines">1</item>
+	</style>	
+		
 </resources>
