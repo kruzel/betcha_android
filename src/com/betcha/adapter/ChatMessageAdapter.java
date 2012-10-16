@@ -13,7 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.betcha.FontUtils;
 import com.betcha.R;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.model.ChatMessage;
 
 public class ChatMessageAdapter extends ArrayAdapter<ChatMessage> {
@@ -39,6 +41,10 @@ public class ChatMessageAdapter extends ArrayAdapter<ChatMessage> {
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_participant_name);
 		TextView tvMessageText = (TextView) v.findViewById(R.id.tv_chat_message);
 		TextView tvDate = (TextView) v.findViewById(R.id.tv_chat_message_date);
+		
+		FontUtils.setTextViewTypeface(tvUserName, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvMessageText, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvDate, CustomFont.HELVETICA_CONDENSED);
 		
 		//TODO add name
 		

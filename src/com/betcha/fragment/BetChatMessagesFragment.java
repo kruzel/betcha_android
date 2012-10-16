@@ -17,7 +17,9 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.FontUtils;
 import com.betcha.R;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.adapter.ChatMessageAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.ChatMessage;
@@ -62,6 +64,9 @@ public class BetChatMessagesFragment extends SherlockFragment {
 		btnSend = (Button) view.findViewById(R.id.buttonChatMessageSend);
 		etNewMessage = (EditText) view.findViewById(R.id.et_chat_message);
 		etNewMessage.clearFocus();
+		
+		FontUtils.setTextViewTypeface(etNewMessage, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(btnSend, CustomFont.HELVETICA_CONDENSED_BOLD);
 		
 		btnSend.setOnClickListener(new OnClickListener() {
 			

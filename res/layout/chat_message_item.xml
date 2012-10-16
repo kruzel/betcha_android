@@ -2,14 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF" >
+    android:paddingTop="5dp" >
 
     <ImageView
         android:id="@+id/iv_participant_pic"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentLeft="true"
+        android:scaleType="centerCrop"
         android:layout_centerVertical="true"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/default_avatar"
+        android:layout_marginLeft="5dp" />
 
     <TextView
         android:id="@+id/tv_participant_name"
@@ -18,9 +21,8 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/iv_participant_pic"
-        android:text="Name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000" />
+        android:text="Name" 
+        style="@style/ChatName"/>
 
     <TextView
         android:id="@+id/tv_chat_message"
@@ -30,9 +32,8 @@
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/tv_participant_name"
         android:text="Chat_message"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000" />
-
+        style="@style/ChatText" />
+
     <TextView
         android:id="@+id/tv_chat_message_date"
         android:layout_width="wrap_content"
@@ -40,8 +41,8 @@
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:hint="date"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#000000" />
+        style="@style/ChatText" />
     
 </RelativeLayout>
