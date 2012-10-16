@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_category_frame"
+    style="@style/CreateMenuFrame"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_category_image"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:scaleType="center"
+        android:src="@drawable/create_ic_category" />
+
+    <LinearLayout
+        android:id="@+id/ll_category_content"
+        style="@style/CreateMenuContent"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@id/iv_category_image"
+        android:layout_marginLeft="3dp"
+        android:orientation="vertical"
+        android:gravity="left|center_vertical"
+        android:padding="0dp">
+        
+        <TextView
+            android:id="@+id/tv_bet_category"
+            style="@style/CreateMenuCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:id="@+id/tv_bet_category_description"
+            style="@style/CreateMenuDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="8dp" />
+        
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/iv_marker"
+        android:layout_width="8dp"
+        android:layout_height="75dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/iv_category_image"
+        android:scaleType="fitXY"
+        android:src="@drawable/menu_marker" />
+
+    <View
+        android:id="@+id/iv_divider_top" 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/iv_marker"
+        android:layout_toRightOf="@id/iv_category_image"
+        android:layout_marginLeft="3dp"
+        android:background="@color/create_divider_top" />
+    
+    <View
+        android:id="@+id/iv_divider_bottom" 
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignBottom="@id/iv_marker"
+        android:layout_toRightOf="@id/iv_category_image"
+        android:layout_marginLeft="3dp"
+        android:background="@color/create_divider_bottom" />
+    
+</RelativeLayout>
