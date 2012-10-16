@@ -37,8 +37,8 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		
 		Prediction prediction = getItem(position);
 		
-		TextView tvUserName = (TextView) v.findViewById(R.id.tv_prediction_user_name);
-		EditText tvPrediction = (EditText) v.findViewById(R.id.tv_prediction_text);
+		TextView tvUserName = (TextView) v.findViewById(R.id.tv_participant_name);
+		EditText tvPrediction = (EditText) v.findViewById(R.id.tv_participant_prediction);
 		CheckBox cbWinner = (CheckBox) v.findViewById(R.id.cb_prediction_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
 		
@@ -103,7 +103,5 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		
 		return v;		
 	}
-	
-	
-	
+		
 }

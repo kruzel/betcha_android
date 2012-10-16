@@ -14,7 +14,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.FontUtils;
 import com.betcha.R;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.adapter.PredictionWithCbxAdapter;
 import com.betcha.model.Bet;
 
@@ -54,8 +56,6 @@ public class BetDetailsFragment extends SherlockFragment {
 			Bundle savedInstanceState) {
 		
 		View view = (ViewGroup) inflater.inflate(R.layout.bet_details_fragment, container);
-		ImageView imgNav = (ImageView) view.findViewById(R.id.image_view_nav);
-		imgNav.setVisibility(View.INVISIBLE);
 		
 		frmPredictionContainer = (FrameLayout) view.findViewById(R.id.frm_bet_predictions_container);
 		lvPredictions = (ListView) view.findViewById(R.id.lv_bet_predictions);
@@ -67,6 +67,11 @@ public class BetDetailsFragment extends SherlockFragment {
 		// internal frame 
 		tvBetSubject = (TextView) view.findViewById(R.id.tv_bet_topic);
 		tvBetReward = (TextView) view.findViewById(R.id.tv_bet_reward);
+		
+		FontUtils.setTextViewTypeface(tvBetReward, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvBetDate, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvBetOwner, CustomFont.HELVETICA_CONDENSED);
+        FontUtils.setTextViewTypeface(tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
 				
 		return view;
 	}
