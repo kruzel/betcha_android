@@ -158,9 +158,7 @@ public class SettingsActivity extends SherlockActivity implements
 					"Registering. Please wait...", true);
 
 			if (tmpMe == null || tmpMe.getId() == null) {
-				if (tmpMe == null) {
-					tmpMe = new User();
-				}
+				tmpMe = new User();
 
 				tmpMe.setProvider("email");
 				tmpMe.setEmail(etEmail.getText().toString());
@@ -172,7 +170,7 @@ public class SettingsActivity extends SherlockActivity implements
 				res = tmpMe.create();
 
 			} else {
-
+				tmpMe.setProvider("email");
 				tmpMe.setEmail(etEmail.getText().toString());
 				tmpMe.setName(etName.getText().toString());
 				tmpMe.setPassword(etPass.getText().toString());
@@ -263,13 +261,23 @@ public class SettingsActivity extends SherlockActivity implements
 								if(json==null)
 									onCreateComplete(app.getMe().getClass(), ErrorCode.ERR_UNAUTHOTISED);
 
-								tmpMe = new User();
+								tmpMe = app.getMe();
+								
+								if (tmpMe == null || tmpMe.getId() == null) {
+									tmpMe = new User();
+								}
+								
 								tmpMe.setProvider("facebook");
 								tmpMe.setUid(json.optString("id"));
 								tmpMe.setAccess_token(token);
 								tmpMe.setListener(SettingsActivity.this);
 
-								int res = tmpMe.create();
+								int res = 0;
+								if (tmpMe.getId() == null) {
+									res = tmpMe.create();
+								} else {
+									res = tmpMe.update();
+								}
 
 								if (res == 0) {
 									onCreateComplete(app.getMe().getClass(),
