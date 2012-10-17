@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import android.content.ContentResolver;
@@ -89,6 +90,10 @@ public class User extends ModelCache<User,Integer> {
 			userClient = new UserRestClient();
 		
 		return userClient;
+	}
+	
+	public HttpStatus getLastRestErrorCode() {
+		return getUserClient().getLastRestErrorCode();
 	}
 
 	public String getName() {

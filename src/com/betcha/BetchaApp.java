@@ -9,6 +9,7 @@ import org.acra.annotation.ReportsCrashes;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.http.HttpStatus;
 
 import android.app.Application;
 import android.content.ContentResolver;
@@ -303,33 +304,33 @@ public class BetchaApp extends Application implements IModelListener {
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
+	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
+	public void onUpdateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, ErrorCode errorCode) {
-		if (clazz.getSimpleName().contentEquals("Friend") && errorCode==ErrorCode.OK) {
+	public void onGetComplete(Class clazz, HttpStatus errorCode) {
+		if (clazz.getSimpleName().contentEquals("Friend") && errorCode==HttpStatus.OK) {
 			// new friedns found
 			friends = null;
 		}
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
+	public void onDeleteComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
+	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 
 	}

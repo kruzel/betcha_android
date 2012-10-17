@@ -7,6 +7,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import android.os.AsyncTask;
@@ -62,6 +63,10 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 			predictionRestClient = new PredictionRestClient(bet.getId());
 
 		return predictionRestClient;
+	}
+	
+	public HttpStatus getLastRestErrorCode() {
+		return getPredictionRestClient().getLastRestErrorCode();
 	}
 
 	public String getPrediction() {

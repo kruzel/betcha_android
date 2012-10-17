@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -14,7 +15,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
@@ -46,7 +46,7 @@ public class SettingsActivity extends SherlockActivity implements
 	private EditText etName;
 
 	private Dialog dialog = null;
-	private ErrorCode lastErrorCode = ErrorCode.OK;
+	private HttpStatus lastErrorCode = HttpStatus.OK;
 
 	private Friend friend;
 
@@ -179,10 +179,8 @@ public class SettingsActivity extends SherlockActivity implements
 				res = tmpMe.update();
 			}
 
-			// app.setMe(me);
-
 			if (res == 0) {
-				onCreateComplete(tmpMe.getClass(), ErrorCode.ERR_INTERNAL);
+				onCreateComplete(tmpMe.getClass(), HttpStatus.UNPROCESSABLE_ENTITY);
 			}
 		}
 	}
@@ -249,7 +247,7 @@ public class SettingsActivity extends SherlockActivity implements
 								}
 								
 								if(resp==null)
-									onCreateComplete(app.getMe().getClass(),ErrorCode.ERR_UNAUTHOTISED);
+									onCreateComplete(app.getMe().getClass(),HttpStatus.UNAUTHORIZED);
 								
 								JSONObject json = null;
 								try {
@@ -259,7 +257,7 @@ public class SettingsActivity extends SherlockActivity implements
 								}
 								
 								if(json==null)
-									onCreateComplete(app.getMe().getClass(), ErrorCode.ERR_UNAUTHOTISED);
+									onCreateComplete(app.getMe().getClass(), HttpStatus.UNAUTHORIZED);
 
 								tmpMe = app.getMe();
 								
@@ -281,7 +279,7 @@ public class SettingsActivity extends SherlockActivity implements
 
 								if (res == 0) {
 									onCreateComplete(app.getMe().getClass(),
-											ErrorCode.ERR_INTERNAL);
+											HttpStatus.UNPROCESSABLE_ENTITY);
 								}
 							}
 						});
@@ -292,12 +290,12 @@ public class SettingsActivity extends SherlockActivity implements
 
 					@Override
 					public void onFacebookError(FacebookError error) {
-						onCreateComplete(User.class, ErrorCode.ERR_FACEBOOK_ERROR);
+						onCreateComplete(User.class, HttpStatus.UNAUTHORIZED);
 					}
 
 					@Override
 					public void onError(DialogError e) {
-						onCreateComplete(User.class, ErrorCode.ERR_FACEBOOK_ERROR);
+						onCreateComplete(User.class, HttpStatus.SERVICE_UNAVAILABLE);
 					}
 
 					@Override
@@ -308,7 +306,7 @@ public class SettingsActivity extends SherlockActivity implements
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
+	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 
 		if (clazz.getSimpleName().contentEquals("User")) {
 			String msg = "";
@@ -317,6 +315,7 @@ public class SettingsActivity extends SherlockActivity implements
 
 			switch (errorCode) {
 			case OK:
+			case CREATED:
 				app.setMe(tmpMe);
 				if(tmpMe.getEmail()!=null)
 					etEmail.setText(tmpMe.getEmail());
@@ -328,25 +327,21 @@ public class SettingsActivity extends SherlockActivity implements
 
 				msg = getString(R.string.error_registration_succeeded);
 				break;
-			case ERR_CONNECTIVITY:
+			case SERVICE_UNAVAILABLE:
 				app.setMe(null);
 				msg = getString(R.string.error_connectivity_error);
 				break;
-			case ERR_SERVER_ERROR:
+			case INTERNAL_SERVER_ERROR:
 				app.setMe(null);
 				msg = getString(R.string.error_server_error);
 				break;
-			case ERR_UNAUTHOTISED:
+			case UNAUTHORIZED:
 				app.setMe(null);
 				msg = getString(R.string.error_authorization_error);
 				break;
-			case ERR_INTERNAL:
+			case UNPROCESSABLE_ENTITY:
 				app.setMe(null);
 				msg = getString(R.string.error_internal_error);
-				break;
-			case ERR_FACEBOOK_ERROR:
-				app.setMe(null);
-				msg = getString(R.string.error_facebook_error);
 				break;
 			default:
 				app.setMe(null);
@@ -371,7 +366,7 @@ public class SettingsActivity extends SherlockActivity implements
 					if (dialog != null && dialog.isShowing())
 						dialog.dismiss();
 
-					if (lastErrorCode == ErrorCode.OK)
+					if (lastErrorCode == HttpStatus.OK)
 						finish();
 				}
 			});
@@ -381,28 +376,28 @@ public class SettingsActivity extends SherlockActivity implements
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
+	public void onUpdateComplete(Class clazz, HttpStatus errorCode) {
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 
-		if (errorCode == ErrorCode.OK)
+		if (errorCode == HttpStatus.OK)
 			finish();
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
+	public void onDeleteComplete(Class clazz, HttpStatus errorCode) {
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
+	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, ErrorCode errorCode) {
+	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();

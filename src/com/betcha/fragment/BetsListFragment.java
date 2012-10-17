@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -226,23 +228,23 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 
 	@Override
-	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
+	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
+	public void onUpdateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, ErrorCode errorCode) {
+	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		
 		lvBets.onRefreshComplete();
 		
-		if(errorCode==ErrorCode.OK ) {
+		if(errorCode==HttpStatus.OK ) {
 			populate();
 						
 			if(app.getBetId()!="-1") {
@@ -255,13 +257,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
+	public void onDeleteComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
+	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -9,6 +9,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import android.util.Log;
@@ -31,6 +32,20 @@ public class Friend extends ModelCache<Friend, Integer> {
 	private User friend; 
 	
 	private int retries = 0;
+	
+	private static FriendRestClient restClient;
+	
+	public FriendRestClient getFriendRestClient() {
+		if(restClient==null)
+			//nested url = bets/:bet_id/predictions
+			restClient = new FriendRestClient(user.getId());
+			
+		return restClient;
+	}
+	
+	public HttpStatus getLastRestErrorCode() {
+		return getFriendRestClient().getLastRestErrorCode();
+	}
 	
 	public Friend() {
 		super();
@@ -127,7 +142,7 @@ public class Friend extends ModelCache<Friend, Integer> {
 		// this may take some time till we fetch all contacts from FB, so keep trying till it succeed
 		int res = 0;
 		
-		FriendRestClient restClient = new FriendRestClient(user.getId());
+		FriendRestClient restClient = getFriendRestClient();
 		JSONObject friendsObj = restClient.show_for_user();
 		
 		if(friendsObj==null || friendsObj.length()==0) {

@@ -10,6 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import android.util.Log;
@@ -77,6 +78,10 @@ public class Bet extends ModelCache<Bet, Integer> {
 			betClient = new BetRestClient();
 
 		return betClient;
+	}
+	
+	public HttpStatus getLastRestErrorCode() {
+		return getBetClient().getLastRestErrorCode();
 	}
 
 	public void setParticipants(List<User> participants) {

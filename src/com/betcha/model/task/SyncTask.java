@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
 
 import android.os.AsyncTask;
 
@@ -11,11 +12,10 @@ import com.betcha.BetchaApp;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.cache.IModelListener;
-import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.RestClient;
 
-public class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
+public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 	private static SyncTask syncThread;
 	private IModelListener modelListener;
 	
@@ -41,15 +41,15 @@ public class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
 	}
 
 	@Override
-	protected ErrorCode doInBackground(Void... params) {
+	protected HttpStatus doInBackground(Void... params) {
 		
 		if(!RestClient.isOnline()) {
 			ModelCache.enableConnectivityReciever();
-			return ErrorCode.ERR_CONNECTIVITY;
+			return HttpStatus.SERVICE_UNAVAILABLE;
 		}
 		
 		if(BetchaApp.getInstance().getMe()==null)
-			return ErrorCode.ERR_INTERNAL;
+			return HttpStatus.UNAUTHORIZED;
 		
 		if(!BetchaApp.getInstance().getMe().isServerCreated()) {
 			if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
@@ -57,13 +57,13 @@ public class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
 				BetchaApp.getInstance().getMe().setServerUpdated(true);
 				BetchaApp.getInstance().getMe().onLocalUpdate();
 			} else {
-				return ErrorCode.ERR_SERVER_ERROR;
+				return HttpStatus.UNAUTHORIZED;
 			}
 		}
 		
 		if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
 			if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-				return ErrorCode.ERR_UNAUTHOTISED;
+				return HttpStatus.UNAUTHORIZED;
 		}
 		
 		// get all updates from server (bets and their predictions and chat_messages
@@ -80,7 +80,7 @@ public class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
 		}
 		
 		if (bets == null || bets.size() == 0) {
-			return ErrorCode.OK;
+			return HttpStatus.OK;
 		}
 
 		for (Bet bet : bets) {
@@ -143,12 +143,12 @@ public class SyncTask extends AsyncTask<Void, Void, ErrorCode> {
 			}
 		}
 
-		return ErrorCode.OK;
+		return HttpStatus.OK;
 	}
 
 	@Override
-	protected void onPostExecute(ErrorCode errorCode) {
-		if(errorCode==ErrorCode.OK) {
+	protected void onPostExecute(HttpStatus errorCode) {
+		if(errorCode==HttpStatus.OK) {
 			BetchaApp.getInstance().setLastSyncTime(new DateTime());
 		}
 		

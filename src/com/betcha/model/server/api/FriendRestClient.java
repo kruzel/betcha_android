@@ -5,6 +5,8 @@ package com.betcha.model.server.api;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 /**
@@ -26,18 +28,25 @@ public class FriendRestClient extends RestClient {
 	}
 		
 	public JSONObject show_for_user() {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class, user_id);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		

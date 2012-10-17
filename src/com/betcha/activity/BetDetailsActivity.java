@@ -4,6 +4,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -258,38 +260,38 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	}
 
 	@Override
-	public void onCreateComplete(Class clazz, ErrorCode errorCode) {
+	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onUpdateComplete(Class clazz, ErrorCode errorCode) {
+	public void onUpdateComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onGetComplete(Class clazz, ErrorCode errorCode) {
+	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		if (dialog != null && dialog.isShowing()) {
 			dialog.dismiss();
 			dialog = null;
 		}
 		
-		if(errorCode == ErrorCode.OK) {
+		if(errorCode == HttpStatus.OK) {
 			betDetailsFragment.refresh();
 	    	betChatFragment.refresh();
 		}
 	}
 
 	@Override
-	public void onDeleteComplete(Class clazz, ErrorCode errorCode) {
+	public void onDeleteComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, ErrorCode errorCode) {
+	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
 		// TODO Auto-generated method stub
 		
 	}

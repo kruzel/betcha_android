@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.cache.ModelCache;
@@ -32,6 +33,10 @@ public class ChatMessage extends ModelCache<ChatMessage, Integer> {
 			chatMessagesRestClient = new ChatMessageRestClient(bet.getId());
 			
 		return chatMessagesRestClient;
+	}
+	
+	public HttpStatus getLastRestErrorCode() {
+		return getChatMessageRestClient().getLastRestErrorCode();
 	}
 
 	public User getUser() {

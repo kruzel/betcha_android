@@ -1,5 +1,6 @@
 package com.betcha.model.server.api;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
@@ -13,6 +14,16 @@ public abstract class RestClient {
 	protected RestTemplate restTemplate = new RestTemplate(true);
 	protected static  String token;
 	private static Context context;
+	
+	protected HttpStatus lastRestErrorCode = HttpStatus.OK;
+	
+	public HttpStatus getLastRestErrorCode() {
+		return lastRestErrorCode;
+	}
+
+	protected void setLastRestErrorCode(HttpStatus lastRestErrorCode) {
+		this.lastRestErrorCode = lastRestErrorCode;
+	}
 
 	public RestClient() {
 		restTemplate.getMessageConverters().add(new StringHttpMessageConverter());

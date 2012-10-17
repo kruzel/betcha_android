@@ -12,6 +12,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.http.HttpStatus;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,7 +22,6 @@ import android.os.AsyncTask.Status;
 
 import com.betcha.BetchaApp;
 import com.betcha.ConnectivityReceiver;
-import com.betcha.model.cache.IModelListener.ErrorCode;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
 import com.j256.ormlite.dao.Dao;
@@ -55,6 +55,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	private RestTask restTask;
 	protected IModelListener listener;
 	protected static Context context;
+	
+	public abstract HttpStatus getLastRestErrorCode();
 	
 	public String getId() {
 		return id;
@@ -408,7 +410,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	 * @author ofer
 	 *
 	 */
-	public static class RestTask extends  AsyncTask<RestMethod, Void, ErrorCode> {
+	public static class RestTask extends  AsyncTask<RestMethod, Void, HttpStatus> {
 		public enum RestMethod { CREATE, UPDATE, DELETE, GET, GET_FOR_CUR_USER }
 		RestMethod currMethod;
 		
@@ -428,82 +430,81 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 			this.modelListener = modelListener;
 		}
 
-		protected ErrorCode doInBackground(RestMethod... params) {
+		protected HttpStatus doInBackground(RestMethod... params) {
 			if (model==null){
-				return ErrorCode.ERR_INTERNAL;
+				return HttpStatus.BAD_REQUEST;
 			}
 			
 			currMethod = params[0];
 			
 			if(!RestClient.isOnline()) {
 				ModelCache.enableConnectivityReciever();
-				return ErrorCode.ERR_CONNECTIVITY;
+				return HttpStatus.SERVICE_UNAVAILABLE;
 			}
 			
 			if(BetchaApp.getInstance().getMe()!=null && ( RestClient.GetToken()==null || RestClient.GetToken().length()==0)) {
 				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
-					return ErrorCode.ERR_UNAUTHOTISED;
+					return HttpStatus.UNAUTHORIZED;
 			}
 						
 			switch (currMethod) {
 			case CREATE:
-				if (model.onRestCreate()>0) {
+				model.onRestCreate();
+				if (model.getLastRestErrorCode()==HttpStatus.CREATED) {
 					model.setServerCreated(true);
 					model.setServerUpdated(true);
 					model.onLocalUpdate();
-					return ErrorCode.OK;
 				}
 				break;
 			case UPDATE:
 				if(model.isServerCreated()) {
-					if(model.onRestUpdate()>0) {
+					model.onRestUpdate();
+					if(model.getLastRestErrorCode()==HttpStatus.OK) {
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return ErrorCode.OK;
 					}
 				} else {
-					if (model.onRestCreate()>0) {
+					model.onRestCreate();
+					if (model.getLastRestErrorCode()==HttpStatus.CREATED) {
 						model.setServerCreated(true);
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return ErrorCode.OK;
 					}
 				}	
 				break;
 			case DELETE:
 				if(model.isServerCreated()) {
-					if(model.onRestDelete()>0) {
+					model.onRestDelete();
+					if(model.getLastRestErrorCode()==HttpStatus.OK) {
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
-						return ErrorCode.OK;
 					}
-				} else
-					return ErrorCode.OK;
+				} 
 				break;
 			case GET:
-				if(model.onRestGet()>0) {
+				model.onRestGet();
+				if(model.getLastRestErrorCode()==HttpStatus.OK) {
 					model.setServerUpdated(true);
 					model.setServerCreated(true);
 					model.onLocalUpdate();
-					return ErrorCode.OK;
 				}
 				break;
 			case GET_FOR_CUR_USER:
-				if(model.onRestGetAllForCurUser()>0) {
+				model.onRestGetAllForCurUser();
+				if(model.getLastRestErrorCode()==HttpStatus.OK) {
 					model.setServerUpdated(true);
 					model.setServerCreated(true);
 					model.onLocalUpdate();
-					return ErrorCode.OK;
 				}
 				break;
 			default:
 				break;
 			}
-			return ErrorCode.ERR_INTERNAL;
+			return model.getLastRestErrorCode();
 		}
 		
 		@Override
-		protected void onPostExecute(ErrorCode result) {
+		protected void onPostExecute(HttpStatus result) {
 			if(modelListener!=null) {
 				switch (currMethod) {
 				case CREATE:

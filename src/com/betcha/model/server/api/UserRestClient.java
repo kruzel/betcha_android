@@ -2,12 +2,13 @@ package com.betcha.model.server.api;
 
 import java.io.ByteArrayOutputStream;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import android.graphics.Bitmap;
@@ -24,25 +25,27 @@ public class UserRestClient extends RestClient {
 	public static void setUrl(String url) {
 		UserRestClient.url = url;
 	}
-	
-	public JSONArray list() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public JSONObject show(String id) {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/" + id + ".json?"+ GetURLTokenParam() , String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -50,12 +53,17 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject showViaEmail(String email) {
+		setLastRestErrorCode(HttpStatus.OK);
 		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_by_email.json?"+ GetURLTokenParam() + "&email=" + email , String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
 		
@@ -66,7 +74,7 @@ public class UserRestClient extends RestClient {
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -74,19 +82,25 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject showViaUid(String uid) {
+		setLastRestErrorCode(HttpStatus.OK);
 		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_by_uid.json?"+ GetURLTokenParam() + "&uid=" + uid , String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -94,6 +108,8 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject create(String id, String full_name, String email, String password, Bitmap bm)   {		
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -159,17 +175,21 @@ public class UserRestClient extends RestClient {
         String res = null;
         try {
         	res = restTemplate.postForObject(url + ".json" , request, String.class);
-        } catch (RestClientException e) {
-        	e.printStackTrace();
-    		return null;
-    	} 
+        } catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			return null;
+		}
 		
 		JSONObject json = null;
 		if(res!=null) {
 			try {
 				json = new JSONObject(res);
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
+				setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 				e.printStackTrace();
 			}
 		}
@@ -178,6 +198,8 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject createOAuth(String id, String provider, String uid, String access_token )   {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -199,16 +221,20 @@ public class UserRestClient extends RestClient {
 		String res;
 		try {
 			res = restTemplate.postForObject(url + ".json" , request, String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
-		}	
+		}
 		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -216,6 +242,8 @@ public class UserRestClient extends RestClient {
 	}
 
 	public void update(User user)   {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
 		
@@ -287,23 +315,39 @@ public class UserRestClient extends RestClient {
         try {
         	Log.i("UserRestClient.update()", "updating server through rest api");
         	restTemplate.put(url + "/" + user.getId() + ".json", request);
-        } catch (RestClientException e) {
-        	e.printStackTrace();
-    		return;
-    	}
+        } catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 		
 		return;
 	}
 
 	public void delete(String id)   {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		try {
 			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
-		} catch (RestClientException e) {
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
 			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
-	public void resetPassword(String email) {
-		restTemplate.put(url + "/reset_password.json?email=" + email,null);
+	public void resetPassword(String email) {   	
+		setLastRestErrorCode(HttpStatus.OK);
+		
+		try {
+			restTemplate.put(url + "/reset_password.json?email=" + email,null);
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

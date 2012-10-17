@@ -1,12 +1,13 @@
 package com.betcha.model.server.api;
 
 import org.joda.time.DateTime;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 import com.betcha.model.Bet;
@@ -18,20 +19,19 @@ public class BetRestClient extends RestClient {
 	public static void setUrl(String url) {
 		BetRestClient.url = url;
 	}
-	
-	public JSONArray list()  {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	public JSONObject show(String id) {
+		setLastRestErrorCode(HttpStatus.OK);
 		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/" + id  + ".json?"+ GetURLTokenParam() , String.class);
-		} catch (Exception e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
 		
@@ -47,18 +47,25 @@ public class BetRestClient extends RestClient {
 	}
 	
 	public JSONObject show_for_user() {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -66,18 +73,25 @@ public class BetRestClient extends RestClient {
 	}
 	
 	public JSONObject show_updates_for_user(DateTime lastUpdate) {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_updates_for_user.json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
 		}
+		
 		JSONObject json = null;
 		try {
 			json = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -85,6 +99,8 @@ public class BetRestClient extends RestClient {
 	}
 
 	public JSONObject create(Bet bet) {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject json = bet.toJson();
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -94,15 +110,20 @@ public class BetRestClient extends RestClient {
 		String res;
 		try {
 			res = restTemplate.postForObject(url + ".json" , request, String.class);
-		} catch (RestClientException e1) {
-			e1.printStackTrace();
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    	return null;
+	    } catch (RestClientException e) {
+			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			return null;
-		}		
+		}
+		
 		JSONObject jsonRes = null;
 		try {
 			jsonRes = new JSONObject(res);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			e.printStackTrace();
 		}
 		
@@ -110,6 +131,8 @@ public class BetRestClient extends RestClient {
 	}
 
 	public void update(Bet bet) {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject json = bet.toJson();
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -118,13 +141,17 @@ public class BetRestClient extends RestClient {
         HttpEntity request= new HttpEntity( json.toString(), headers);
 		try {
 			restTemplate.put(url + "/" + bet.getId() + ".json", request);
-		} catch (RestClientException e) {
-			// TODO Auto-generated catch block
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
 			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	public void updateOrCreate(Bet bet) {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		JSONObject json = bet.toJson();
 		
 		HttpHeaders headers = new HttpHeaders();
@@ -133,17 +160,24 @@ public class BetRestClient extends RestClient {
         HttpEntity request= new HttpEntity( json.toString(), headers);
 		try {
 			restTemplate.put(url + "/" + bet.getId() + "/update_or_create.json", request);
-		} catch (RestClientException e) {
-			// TODO Auto-generated catch block
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
 			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
 	public void delete(String id)  {
+		setLastRestErrorCode(HttpStatus.OK);
+		
 		try {
 			restTemplate.delete(url  + "/" + id + ".json?"+ GetURLTokenParam());
-		} catch (RestClientException e) {
+		} catch (HttpClientErrorException e) {
+	    	setLastRestErrorCode(e.getStatusCode());
+	    } catch (RestClientException e) {
 			e.printStackTrace();
+			setLastRestErrorCode(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
