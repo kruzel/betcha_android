@@ -38,7 +38,8 @@
         android:layout_height="24dp"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/cb_prediction_win"
-        android:layout_toRightOf="@+id/relativeLayout1"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="100dp"
         android:minWidth="80dp"
         android:paddingLeft="4dp"
         android:paddingRight="4dp" >

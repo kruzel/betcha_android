@@ -368,10 +368,12 @@ public class Bet extends ModelCache<Bet, Integer> {
 		for (User participant : newParticipants) {
 			//avoid adding a user already participating in bet
 			Boolean found = false;
-			for (Prediction prediction : predictions) {
-				if(prediction.getUser().getId().equals(participant.getId())) {
-					found = true;
-					break;
+			if(predictions!=null) {
+				for (Prediction prediction : predictions) {
+					if(prediction.getUser().getId().equals(participant.getId())) {
+						found = true;
+						break;
+					}
 				}
 			}
 			if(found)

@@ -29,10 +29,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
         android:layout_toRightOf="@+id/tv_participant_name"
+        android:layout_toLeftOf="@+id/tv_chat_message_date"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="100dp"
         android:text="Chat_message"
-        style="@style/ChatText" />
+        style="@style/ChatText"
+        android:singleLine="false"   />
 
     <TextView
         android:id="@+id/tv_chat_message_date"
