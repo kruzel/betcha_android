@@ -139,8 +139,8 @@
 	            
 		        <ListView
 		            android:id="@+id/lv_bet_predictions"
-		            android:layout_width="fill_parent"
-		            android:layout_height="100dp"
+		            android:layout_width="match_parent"
+		            android:layout_height="match_parent"
 		            android:layout_below="@id/ll_bet_reward"
 		            android:layout_centerHorizontal="true"
 		            android:layout_marginTop="5dp"

@@ -366,6 +366,17 @@ public class Bet extends ModelCache<Bet, Integer> {
 	public int addPredictions(List<User> newParticipants) {
 		int res = 0;
 		for (User participant : newParticipants) {
+			//avoid adding a user already participating in bet
+			Boolean found = false;
+			for (Prediction prediction : predictions) {
+				if(prediction.getUser().getId().equals(participant.getId())) {
+					found = true;
+					break;
+				}
+			}
+			if(found)
+				continue;
+			
 			if(participant.getId()==null) { //new friend
 				//verify contact not exist already via mail
 				List<User> foundUsers = null;
