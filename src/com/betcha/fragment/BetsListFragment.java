@@ -7,7 +7,10 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +55,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	private Boolean isFirstBetsLoad = true;
 	
 	private RadioGroup rgBetsFilterGrou;
+	
+	private BroadcastReceiver receiver;
 		
 	/** Called when the activity is first created. */
     @Override
@@ -60,6 +65,14 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
                 
         app = BetchaApp.getInstance();
         setHasOptionsMenu(true);
+        
+        receiver = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				populate();
+			}
+		};
     }
     
 	@Override
@@ -119,7 +132,17 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 			populate();
         } 
 		
+		final String BET_LIST_ACTION = "com.betcha.BetsListFragmentReceiver";
+	    IntentFilter intentFilter = new IntentFilter(BET_LIST_ACTION);
+		getActivity().registerReceiver(receiver,intentFilter);
+		
 		super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		getActivity().unregisterReceiver(receiver);
+		super.onPause();
 	}
 
 	@Override

@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -49,6 +52,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	
 	ListView lvFriends;
 	FriendAdapter friendAdapter;
+	
+	private BroadcastReceiver receiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +163,15 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			}
 		});
 		
+		receiver = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				betDetailsFragment.refresh();
+				betChatFragment.refresh();
+			}
+		};
+		
 	}
 
 	@Override
@@ -204,6 +218,16 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 		betDetailsFragment.init(bet);
 		betChatFragment.init(bet, app.getMe());
+		
+		final String BET_DETAILS_ACTION = "com.betcha.BetDetailsActivityReceiver";
+	    IntentFilter intentFilter = new IntentFilter(BET_DETAILS_ACTION);
+		registerReceiver(receiver,intentFilter);
+	}
+
+	@Override
+	protected void onPause() {
+		unregisterReceiver(receiver);
+		super.onPause();
 	}
 
 	@Override
