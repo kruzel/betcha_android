@@ -210,7 +210,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
         
  		if(bets!=null && bets.size()>0) {
  			if(betAdapter==null){
-	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item2, bets);
+	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
 		        lvBets.setAdapter(betAdapter);    
  			} else {
 	 			betAdapter.clear();
