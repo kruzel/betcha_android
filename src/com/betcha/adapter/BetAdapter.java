@@ -84,7 +84,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
-	        v = inflater.inflate(R.layout.bets_list_item2, parent, false);
+	        v = inflater.inflate(R.layout.bets_list_item, parent, false);
 		    		    
 		    holder = new ViewHolder();
 		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
@@ -102,7 +102,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    
 		    for(int i = 0; i<predictionSize ; i++ ) {
 		    	holder.rlPredictionItems[i] = new PredictionHolder();
-		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item2, holder.lvPredictions, false);
+		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item, holder.lvPredictions, false);
 		    	holder.rlPredictionItems[i].ivParticipantProfPic = (ImageView) holder.rlPredictionItems[i].layout.findViewById(R.id.iv_participant_pic);
 		    	holder.rlPredictionItems[i].tvParticipantName = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_name);
 		    	holder.rlPredictionItems[i].tvParticipantPrediction = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_prediction);

@@ -11,8 +11,8 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.fragment.CreateBetCategoryFragment2;
-import com.betcha.fragment.CreateBetCategoryFragment2.OnBetCategorySelectionListener2;
+import com.betcha.fragment.CreateBetCategoryFragment;
+import com.betcha.fragment.CreateBetCategoryFragment.OnBetCategorySelectionListener2;
 import com.betcha.fragment.CreateBetFragment;
 import com.betcha.fragment.CreateBetFragment.OnBetDetailsEnteredListener;
 import com.betcha.model.Bet;
@@ -25,7 +25,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 	private Bet newBet;
 	
 	private CreateBetFragment createBetFragment;
-	private CreateBetCategoryFragment2 betCategoryFragment;
+	private CreateBetCategoryFragment betCategoryFragment;
 	private List<Category> customCategoriesList;
 	private List<Category> featuredCategoriesList;
 	
@@ -42,7 +42,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
         
         newBet = new Bet();
         
-        betCategoryFragment = new CreateBetCategoryFragment2();
+        betCategoryFragment = new CreateBetCategoryFragment();
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.create_bet_fragment_container, betCategoryFragment);
 		transaction.addToBackStack(null);
