@@ -105,14 +105,8 @@ public class LoginEmailActivity extends SherlockActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (app.getMe() != null) {
-				Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intent);
-				//finish();
+			finish();
 			return true;
-			}
-			break;
 		default:
 			
 		}
@@ -277,7 +271,7 @@ public class LoginEmailActivity extends SherlockActivity implements
 					if (dialog != null && dialog.isShowing())
 						dialog.dismiss();
 
-					if (lastErrorCode == HttpStatus.OK) {
+					if (lastErrorCode == HttpStatus.CREATED) {
 						Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
 						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						startActivity(intent);
@@ -295,8 +289,11 @@ public class LoginEmailActivity extends SherlockActivity implements
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 
-		if (errorCode == HttpStatus.OK)
-			finish();
+		if (errorCode == HttpStatus.OK) {
+			Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
 	}
 
 	@Override

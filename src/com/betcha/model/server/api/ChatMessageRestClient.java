@@ -119,7 +119,7 @@ public class ChatMessageRestClient extends RestClient {
 	}
 	
 	public JSONObject create(ChatMessage chatMessage) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject json = chatMessage.toJson();
 		

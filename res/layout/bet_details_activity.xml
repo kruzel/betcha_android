@@ -34,7 +34,8 @@
 		            android:layout_width="100dp"
 		            android:layout_height="wrap_content"
 		            android:text="@string/invite" 
-		            android:visibility="invisible"/>
+		            android:visibility="invisible"
+		            android:background="@drawable/button_small"/>
 						
 		        <Button
 		            android:id="@+id/button_close"
@@ -42,14 +43,16 @@
 		            android:layout_height="wrap_content"
 		            android:layout_gravity="center_horizontal"
 		            android:text="@string/close"
-		            android:visibility="invisible" />
+		            android:visibility="invisible"
+		            android:background="@drawable/button_small" />
 				
 		        <Button
 		            android:id="@+id/button_delete"
 		            android:layout_width="100dp"
 		            android:layout_height="wrap_content"
 		            android:text="@string/delete"
-		            android:visibility="invisible" />
+		            android:visibility="invisible"
+		            android:background="@drawable/button_small" />
 		
 		    </LinearLayout>
 		    		

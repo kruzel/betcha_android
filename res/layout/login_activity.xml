@@ -30,7 +30,7 @@
     	    android:layout_alignParentBottom="true"
     	    android:layout_centerInParent="true"
     	    android:layout_marginBottom="10dp"
-    	    android:background="@drawable/button_rounded"
+    	    android:background="@drawable/button_gray"
     	    android:onClick="onSubmit"
     	    android:text="@string/email_Connect" />
 

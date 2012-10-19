@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -265,6 +266,8 @@ public class User extends ModelCache<User,Integer> {
 		
 		if(jsonContent==null)
 			return 0;
+		
+		setServerCreated(true);
 		
 		String resId = jsonContent.optString("id");
 		if(resId!=null && resId!=getId()) {

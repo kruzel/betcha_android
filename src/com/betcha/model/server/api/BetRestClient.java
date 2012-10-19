@@ -99,7 +99,7 @@ public class BetRestClient extends RestClient {
 	}
 
 	public JSONObject create(Bet bet) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject json = bet.toJson();
 		

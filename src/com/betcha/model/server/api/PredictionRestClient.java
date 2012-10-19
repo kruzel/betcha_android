@@ -121,7 +121,7 @@ public class PredictionRestClient extends RestClient {
 	}
 
 	public JSONObject create(Prediction prediction) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject json = prediction.toJson();
 		
@@ -154,7 +154,7 @@ public class PredictionRestClient extends RestClient {
 	}
 	
 	public JSONObject createAndInvite(Prediction prediction) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject json = prediction.toJson();
 		

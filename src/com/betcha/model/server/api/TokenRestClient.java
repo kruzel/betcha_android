@@ -17,7 +17,7 @@ public class TokenRestClient extends RestClient {
 	}
 	
 	public String create(String email, String password) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		Map<String,String> arg = new HashMap<String,String>();
 		arg.put("provider", "email");
@@ -57,7 +57,7 @@ public class TokenRestClient extends RestClient {
 	
 	
 	public String createOAuth(String provider, String uid, String access_token) {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		Map<String,String> arg = new HashMap<String,String>();
 		arg.put("provider", provider);

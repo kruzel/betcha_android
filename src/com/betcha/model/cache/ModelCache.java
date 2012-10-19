@@ -446,6 +446,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 				if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
 					return HttpStatus.UNAUTHORIZED;
 			}
+			
+			HttpStatus code = model.getLastRestErrorCode();
 						
 			switch (currMethod) {
 			case CREATE:

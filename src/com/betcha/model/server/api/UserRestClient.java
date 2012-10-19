@@ -108,7 +108,7 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject create(String id, String full_name, String email, String password, Bitmap bm)   {		
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();
@@ -198,7 +198,7 @@ public class UserRestClient extends RestClient {
 	}
 	
 	public JSONObject createOAuth(String id, String provider, String uid, String access_token )   {
-		setLastRestErrorCode(HttpStatus.OK);
+		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject jsonContent = new JSONObject();
 		JSONObject jsonParent = new JSONObject();

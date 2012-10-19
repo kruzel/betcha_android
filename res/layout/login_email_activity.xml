@@ -100,7 +100,7 @@
 	        android:layout_margin="10dp"
 	        android:onClick="onSubmit"
 	        android:text="@string/login"
-	        android:background="@drawable/button_rounded" />
+	        android:background="@drawable/button_gray"/>
 	    
 	    <Button
 	        android:id="@+id/buttonResetPass"
@@ -109,7 +109,7 @@
 	        android:layout_margin="10dp"
 	        android:onClick="onResetPassword"
 	        android:text="@string/reset"
-	        android:background="@drawable/button_rounded" />
+	        android:background="@drawable/button_gray" />
 	</LinearLayout>
 	
 	
