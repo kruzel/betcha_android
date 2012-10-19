@@ -26,7 +26,7 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.activity.CreateBetActivity;
-import com.betcha.activity.SettingsActivity;
+import com.betcha.activity.LoginActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
@@ -141,7 +141,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	            startActivity(intent);
 	            return true;
 	        case R.id.menu_settings:
-	            intent = new Intent(getActivity(), SettingsActivity.class);
+	            intent = new Intent(getActivity(), LoginActivity.class);
 	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);
 	            return true;
@@ -252,7 +252,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				openDetailedActivity(newBet, true);
 			}
 		} else {
-			Toast.makeText(getActivity(), R.string.error_bet_not_found, Toast.LENGTH_LONG).show();
+			Toast.makeText(getActivity(), getString(R.string.error_bet_not_found) + ", error " + errorCode.value(), Toast.LENGTH_LONG).show();
 		}
 	}
 

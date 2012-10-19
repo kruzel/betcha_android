@@ -1,11 +1,7 @@
 package com.betcha.activity;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 
 import android.app.Dialog;
@@ -15,21 +11,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
+import com.betcha.FontUtils;
+import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.Friend;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
-import com.facebook.android.DialogError;
-import com.facebook.android.Facebook;
-import com.facebook.android.Facebook.DialogListener;
-import com.facebook.android.FacebookError;
 
-public class SettingsActivity extends SherlockActivity implements
+public class LoginEmailActivity extends SherlockActivity implements
 		IModelListener {
 	public final Pattern EMAIL_ADDRESS_PATTERN = Pattern
 			.compile("[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" + "\\@"
@@ -39,8 +33,6 @@ public class SettingsActivity extends SherlockActivity implements
 	private BetchaApp app;
 	private User tmpMe;
 
-	private Facebook facebook = new Facebook("299434100154215");
-
 	private EditText etEmail;
 	private EditText etPass;
 	private EditText etName;
@@ -48,13 +40,11 @@ public class SettingsActivity extends SherlockActivity implements
 	private Dialog dialog = null;
 	private HttpStatus lastErrorCode = HttpStatus.OK;
 
-	private Friend friend;
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.settings);
+		setContentView(R.layout.login_email_activity);
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -62,16 +52,20 @@ public class SettingsActivity extends SherlockActivity implements
 		app = (BetchaApp) getApplication();
 
 		etEmail = (EditText) findViewById(R.id.editTextEmail);
-		etName = (EditText) findViewById(R.id.editTextName);
 		etPass = (EditText) findViewById(R.id.editTextPass);
-
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		facebook.authorizeCallback(requestCode, resultCode, data);
+		etName = (EditText) findViewById(R.id.editTextName);
+		
+		TextView tvEmail = (TextView) findViewById(R.id.textView1);
+		TextView tvPass = (TextView) findViewById(R.id.textView2);
+		TextView tvName = (TextView) findViewById(R.id.textViewName);
+		
+		FontUtils.setTextViewTypeface(etEmail, R.id.textView1, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(etPass, R.id.textView2, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(etName, R.id.textViewName, CustomFont.HELVETICA_CONDENSED);
+		
+		FontUtils.setTextViewTypeface(tvEmail, R.id.editTextEmail, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvName, R.id.editTextPass, CustomFont.HELVETICA_CONDENSED);
+		FontUtils.setTextViewTypeface(tvPass, R.id.editTextName, CustomFont.HELVETICA_CONDENSED);
 	}
 
 	@Override
@@ -111,12 +105,19 @@ public class SettingsActivity extends SherlockActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (app.getMe() != null)
-				finish();
+			if (app.getMe() != null) {
+				Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intent);
+				//finish();
 			return true;
+			}
+			break;
 		default:
-			return super.onOptionsItemSelected(item);
+			
 		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 
 	public void onSubmit(View v) {
@@ -215,96 +216,6 @@ public class SettingsActivity extends SherlockActivity implements
 		t.start();
 	}
 
-	public void OnFBConnect(View v) {
-		if (dialog != null && dialog.isShowing())
-			dialog.dismiss();
-		dialog = ProgressDialog.show(this,
-				getResources().getString(R.string.register),
-				"Registering. Please wait...", true);
-
-		facebook.authorize(this, new String[] { "email", "read_friendlists",
-				"friends_about_me", "publish_stream", "user_online_presence",
-				"friends_online_presence", "read_stream", "xmpp_login" },
-				new DialogListener() {
-					@Override
-					public void onComplete(Bundle values) {
-						
-						Thread t = new Thread(new Runnable() {
-							
-							@Override
-							public void run() {
-								// TODO on registration - load contacts to friends list
-								String token = facebook.getAccessToken();
-								
-								String resp = null;
-								try {
-									resp = facebook.request("me");
-								} catch (MalformedURLException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-								
-								if(resp==null)
-									onCreateComplete(app.getMe().getClass(),HttpStatus.UNAUTHORIZED);
-								
-								JSONObject json = null;
-								try {
-									json = new JSONObject(resp);											
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
-								
-								if(json==null)
-									onCreateComplete(app.getMe().getClass(), HttpStatus.UNAUTHORIZED);
-
-								tmpMe = app.getMe();
-								
-								if (tmpMe == null || tmpMe.getId() == null) {
-									tmpMe = new User();
-								}
-								
-								tmpMe.setProvider("facebook");
-								tmpMe.setUid(json.optString("id"));
-								tmpMe.setAccess_token(token);
-								tmpMe.setListener(SettingsActivity.this);
-
-								int res = 0;
-								if (tmpMe.getId() == null) {
-									res = tmpMe.create();
-								} else {
-									res = tmpMe.update();
-								}
-
-								if (res == 0) {
-									onCreateComplete(app.getMe().getClass(),
-											HttpStatus.UNPROCESSABLE_ENTITY);
-								}
-							}
-						});
-						t.start();
-
-						return;
-					}
-
-					@Override
-					public void onFacebookError(FacebookError error) {
-						onCreateComplete(User.class, HttpStatus.UNAUTHORIZED);
-					}
-
-					@Override
-					public void onError(DialogError e) {
-						onCreateComplete(User.class, HttpStatus.SERVICE_UNAVAILABLE);
-					}
-
-					@Override
-					public void onCancel() {
-					}
-				});
-
-	}
-
 	@Override
 	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 
@@ -366,8 +277,12 @@ public class SettingsActivity extends SherlockActivity implements
 					if (dialog != null && dialog.isShowing())
 						dialog.dismiss();
 
-					if (lastErrorCode == HttpStatus.OK)
-						finish();
+					if (lastErrorCode == HttpStatus.OK) {
+						Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						startActivity(intent);
+						//finish();
+					}
 				}
 			});
 			t.start();

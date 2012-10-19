@@ -34,7 +34,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 		
 		if(app.getMe()==null || app.getMe().getId()==null) {
         	Intent intent = new Intent();
-        	intent.setClass(this, SettingsActivity.class);
+        	intent.setClass(this, LoginActivity.class);
         	startActivity(intent);
 	    } else if(!app.getBetId().equals("-1")) {
 				Bet bet = null;
