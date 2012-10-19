@@ -71,6 +71,11 @@
 	    <item name="android:textColor">@color/text_fabric</item>
 	</style>
 	
+	<style name="loginText" parent="@style/Text">
+	    <item name="android:textSize">14sp</item>
+	    <item name="android:textColor">@color/text_lightfabric</item>
+	</style>
+	
 	<!-- Create Menu -->
 	
 	<style name="CreateMenuContainer">
