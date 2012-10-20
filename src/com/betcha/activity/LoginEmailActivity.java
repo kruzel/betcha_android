@@ -213,6 +213,8 @@ public class LoginEmailActivity extends SherlockActivity implements
 	@Override
 	public void onCreateComplete(Class clazz, HttpStatus errorCode) {
 
+		tmpMe.setListener(null);
+		
 		if (clazz.getSimpleName().contentEquals("User")) {
 			String msg = "";
 			if (dialog != null && dialog.isShowing())
@@ -286,6 +288,8 @@ public class LoginEmailActivity extends SherlockActivity implements
 
 	@Override
 	public void onUpdateComplete(Class clazz, HttpStatus errorCode) {
+		tmpMe.setListener(null);
+		
 		if (dialog != null && dialog.isShowing())
 			dialog.dismiss();
 
