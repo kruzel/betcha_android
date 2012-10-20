@@ -8,11 +8,14 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import utils.SoftKeyboardUtils;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -22,6 +25,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -303,8 +308,13 @@ public class CreateBetFragment extends SherlockFragment {
 					
 					@Override
 					public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-						v.clearFocus();
-						return true;
+						if (actionId == EditorInfo.IME_ACTION_DONE) {
+							v.clearFocus();
+							SoftKeyboardUtils.hideSoftwareKeyboard(v);
+					        return true;
+						}
+						
+						return false;
 					}
 				});
 		        

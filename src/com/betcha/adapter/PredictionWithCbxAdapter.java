@@ -2,14 +2,16 @@ package com.betcha.adapter;
 
 import java.util.List;
 
+import utils.SoftKeyboardUtils;
+
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -79,6 +81,7 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 						p.setPrediction(et.getText().toString());
 						p.update();
 						et.clearFocus();
+						SoftKeyboardUtils.hideSoftwareKeyboard(v);
 			            return true;
 			        }
 			        return false;
