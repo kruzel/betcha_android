@@ -215,19 +215,43 @@ public class Bet extends ModelCache<Bet, Integer> {
 			}
 		}
 		
-		if (getBetClient().create(this) != null)
+		if (getBetClient().create(this) != null) {
 			res = 1;
+			
+			for (Prediction prediction : getPredictions()) {
+				prediction.setServerCreated(true);
+				prediction.setServerUpdated(true);
+				prediction.onLocalUpdate();
+			}
+			
+		}
 
 		return res;
 	}
 
 	public int onRestUpdate() {
 		getBetClient().update(this);
+		
+		if(getLastRestErrorCode()==HttpStatus.OK) {
+			for (Prediction prediction : getPredictions()) {
+				prediction.setServerUpdated(true);
+				prediction.onLocalUpdate();
+			}
+		}
+		
 		return 1;
 	}
 
 	public int onRestDelete() {
 		getBetClient().delete(getId());
+		
+		if(getLastRestErrorCode()==HttpStatus.OK) {
+			for (Prediction prediction : getPredictions()) {
+				prediction.setServerUpdated(true);
+				prediction.onLocalUpdate();
+			}
+		}
+		
 		return 1;
 	}
 

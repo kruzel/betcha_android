@@ -41,10 +41,10 @@ import com.j256.ormlite.field.DatabaseField;
 public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	@DatabaseField(id = true, canBeNull = false)
 	protected String id;
-	@DatabaseField
-	protected Boolean server_created = false;
-	@DatabaseField
-	protected Boolean server_updated = false;
+	@DatabaseField(defaultValue="false")
+	protected Boolean server_created;
+	@DatabaseField(defaultValue="false")
+	protected Boolean server_updated;
 	@DatabaseField
 	protected RestMethod last_rest_call; //use this to know what server operation need to be completed
 	@DatabaseField
@@ -244,7 +244,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	}
 	
 	public Boolean isServerCreated() {
-		return server_created;
+		return server_created!=null && server_created;
 	}
 
 	public void setServerUpdated(Boolean serverUpdated) {
@@ -252,7 +252,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	}
 
 	public Boolean isServerUpdated() {
-		return server_updated;
+		return server_updated!=null && server_updated;
 	}
 	
 	public DateTime getUpdated_at() {
