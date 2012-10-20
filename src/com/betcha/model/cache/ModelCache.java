@@ -52,6 +52,9 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	@DatabaseField
 	private DateTime created_at;
 	
+	private Boolean changes_stored = true; //indicate whether changes are saved at all or just reside in RAM
+											//currently for specific usage
+	
 	private RestTask restTask;
 	protected IModelListener listener;
 	protected static Context context;
@@ -228,6 +231,14 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		return status.getNumLinesChanged();
 	}
 			
+	public Boolean getChangesStored() {
+		return changes_stored;
+	}
+
+	public void setChangesStored(Boolean changes_stored) {
+		this.changes_stored = changes_stored;
+	}
+
 	public void setServerCreated(Boolean server_created) {
 		this.server_created = server_created;
 	}

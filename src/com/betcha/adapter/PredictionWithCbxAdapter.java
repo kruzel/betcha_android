@@ -3,21 +3,24 @@ package com.betcha.adapter;
 import java.util.List;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
-import com.betcha.R;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.R;
 import com.betcha.model.Prediction;
 
 public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
@@ -65,19 +68,20 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
 		if(app.getMe().getId().equals(prediction.getUser().getId())) {
-				
-			tvPrediction.setOnFocusChangeListener(new OnFocusChangeListener() {
+							
+			tvPrediction.setOnEditorActionListener(new OnEditorActionListener() {
 				
 				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					if(!hasFocus) {
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					if (actionId == EditorInfo.IME_ACTION_DONE) {
 						EditText et = (EditText) v;
 						Prediction p = (Prediction) v.getTag();
 						p.setPrediction(et.getText().toString());
 						p.update();
 						et.clearFocus();
-					}
-					
+			            return true;
+			        }
+			        return false;
 				}
 			});
 			
