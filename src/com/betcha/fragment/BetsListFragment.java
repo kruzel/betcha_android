@@ -190,7 +190,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public void populate() {
 		// query for all of the bets objects in the database
  		try {
- 			QueryBuilder<Bet, Integer> betsQueryBuilder = Bet.getModelDao().queryBuilder();
+ 			QueryBuilder<Bet, String> betsQueryBuilder = Bet.getModelDao().queryBuilder();
 // 			QueryBuilder<Prediction, Integer> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
  			PreparedQuery<Bet> preparedQuery = null;
  			switch (betsFiler) {				

@@ -29,7 +29,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 
 @DatabaseTable(tableName = "bets")
-public class Bet extends ModelCache<Bet, Integer> {
+public class Bet extends ModelCache<Bet, String> {
 
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; // owner
@@ -61,7 +61,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 
 	// private static GetUserBetsTask getUserBetsTask;
 	private static BetRestClient betClient;
-	private static Dao<Bet, Integer> dao;
+	private static Dao<Bet, String> dao;
 
 	public void setBet(Bet bet) {
 		this.id = bet.getId();
@@ -185,7 +185,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<Bet, Integer> getModelDao() throws SQLException {
+	public static Dao<Bet, String> getModelDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Bet.class);
 		}
@@ -193,7 +193,7 @@ public class Bet extends ModelCache<Bet, Integer> {
 	}
 
 	@Override
-	protected Dao<Bet, Integer> getDao() throws SQLException {
+	protected Dao<Bet, String> getDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Bet.class);
 		}

@@ -15,7 +15,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "chat_messages")
-public class ChatMessage extends ModelCache<ChatMessage, Integer> {
+public class ChatMessage extends ModelCache<ChatMessage, String> {
 
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user;
@@ -24,7 +24,7 @@ public class ChatMessage extends ModelCache<ChatMessage, Integer> {
 	@DatabaseField
 	private String message;
 	
-	private static Dao<ChatMessage,Integer> dao;
+	private static Dao<ChatMessage,String> dao;
 	private static ChatMessageRestClient chatMessagesRestClient;
 	
 	public ChatMessageRestClient getChatMessageRestClient() {
@@ -68,7 +68,7 @@ public class ChatMessage extends ModelCache<ChatMessage, Integer> {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<ChatMessage,Integer> getModelDao() throws SQLException  {
+	public static Dao<ChatMessage,String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(ChatMessage.class);
 		}
@@ -76,7 +76,7 @@ public class ChatMessage extends ModelCache<ChatMessage, Integer> {
 	}
 	
 	@Override
-	protected Dao<ChatMessage, Integer> getDao() throws SQLException {
+	protected Dao<ChatMessage, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(ChatMessage.class);
 		}

@@ -35,7 +35,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 @DatabaseTable(tableName = "users")
-public class User extends ModelCache<User,Integer> {
+public class User extends ModelCache<User,String> {
 	@DatabaseField
 	private String name;
 	@DatabaseField
@@ -63,7 +63,7 @@ public class User extends ModelCache<User,Integer> {
 	
 	//non persistent
 	private static UserRestClient userClient;
-	private static Dao<User,Integer> dao;
+	private static Dao<User,String> dao;
 	private static Bitmap default_pic;
 	private static ImageLoader imageLoader;
 	private static DisplayImageOptions defaultOptions;
@@ -190,7 +190,7 @@ public class User extends ModelCache<User,Integer> {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<User,Integer> getModelDao() throws SQLException  {
+	public static Dao<User,String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(User.class);
 		}
@@ -198,7 +198,7 @@ public class User extends ModelCache<User,Integer> {
 	}
 	
 	@Override
-	protected Dao<User, Integer> getDao() throws SQLException {
+	protected Dao<User, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(User.class);
 		}

@@ -1,5 +1,6 @@
 package com.betcha;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -12,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.betcha.activity.BetDetailsActivity;
-import com.betcha.activity.BetsListActivity;
 import com.betcha.model.Bet;
 import com.google.android.gcm.GCMBaseIntentService;
 
@@ -44,9 +44,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 				
 		Log.i("GCMIntentService.onMessage()", "type:" + msgType + ", owner: " + ownerId + ", user: " + userId + ", bet: " + betId + ", prediction: " + predictionId );
 		
+		Bet bet = null;
 		if(msgType.equals("bet_update")) {
-			Bet bet = new Bet();
-			bet.setId(betId);
+			try {
+				bet = Bet.getModelDao().queryForId(betId);
+			} catch (SQLException e) {
+			}
+			
+			if(bet==null) {
+				bet = new Bet();
+				bet.setId(betId);
+			}
+			
 			if(bet.onRestGet()==0) 
 				return;
 			
@@ -74,8 +83,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 				Notification notification = new Notification(icon, tickerText, when);
 				
 				Context context = getApplicationContext();
-				CharSequence contentTitle = "DropaBet invitation";
-				CharSequence contentText = "Hey, " + bet.getOwner().getName() + " is inviting you to bet that " + bet.getSubject() + ", losers buy winners a " + bet.getReward();
+				CharSequence contentTitle = "DropaBet";
+				CharSequence contentText = "You have a new bet update from " + bet.getOwner().getName();
 				Intent notificationIntent = new Intent(this, BetDetailsActivity.class);
 				notificationIntent.putExtra("bet_id", bet.getId());
 				PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);

@@ -19,7 +19,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 @DatabaseTable(tableName = "predictions")
-public class Prediction extends ModelCache<Prediction, Integer> {
+public class Prediction extends ModelCache<Prediction, String> {
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user;
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
@@ -33,7 +33,7 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 
 	private static PredictionRestClient predictionRestClient;
 	private static UpdateBatchPredictionsTask updatePredictionsTask;
-	private static Dao<Prediction, Integer> dao;
+	private static Dao<Prediction, String> dao;
 
 	private Boolean sendInvite = false;
 
@@ -115,7 +115,7 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<Prediction, Integer> getModelDao() throws SQLException {
+	public static Dao<Prediction, String> getModelDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Prediction.class);
 		}
@@ -123,7 +123,7 @@ public class Prediction extends ModelCache<Prediction, Integer> {
 	}
 
 	@Override
-	protected Dao<Prediction, Integer> getDao() throws SQLException {
+	protected Dao<Prediction, String> getDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Prediction.class);
 		}

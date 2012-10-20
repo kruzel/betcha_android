@@ -25,7 +25,7 @@ import com.j256.ormlite.table.DatabaseTable;
  *
  */
 @DatabaseTable(tableName = "friends")
-public class Friend extends ModelCache<Friend, Integer> {
+public class Friend extends ModelCache<Friend, String> {
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; 
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
@@ -72,14 +72,14 @@ public class Friend extends ModelCache<Friend, Integer> {
 		this.friend = friend;
 	}
 
-	private static Dao<Friend,Integer> dao;
+	private static Dao<Friend,String> dao;
 	
 	/**
 	 * static methods that must be implemented by derived class
 	 * @return Dao object
 	 * @throws SQLException
 	 */
-	public static Dao<Friend, Integer> getModelDao() throws SQLException  {
+	public static Dao<Friend, String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(Friend.class);
 		}
@@ -87,7 +87,7 @@ public class Friend extends ModelCache<Friend, Integer> {
 	}
 	
 	@Override
-	protected Dao<Friend, Integer> getDao() throws SQLException {
+	protected Dao<Friend, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(Friend.class);
 		}
