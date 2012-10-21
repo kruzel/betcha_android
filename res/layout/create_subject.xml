@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/BetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <LinearLayout
+        android:id="@+id/ll_suggestions"
+        style="@style/CreateSuggestionsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="4dp"
+        android:orientation="vertical" />
+    
+    <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
+        style="@style/BetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:padding="2dp">
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="8dp"
+		    android:src="@drawable/default_avatar"
+		    android:scaleType="centerCrop" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_owner_profile_frame"
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="4dp" 
+		    android:src="@drawable/bet_avatar_frame" />
+	    
+	    <ImageView
+	        android:id="@+id/iv_bet_category"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_owner_profile_frame"
+		    android:layout_marginTop="7dp" 
+		    android:layout_marginLeft="18dp"
+		    android:src="@drawable/bet_category" />
+
+	    <RelativeLayout
+	        style="@style/BetContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_frame"
+	        android:layout_marginLeft="2dp"
+	        android:padding="5dp">
+
+	        <EditText
+	            android:id="@+id/et_bet_subject"
+	            style="@style/CreateEditbox"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:padding="5dp"
+	            android:gravity="left|top"
+	            android:imeOptions="actionNext"
+	            android:inputType="textCapSentences|textNoSuggestions|textMultiLine"
+	            android:hint="@string/create_subject_hint" />
+
+	    </RelativeLayout>
+    	    
+    </RelativeLayout>
+	    
+</RelativeLayout>

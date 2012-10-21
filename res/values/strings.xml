@@ -25,6 +25,13 @@
 	<string name="publishing_bet">Publishing bet...</string>
 	<string name="send">Send</string>
 
+	<string name="create_subject_hint">What do you want to bet about?</string>
+	<string name="create_stake_hint">What\'s the stake?</string>
+	
+	<string name="stake_drink">Drink</string>
+	<string name="stake_lunch">Lunch</string>
+	<string name="stake_cd">CD</string>
+			
 	<string name="email_address">Email address</string>
 	<string name="email_address_hint">user@domain.com</string>
 	<string name="register">Register</string>

@@ -105,6 +105,41 @@
 	    <item name="android:color">@color/text_lightfabric</item>
 	    <item name="android:ellipsize">end</item>
 	    <item name="android:lines">1</item>
-	</style>	
-		
+	</style>
+	
+	<!-- Create Suggestions -->
+	
+	<style name="CreateSuggestionsContainer">
+	    <item name="android:background">@drawable/create_bg_suggestions</item>
+	</style>
+
+	<style name="CreateSuggestion">
+	    <item name="android:background">@drawable/highlight_selector</item>
+	</style>
+
+	<style name="CreateSuggestionText" parent="@style/Text">
+	    <item name="android:textColor">@color/create_suggestion_text</item>
+	    <item name="android:shadowColor">#ff000000</item>
+	    <item name="android:shadowRadius">2</item>
+	    <item name="android:shadowDx">0</item>
+	    <item name="android:shadowDy">-2</item>
+	</style>
+
+	<!-- Create Subject / Stake -->
+	
+	<style name="CreateEditbox" parent="@style/Text">
+	    <item name="android:background">@drawable/beveled_white_frame</item>
+	    <item name="android:textSize">18sp</item>
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:textColorHint">@color/text_darkhint</item>
+	</style>
+
+	<style name="CreateSuggestionSubject" parent="@style/CreateSuggestionText">
+	    <item name="android:textSize">18sp</item>
+	</style>
+
+	<style name="CreateSuggestionStake" parent="@style/CreateSuggestionText">
+	    <item name="android:textSize">12sp</item>
+	</style>
+			
 </resources>

@@ -22,6 +22,7 @@
     <color name="text_deepocean">#ff2a2c2b</color>
     <color name="text_lightfabric">#ff7f848c</color>
     <color name="text_fabric">#ff636970</color>
+    <color name="text_darkhint">#ff888888</color>
     
     <!-- Action Bar -->
     <color name="abr_bg_pressed">#cc92979e</color>
@@ -31,5 +32,8 @@
     <!-- Create Menu -->
     <color name="create_divider_top">#ffffffff</color>
     <color name="create_divider_bottom">#ffe9e9e9</color>
+    
+    <!-- Create Suggestion -->
+    <color name="create_suggestion_text">#ffebebeb</color>
     
 </resources>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <array name="stake_names">
+        <item>@string/stake_drink</item>
+        <item>@string/stake_lunch</item>
+        <item>@string/stake_cd</item>
+        <item>@string/stake_drink</item>
+        <item>@string/stake_lunch</item>
+        <item>@string/stake_cd</item>
+        <item>@string/stake_drink</item>
+        <item>@string/stake_lunch</item>
+        <item>@string/stake_cd</item>
+        <item>@string/stake_drink</item>
+        <item>@string/stake_lunch</item>
+        <item>@string/stake_cd</item>
+    </array>
+    
+    <array name="stake_icons">
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_lunch</item>
+    </array>
+    
+</resources>
