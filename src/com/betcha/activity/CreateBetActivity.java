@@ -1,7 +1,5 @@
 package com.betcha.activity;
 
-import java.util.List;
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
@@ -16,18 +14,13 @@ import com.betcha.fragment.CreateBetCategoryFragment.OnBetCategorySelectionListe
 import com.betcha.fragment.CreateBetFragment;
 import com.betcha.fragment.CreateBetFragment.OnBetDetailsEnteredListener;
 import com.betcha.model.Bet;
-import com.betcha.model.Category;
 
 public class CreateBetActivity extends SherlockFragmentActivity implements OnBetCategorySelectionListener2, OnBetDetailsEnteredListener {
 	
 	private BetchaApp app;
 	
-	private Bet newBet;
-	
 	private CreateBetFragment createBetFragment;
 	private CreateBetCategoryFragment betCategoryFragment;
-	private List<Category> customCategoriesList;
-	private List<Category> featuredCategoriesList;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -40,7 +33,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         
-        newBet = new Bet();
+        app.setCurBet(new Bet());
         
         betCategoryFragment = new CreateBetCategoryFragment();
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -48,15 +41,6 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 		transaction.addToBackStack(null);
 		transaction.commit();
     }
-    
-	@Override
-	protected void onResume() {
-		customCategoriesList = Category.getCategories(this,"Custom");
-		featuredCategoriesList = Category.getCategories(this,"Sport");
-				
-		betCategoryFragment.init(newBet, customCategoriesList, featuredCategoriesList);
-		super.onResume();
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -75,7 +59,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 			Toast.makeText(this, "No friends or contacts found", Toast.LENGTH_LONG);
 		} else {
 			createBetFragment = new CreateBetFragment();
-			createBetFragment.init(newBet, app.getMe(),app.getFriends());
+			
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 			transaction.replace(R.id.create_bet_fragment_container, createBetFragment);
 			transaction.addToBackStack(null);
@@ -86,7 +70,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
 
 	@Override
 	public void OnBetDetailsEntered() {
-		newBet.create();
+		app.getCurBet().create();
 		
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 	    ft.remove(createBetFragment);

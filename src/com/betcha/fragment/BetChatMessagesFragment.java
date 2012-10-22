@@ -17,29 +17,23 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
-import com.betcha.R;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.R;
 import com.betcha.adapter.ChatMessageAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.ChatMessage;
-import com.betcha.model.User;
 
 public class BetChatMessagesFragment extends SherlockFragment {
-	private User curUser;
-	private Bet bet;
+	private BetchaApp app;
+	
 	private FrameLayout frmMessagesContainer;
 	private ListView lvMessages;
 	private ChatMessageAdapter chatMessageAdapter;
 	
 	private Button btnSend;
 	private EditText etNewMessage;
-
-	public void init(Bet bet, User curUser) {
-		this.bet = bet;
-		this.curUser = curUser;
-		populate();
-	}
 	
 	public void refresh() {
 		chatMessageAdapter = null;
@@ -50,6 +44,8 @@ public class BetChatMessagesFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        app = BetchaApp.getInstance();
                 
     }
     
@@ -77,12 +73,12 @@ public class BetChatMessagesFragment extends SherlockFragment {
 	            
 	            if(etNewMessage.getText().toString()!=null && etNewMessage.getText().toString().length()>0) {
 					ChatMessage msg = new ChatMessage();
-					msg.setUser(curUser);
-					msg.setBet(bet);
+					msg.setUser(app.getCurUser());
+					msg.setBet(app.getCurBet());
 					msg.setMessage(etNewMessage.getText().toString());
 					msg.create();
 					try {
-						Bet.getModelDao().refresh(bet);
+						Bet.getModelDao().refresh(app.getCurBet());
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
@@ -104,17 +100,17 @@ public class BetChatMessagesFragment extends SherlockFragment {
 	
 	@Override
 	public void onResume() {
-		
+		populate();
 		super.onResume();
 	}
 
 	protected void populate() {
 		LayoutParams msgFramelayoutParams = frmMessagesContainer.getLayoutParams();
-		msgFramelayoutParams.height = bet.getChatMessagesCount() > 4 ? 80 * bet.getChatMessagesCount() : 320;
+		msgFramelayoutParams.height = app.getCurBet().getChatMessagesCount() > 4 ? 80 * app.getCurBet().getChatMessagesCount() : 320;
 		frmMessagesContainer.setLayoutParams(msgFramelayoutParams);
 		
 		if(chatMessageAdapter==null) {
-			chatMessageAdapter = new ChatMessageAdapter(getActivity(), R.layout.chat_message_item, bet.getChatMessages());
+			chatMessageAdapter = new ChatMessageAdapter(getActivity(), R.layout.chat_message_item, app.getCurBet().getChatMessages());
 			lvMessages.setAdapter(chatMessageAdapter);
 		} else {
 			chatMessageAdapter.notifyDataSetChanged();

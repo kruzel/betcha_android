@@ -105,11 +105,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.i("GCMIntentService.onRegistered() device id", regId);
 		
 		BetchaApp app = (BetchaApp) ctx;
-		if(app.getMe()!=null) {
-			app.getMe().setPush_notifications_device_id(regId);
+		if(app.getCurUser()!=null) {
+			app.getCurUser().setPush_notifications_device_id(regId);
 			
 			Log.i("GCMIntentService.onRegistered()", "updating server");
-			app.getMe().update();
+			app.getCurUser().update();
 		}	
 	}
 
@@ -119,9 +119,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.i("GCMIntentService.onUnregistered() device id", regId);
 		
 		BetchaApp app = (BetchaApp) ctx;
-		if(app.getMe()!=null) {
-			app.getMe().setPush_notifications_device_id("");
-			app.getMe().update();
+		if(app.getCurUser()!=null) {
+			app.getCurUser().setPush_notifications_device_id("");
+			app.getCurUser().update();
 		}	
 	}
 

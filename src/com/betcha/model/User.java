@@ -280,7 +280,7 @@ public class User extends ModelCache<User,String> {
 	
 	private void recreateUser(JSONObject jsonUser) {
 	
-		Boolean isLocalUser = BetchaApp.getInstance().getMe()==this;
+		Boolean isLocalUser = BetchaApp.getInstance().getCurUser()==this;
 	
 		String oldId = getId();
 		onLocalDelete();

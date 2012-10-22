@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.CategoryAdapter;
 import com.betcha.model.Bet;
@@ -18,7 +19,9 @@ import com.betcha.model.Category;
 
 public class CreateBetCategoryFragment extends SherlockListFragment {
     
-	private Bet bet;
+	private BetchaApp app;
+	
+	List<Object> items;
 	private CategoryAdapter adapter;
 	
 	private OnBetCategorySelectionListener2 listener;
@@ -26,16 +29,20 @@ public class CreateBetCategoryFragment extends SherlockListFragment {
 	public interface OnBetCategorySelectionListener2 {
 		public void OnBetCategorySelected();
 	}
-
-	public void init(Bet bet, List<Category> customCategoriesList, List<Category> featuredCategoriesList ) {
-		this.bet = bet;
-
-		List<Object> items = new LinkedList<Object>();
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		app = BetchaApp.getInstance();
+		
+		List<Category> customCategoriesList = Category.getCategories(getActivity(),"Custom");
+		List<Category> featuredCategoriesList = Category.getCategories(getActivity(),"Sport");
+		
+		items = new LinkedList<Object>();
 		items.addAll(customCategoriesList);
 		items.add(CategoryAdapter.sSpace);
 		items.addAll(featuredCategoriesList);
-		
-		this.adapter.setObjects(items);
+				
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -57,6 +64,7 @@ public class CreateBetCategoryFragment extends SherlockListFragment {
 		
 		this.adapter = new CategoryAdapter(view.getContext());
 		setListAdapter(this.adapter);
+		this.adapter.setObjects(items);
 		
 		return view;
 	}
@@ -66,7 +74,7 @@ public class CreateBetCategoryFragment extends SherlockListFragment {
         Object o = this.adapter.getItem(position);
         if (o instanceof Category) {
             Category cat = (Category) o;
-            bet.setCategoryId(cat.getId());
+            app.getCurBet().setCategoryId(cat.getId());
             listener.OnBetCategorySelected();
         }
     }

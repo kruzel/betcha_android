@@ -70,23 +70,23 @@ public class LoginEmailActivity extends SherlockActivity implements
 
 	@Override
 	protected void onResume() {
-		User me = app.getMe();
+		User me = app.getCurUser();
 		Button btEmailReg = (Button) findViewById(R.id.buttonEmailReg);
 
 		if (me != null) {
 
-			String myEmail = app.getMe().getEmail();
+			String myEmail = app.getCurUser().getEmail();
 
 			if (myEmail != null && myEmail.length() != 0) {
 				etEmail.setText(myEmail);
 			}
 
-			String myPass = app.getMe().getPassword();
+			String myPass = app.getCurUser().getPassword();
 			if (myPass != null && myPass.length() != 0) {
 				etPass.setText(myPass);
 			}
 
-			String myName = app.getMe().getName();
+			String myName = app.getCurUser().getName();
 			if (myName != null && myName.length() != 0) {
 				etName.setText(myName);
 			}
@@ -143,7 +143,7 @@ public class LoginEmailActivity extends SherlockActivity implements
 		}
 
 		if (errorFound == false) {
-			tmpMe = app.getMe();
+			tmpMe = app.getCurUser();
 			int res = 0;
 
 			if (dialog != null && dialog.isShowing())

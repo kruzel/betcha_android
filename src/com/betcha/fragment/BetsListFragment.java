@@ -122,7 +122,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	
 	@Override
 	public void onResume() {
-		if(app.getMe()!=null && app.getMe().getId()!=null) {
+		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 			if(isFirstBetsLoad) {
 				isFirstBetsLoad = false;
 	        	lvBets.setRefreshing();
@@ -195,7 +195,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
  			PreparedQuery<Bet> preparedQuery = null;
  			switch (betsFiler) {				
 			case NEW_BETS:			//un-met invitations
-				betsQueryBuilder.where().ne("user_id", app.getMe().getId());
+				betsQueryBuilder.where().ne("user_id", app.getCurUser().getId());
 //				predictionQueryBuilder.where().eq("user_id",app.getMe().getId());
 //				betsQueryBuilder.join(predictionQueryBuilder);
 				betsQueryBuilder.orderBy("dueDate", false);
@@ -204,14 +204,14 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				bets = new ArrayList<Bet>();
 				for (Bet bet : tmpBets) {
 					for (Prediction prediction : bet.getPredictions()) {
-						if(prediction.getUser()==app.getMe() && prediction.equals("")) {
+						if(prediction.getUser()==app.getCurUser() && prediction.equals("")) {
 							bets.add(bet);
 						}
 					}
 				}
 				break;
 			case MY_BETS:	//bets I created
-				betsQueryBuilder.where().eq("user_id", app.getMe().getId());
+				betsQueryBuilder.where().eq("user_id", app.getCurUser().getId());
 				betsQueryBuilder.orderBy("dueDate", false);
 	 			preparedQuery = betsQueryBuilder.prepare();
 				bets = Bet.getModelDao().query(preparedQuery);

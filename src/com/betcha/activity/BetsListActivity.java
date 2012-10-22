@@ -32,7 +32,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
     
 	protected void onResume() {
 		
-		if(app.getMe()==null || app.getMe().getId()==null) {
+		if(app.getCurUser()==null || app.getCurUser().getId()==null) {
         	Intent intent = new Intent();
         	intent.setClass(this, LoginActivity.class);
         	startActivity(intent);

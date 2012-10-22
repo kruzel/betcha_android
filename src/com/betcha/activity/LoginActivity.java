@@ -58,7 +58,7 @@ public class LoginActivity extends SherlockActivity implements
 
 	@Override
 	protected void onResume() {
-		User me = app.getMe();
+		User me = app.getCurUser();
 
 		super.onResume();
 	}
@@ -67,7 +67,7 @@ public class LoginActivity extends SherlockActivity implements
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			if (app.getMe() != null)
+			if (app.getCurUser() != null)
 				finish();
 			return true;
 		default:
@@ -112,7 +112,7 @@ public class LoginActivity extends SherlockActivity implements
 								}
 								
 								if(resp==null)
-									onCreateComplete(app.getMe().getClass(),HttpStatus.UNAUTHORIZED);
+									onCreateComplete(app.getCurUser().getClass(),HttpStatus.UNAUTHORIZED);
 								
 								JSONObject json = null;
 								try {
@@ -122,9 +122,9 @@ public class LoginActivity extends SherlockActivity implements
 								}
 								
 								if(json==null)
-									onCreateComplete(app.getMe().getClass(), HttpStatus.UNAUTHORIZED);
+									onCreateComplete(app.getCurUser().getClass(), HttpStatus.UNAUTHORIZED);
 
-								tmpMe = app.getMe();
+								tmpMe = app.getCurUser();
 								
 								if (tmpMe == null || tmpMe.getId() == null) {
 									tmpMe = new User();
@@ -143,7 +143,7 @@ public class LoginActivity extends SherlockActivity implements
 								}
 
 								if (res == 0) {
-									onCreateComplete(app.getMe().getClass(),
+									onCreateComplete(app.getCurUser().getClass(),
 											HttpStatus.UNPROCESSABLE_ENTITY);
 								}
 							}

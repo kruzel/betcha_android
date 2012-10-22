@@ -54,7 +54,7 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		
 		tvPrediction.setTag(prediction);
 		
-		if(app.getMe().getId().equals(prediction.getBet().getOwner().getId())) {
+		if(app.getCurUser().getId().equals(prediction.getBet().getOwner().getId())) {
 			cbWinner.setClickable(true);
 		} else {
 			cbWinner.setClickable(false);
@@ -69,7 +69,7 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 		}
 		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
-		if(app.getMe().getId().equals(prediction.getUser().getId())) {
+		if(app.getCurUser().getId().equals(prediction.getUser().getId())) {
 							
 			tvPrediction.setOnEditorActionListener(new OnEditorActionListener() {
 				

@@ -18,14 +18,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
-import com.betcha.R;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.R;
 import com.betcha.adapter.PredictionWithCbxAdapter;
-import com.betcha.model.Bet;
 
 public class BetDetailsFragment extends SherlockFragment {
-	private Bet bet;
+	private BetchaApp app;
+	
 	private ListView lvPredictions;
 	private FrameLayout frmPredictionContainer;
 	private PredictionWithCbxAdapter predictionAdapter;
@@ -37,11 +38,6 @@ public class BetDetailsFragment extends SherlockFragment {
 	// internal frame 
 	TextView tvBetSubject;
 	TextView tvBetReward;
-
-	public void init(Bet bet) {
-		this.bet = bet;
-		populate();
-	}
 	
 	public void refresh() {
 		predictionAdapter = null;
@@ -52,6 +48,8 @@ public class BetDetailsFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        app = BetchaApp.getInstance();
                 
     }
     
@@ -76,48 +74,48 @@ public class BetDetailsFragment extends SherlockFragment {
 		FontUtils.setTextViewTypeface(tvBetDate, CustomFont.HELVETICA_CONDENSED);
 		FontUtils.setTextViewTypeface(tvBetOwner, CustomFont.HELVETICA_CONDENSED);
         FontUtils.setTextViewTypeface(tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
-				
+				        
 		return view;
 	}
 	
 	@Override
 	public void onResume() {
-		
+		populate();
 		super.onResume();
 	}
 
 	protected void populate() {
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
-		bet.getOwner().setProfilePhoto(ivProfPic);
-		tvBetOwner.setText(bet.getOwner().getName());
+		app.getCurBet().getOwner().setProfilePhoto(ivProfPic);
+		tvBetOwner.setText(app.getCurBet().getOwner().getName());
 		
-		if(bet.getDueDate().isAfterNow()) {
-			if(bet.getDueDate().minusHours(24).isBeforeNow()) {
-				if(bet.getDueDate().minusMinutes(60).isBeforeNow()) {
+		if(app.getCurBet().getDueDate().isAfterNow()) {
+			if(app.getCurBet().getDueDate().minusHours(24).isBeforeNow()) {
+				if(app.getCurBet().getDueDate().minusMinutes(60).isBeforeNow()) {
 					//less then 1 hr
-					tvBetDate.setText(Integer.toString(Minutes.minutesBetween(DateTime.now(), bet.getDueDate()).getMinutes()) + " m");
+					tvBetDate.setText(Integer.toString(Minutes.minutesBetween(DateTime.now(), app.getCurBet().getDueDate()).getMinutes()) + " m");
 				} else {
 					//less then 24 hours left
-					tvBetDate.setText(Integer.toString(Hours.hoursBetween(DateTime.now(), bet.getDueDate()).getHours()) + " hr");
+					tvBetDate.setText(Integer.toString(Hours.hoursBetween(DateTime.now(), app.getCurBet().getDueDate()).getHours()) + " hr");
 				}
 			} else {
 				//more then 24 hours left
-				tvBetDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), bet.getDueDate()).getDays()) + " d");
+				tvBetDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), app.getCurBet().getDueDate()).getDays()) + " d");
 	 		}
 		} else {
 			tvBetDate.setText("--");
 		}
 		
-		tvBetSubject.setText(bet.getSubject());
-		tvBetReward.setText(bet.getReward());
+		tvBetSubject.setText(app.getCurBet().getSubject());
+		tvBetReward.setText(app.getCurBet().getReward());
 		
 		LayoutParams layoutParams = frmPredictionContainer.getLayoutParams();
-		layoutParams.height = bet.getPredictionsCount() > 2 ? 100 * bet.getPredictionsCount() : 200;
+		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 100 * app.getCurBet().getPredictionsCount() : 200;
 		frmPredictionContainer.setLayoutParams(layoutParams);
 		
 		if(predictionAdapter==null) {
-			predictionAdapter = new PredictionWithCbxAdapter(getActivity(), R.layout.bet_prediction_list_item, bet.getPredictions());
+			predictionAdapter = new PredictionWithCbxAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
 			lvPredictions.setAdapter(predictionAdapter);
 		} else {
 			predictionAdapter.notifyDataSetChanged();

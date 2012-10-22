@@ -51,6 +51,16 @@ public class BetchaApp extends Application implements IModelListener {
 
 	public static int THEME = R.style.Theme_Sherlock;
 	public static BetchaApp app;
+	
+	public Bet curBet;
+	
+	public Bet getCurBet() {
+		return curBet;
+	}
+
+	public void setCurBet(Bet curBet) {
+		this.curBet = curBet;
+	}
 
 	@Override
 	public void onCreate() {
@@ -155,7 +165,7 @@ public class BetchaApp extends Application implements IModelListener {
 		return prefs;
 	}
 
-	public User getMe() {
+	public User getCurUser() {
 		return me;
 	}
 
@@ -214,10 +224,10 @@ public class BetchaApp extends Application implements IModelListener {
 				synchronized(friendsLock) {
 					try {
 						// TODO add distinct email
-						if (getMe() != null)
+						if (getCurUser() != null)
 							friends = User.getModelDao().queryBuilder()
 									.orderBy("name", true).where()
-									.ne("id", getMe().getId()).query();
+									.ne("id", getCurUser().getId()).query();
 					} catch (SQLException e) {
 						e.printStackTrace();
 					} catch (Throwable e) {

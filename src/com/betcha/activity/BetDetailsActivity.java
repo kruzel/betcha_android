@@ -40,7 +40,7 @@ import com.betcha.model.cache.IModelListener;
 
 public class BetDetailsActivity extends SherlockFragmentActivity implements OnClickListener, IModelListener {
 	private BetchaApp app;
-	private Bet bet;
+	
 	private BetDetailsFragment betDetailsFragment;
 	private ProgressDialog dialog;
 	
@@ -129,7 +129,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 								}
 							}
 					    	
-					    	bet.addPredictions(participants);
+					    	app.getCurBet().addPredictions(participants);
 					    						    	
 					    	betDetailsFragment.refresh();
 					    	
@@ -147,8 +147,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			
 			@Override
 			public void onClick(View v) {
-				bet.setState(Bet.STATE_CLOSED);
-				bet.update();
+				app.getCurBet().setState(Bet.STATE_CLOSED);
+				app.getCurBet().update();
 				finish();
 			}
 		});
@@ -157,7 +157,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	
 			@Override
 			public void onClick(View v) {
-				bet.delete();
+				app.getCurBet().delete();
+				app.setCurBet(null);
 				finish();
 				
 			}
@@ -189,17 +190,17 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			
 			List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
 			if(bets!=null && bets.size()>0)
-				bet = bets.get(0);
+				app.setCurBet(bets.get(0));
 		
 		} catch (SQLException e1) {
 			e1.printStackTrace();
 			return;
 		}
 		
-		if(bet==null)
+		if(app.getCurBet()==null)
 			return;
 		
-		if(app.getMe().getId().equals(bet.getOwner().getId())) {
+		if(app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
 			btnInvite.setVisibility(View.VISIBLE);
 			btnClose.setVisibility(View.VISIBLE);
 			btnDelete.setVisibility(View.VISIBLE);
@@ -215,9 +216,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			dialog = ProgressDialog.show(BetDetailsActivity.this,
 					"", getString(R.string.msg_bet_loading), true);
 		}
-		
-		betDetailsFragment.init(bet);
-		betChatFragment.init(bet, app.getMe());
 		
 		final String BET_DETAILS_ACTION = "com.betcha.BetDetailsActivityReceiver";
 	    IntentFilter intentFilter = new IntentFilter(BET_DETAILS_ACTION);
@@ -248,8 +246,8 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
     		}
         	dialog = ProgressDialog.show(BetDetailsActivity.this,
 					"", getString(R.string.msg_bet_loading), true);
-        	bet.setListener(this);
-        	bet.get();
+        	app.getCurBet().setListener(this);
+        	app.getCurBet().get();
         	return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -266,19 +264,19 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	// Prediction list OnClick
 	public void onClick(View v) {
 
-		Prediction.update(bet.getPredictions(),bet.getId());
+		Prediction.update(app.getCurBet().getPredictions(),app.getCurBet().getId());
 
-		bet.setState(Bet.STATE_CLOSED);
-		bet.update();
+		app.getCurBet().setState(Bet.STATE_CLOSED);
+		app.getCurBet().update();
 		
 	}
 
 	protected void getFromServer() {
-		if(bet==null)
+		if(app.getCurBet()==null)
 			return;
 		
-		bet.setListener(this);
-		bet.get();
+		app.getCurBet().setListener(this);
+		app.getCurBet().get();
 		
 		app.setBetId("-1"); //avoid going here on next resume
 	}

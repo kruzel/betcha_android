@@ -48,21 +48,21 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 			return HttpStatus.SERVICE_UNAVAILABLE;
 		}
 		
-		if(BetchaApp.getInstance().getMe()==null)
+		if(BetchaApp.getInstance().getCurUser()==null)
 			return HttpStatus.UNAUTHORIZED;
 		
-		if(!BetchaApp.getInstance().getMe().isServerCreated()) {
-			if(BetchaApp.getInstance().getMe().onRestCreate()>0) {
-				BetchaApp.getInstance().getMe().setServerCreated(true);
-				BetchaApp.getInstance().getMe().setServerUpdated(true);
-				BetchaApp.getInstance().getMe().onLocalUpdate();
+		if(!BetchaApp.getInstance().getCurUser().isServerCreated()) {
+			if(BetchaApp.getInstance().getCurUser().onRestCreate()>0) {
+				BetchaApp.getInstance().getCurUser().setServerCreated(true);
+				BetchaApp.getInstance().getCurUser().setServerUpdated(true);
+				BetchaApp.getInstance().getCurUser().onLocalUpdate();
 			} else {
 				return HttpStatus.UNAUTHORIZED;
 			}
 		}
 		
 		if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
-			if(BetchaApp.getInstance().getMe().restCreateToken()==0) 
+			if(BetchaApp.getInstance().getCurUser().restCreateToken()==0) 
 				return HttpStatus.UNAUTHORIZED;
 		}
 		

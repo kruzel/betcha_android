@@ -7,8 +7,7 @@
         android:id="@+id/bet_list_filter_group"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:visibility="gone" > <!-- XXX -->
+        android:orientation="horizontal" > 
 	        
 	    <RadioButton
 	        android:id="@+id/all_bets_filter"

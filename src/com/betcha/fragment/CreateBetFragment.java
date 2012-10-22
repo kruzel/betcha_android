@@ -9,13 +9,11 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import utils.SoftKeyboardUtils;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -25,9 +23,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -43,6 +40,7 @@ import android.widget.TextView.OnEditorActionListener;
 import android.widget.TimePicker;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.adapter.FriendAdapter;
 import com.betcha.adapter.RewardsImagesAdapter;
@@ -52,9 +50,11 @@ import com.betcha.model.Reward;
 import com.betcha.model.User;
 
 public class CreateBetFragment extends SherlockFragment {
-	private Bet bet;
-	private User loggedInUser;
-	private List<User> friendsList;
+//	private Bet bet;
+//	private User loggedInUser;
+//	private List<User> friendsList;
+	
+	private BetchaApp app;
 	
 	private TextView betOwner;
 	private EditText betSubject;
@@ -82,12 +82,6 @@ public class CreateBetFragment extends SherlockFragment {
 		public void OnBetDetailsEntered();
 	}
 
-	public void init(Bet bet, User loggedInUser, List<User> friendsList) {
-		this.bet = bet;
-		this.loggedInUser = loggedInUser;
-		this.friendsList = friendsList;
-	}
-
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -103,6 +97,8 @@ public class CreateBetFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        app = BetchaApp.getInstance();
                 
     }
     
@@ -134,8 +130,8 @@ public class CreateBetFragment extends SherlockFragment {
 		betDueDate.setText(fmtDate.print(new DateTime()));
 		betDueTime.setText(fmtTime.print(new DateTime()));
 
-		betOwner.setText(loggedInUser.getName());
-		loggedInUser.setProfilePhoto(ownerProfPic);
+		betOwner.setText(app.getCurUser().getName());
+		app.getCurUser().setProfilePhoto(ownerProfPic);
         
         betSubject.setOnEditorActionListener(new OnEditorActionListener() {
 			
@@ -144,7 +140,7 @@ public class CreateBetFragment extends SherlockFragment {
 				if(betSubject.length() == 0) {
 					betSubject.setError(getString(R.string.error_missing_bet_subject));
 				} else {
-					bet.setSubject(betSubject.getText().toString());
+					app.getCurBet().setSubject(betSubject.getText().toString());
 					betReward.setVisibility( View.VISIBLE);
 					betRewardImage.setVisibility( View.VISIBLE);
 					rewardsGallry.setVisibility(View.VISIBLE);
@@ -183,7 +179,7 @@ public class CreateBetFragment extends SherlockFragment {
 				if(betReward.length() == 0) {
 		        	betReward.setError(getString(R.string.error_missing_bet_reward));
 		        } else {
-		        	bet.setReward(betReward.getText().toString());
+		        	app.getCurBet().setReward(betReward.getText().toString());
 		        	betPrediction.setVisibility( View.VISIBLE);
 		        	rewardsGallry.setVisibility(View.INVISIBLE);
 		        	rewardsGallry.setClickable(false);
@@ -220,12 +216,12 @@ public class CreateBetFragment extends SherlockFragment {
 				if(betPrediction.length() == 0) {
 		        	betPrediction.setError(getString(R.string.error_missing_bet));
 		        } else {
-		        	Prediction prediction = new Prediction(bet);
-		        	prediction.setUser(loggedInUser);
+		        	Prediction prediction = new Prediction(app.getCurBet());
+		        	prediction.setUser(app.getCurUser());
 		        	prediction.setPrediction(betPrediction.getText().toString());
 		        	prediction.setMyAck(getString(R.string.pending));
 		    		prediction.genId();       			      	        			
-		        	bet.setOwnerPrediction(prediction);
+		        	app.getCurBet().setOwnerPrediction(prediction);
 
 		        	betDueDate.setVisibility(View.VISIBLE);
 		        	betDueTime.setVisibility(View.VISIBLE);
@@ -258,7 +254,7 @@ public class CreateBetFragment extends SherlockFragment {
 				
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
 		        DateTime betDueDateAndTime = DateTime.parse(betDueDate.getText().toString() + " " + betDueTime.getText().toString(), fmt);
-		        bet.setDueDate(betDueDateAndTime);
+		        app.getCurBet().setDueDate(betDueDateAndTime);
 		        		
 		        FragmentTransaction ft = getFragmentManager().beginTransaction();
 		        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
@@ -273,10 +269,10 @@ public class CreateBetFragment extends SherlockFragment {
 				dialog.setTitle(getResources().getString(R.string.select_friends));
 								
 				lvFriends = (ListView) dialog.findViewById(R.id.friends_list);
-				friendAdapter = new FriendAdapter(getActivity(), R.layout.invite_list_item, CreateBetFragment.this.friendsList);
+				friendAdapter = new FriendAdapter(getActivity(), R.layout.invite_list_item, app.getFriends());
 		        lvFriends.setAdapter(friendAdapter);
 		        
-		        for (User friend : friendsList) {
+		        for (User friend : app.getFriends()) {
 					if(friend.getIsInvitedToBet()) {
 						friend.setIsInvitedToBet(false);
 					}
@@ -324,16 +320,16 @@ public class CreateBetFragment extends SherlockFragment {
 					@Override
 					public void onClick(View v) {
 						List<User> participants = new ArrayList<User>();
-				    	for (User friend : friendsList) {
+				    	for (User friend : app.getFriends()) {
 							if(friend.getIsInvitedToBet()) {
 								participants.add(friend);
 							}
 						}
 				    	
-				    	bet.addParticipants(participants);
+				    	app.getCurBet().addParticipants(participants);
 						
-						bet.setState(Bet.STATE_OPEN);    	
-				    	bet.setOwner(loggedInUser);
+				    	app.getCurBet().setState(Bet.STATE_OPEN);    	
+				    	app.getCurBet().setOwner(app.getCurUser());
 				    	
 				    	dialog.dismiss();
 				    	
@@ -357,22 +353,22 @@ public class CreateBetFragment extends SherlockFragment {
 	}
 	
 	protected void populate() {
-		if(bet.getSubject()!=null)
-			betSubject.setText(bet.getSubject());
-		if(bet.getReward()!=null)
-			betReward.setText(bet.getReward());
-		if(bet.getDueDate()!=null) {
-			if(bet.getDueDate().plusHours(24).isAfterNow()) {
+		if(app.getCurBet().getSubject()!=null)
+			betSubject.setText(app.getCurBet().getSubject());
+		if(app.getCurBet().getReward()!=null)
+			betReward.setText(app.getCurBet().getReward());
+		if(app.getCurBet().getDueDate()!=null) {
+			if(app.getCurBet().getDueDate().plusHours(24).isAfterNow()) {
 				DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
-				betDueDateSummary.setText(fmtTime.print(bet.getDueDate()));
+				betDueDateSummary.setText(fmtTime.print(app.getCurBet().getDueDate()));
 			} else {
 				//less then 24 hours left
 				DateTimeFormatter fmtDate = DateTimeFormat.forPattern("MM-dd");
-				betDueDateSummary.setText(fmtDate.print(bet.getDueDate()));
+				betDueDateSummary.setText(fmtDate.print(app.getCurBet().getDueDate()));
 			} 
 		}
-		if(bet.getOwnerPrediction()!=null && bet.getOwnerPrediction().getPrediction()!=null)
-			betPrediction.setText(bet.getOwnerPrediction().getPrediction());
+		if(app.getCurBet().getOwnerPrediction()!=null && app.getCurBet().getOwnerPrediction().getPrediction()!=null)
+			betPrediction.setText(app.getCurBet().getOwnerPrediction().getPrediction());
 	}
 	
 	public void OnDateClick(View v) {
