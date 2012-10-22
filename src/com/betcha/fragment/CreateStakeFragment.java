@@ -92,7 +92,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_subject, container, false);
+        View view = inflater.inflate(R.layout.create_stake, container, false);
         
         ImageView profileView = (ImageView) view.findViewById(R.id.iv_bet_owner_profile_pic);
         // TODO set user's image
@@ -107,7 +107,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
             
             View suggestionView = inflater.inflate(R.layout.create_stake_suggestion, null);
             
-            TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
+            TextView textView = (TextView) suggestionView.findViewById(R.id.et_bet_subject);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
             textView.setText(suggestion.name);
             
