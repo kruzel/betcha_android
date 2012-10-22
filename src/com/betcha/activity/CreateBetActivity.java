@@ -78,9 +78,9 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public void onStakeSelected(String stake) {
 		app.getCurBet().setReward(stake);
 		
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-	    ft.remove(createStakeFragment);
-	    ft.commit();
+//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+//	    ft.remove(createStakeFragment);
+//	    ft.commit();
 		
 	    //open due date selection fragment
 	    

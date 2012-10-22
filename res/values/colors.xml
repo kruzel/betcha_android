@@ -36,4 +36,6 @@
     <!-- Create Suggestion -->
     <color name="create_suggestion_text">#ffebebeb</color>
     
+    <drawable name="create_suggestion_highlight">#22ffffff</drawable>
+    
 </resources>

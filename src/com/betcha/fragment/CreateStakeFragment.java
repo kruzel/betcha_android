@@ -107,7 +107,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
             
             View suggestionView = inflater.inflate(R.layout.create_stake_suggestion, null);
             
-            TextView textView = (TextView) suggestionView.findViewById(R.id.et_bet_subject);
+            TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
             textView.setText(suggestion.name);
             
@@ -151,7 +151,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     private EditText getEditText() {
         View view = getView();
         if (view != null) {
-            return (EditText) view.findViewById(R.id.et_bet_subject);
+            return (EditText) view.findViewById(R.id.et_bet_stake);
         }
         return null;
     }
