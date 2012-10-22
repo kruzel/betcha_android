@@ -9,18 +9,20 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.fragment.CreateBetCategoryFragment;
-import com.betcha.fragment.CreateBetCategoryFragment.OnBetCategorySelectionListener2;
-import com.betcha.fragment.CreateBetFragment;
 import com.betcha.fragment.CreateBetFragment.OnBetDetailsEnteredListener;
+import com.betcha.fragment.CreateCategoryFragment;
+import com.betcha.fragment.CreateCategoryFragment.OnCategorySelectedListener;
+import com.betcha.fragment.CreateStakeFragment;
+import com.betcha.fragment.CreateStakeFragment.OnStakeSelectedListener;
 import com.betcha.model.Bet;
+import com.betcha.model.Category;
 
-public class CreateBetActivity extends SherlockFragmentActivity implements OnBetCategorySelectionListener2, OnBetDetailsEnteredListener {
+public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnStakeSelectedListener {
 	
 	private BetchaApp app;
 	
-	private CreateBetFragment createBetFragment;
-	private CreateBetCategoryFragment betCategoryFragment;
+	private CreateStakeFragment createStakeFragment;
+	private CreateCategoryFragment betCategoryFragment;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -35,7 +37,9 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
         
         app.setCurBet(new Bet());
         
-        betCategoryFragment = new CreateBetCategoryFragment();
+        String[] sections = new String[] { "Custom", "Sport" };
+        
+        betCategoryFragment = CreateCategoryFragment.newInstance(sections);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.create_bet_fragment_container, betCategoryFragment);
 		transaction.addToBackStack(null);
@@ -52,31 +56,38 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnBet
             return super.onOptionsItemSelected(item);
 		}
 	}
-
+	
 	@Override
-	public void OnBetCategorySelected() {
+	public void onCategorySelected(Category category) {
+		app.getCurBet().setCategoryId(category.getId());
+				
 		if(app.getFriends()==null) {
 			Toast.makeText(this, "No friends or contacts found", Toast.LENGTH_LONG);
-		} else {
-			createBetFragment = new CreateBetFragment();
+		} else {		
+			createStakeFragment = CreateStakeFragment.newInstance(getResources(), R.array.stake_names, R.array.stake_icons,app.getCurBet().getSubject());
 			
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			transaction.replace(R.id.create_bet_fragment_container, createBetFragment);
+			transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
 			transaction.addToBackStack(null);
 			transaction.commit();
 		}
-		
 	}
 
+	
 	@Override
-	public void OnBetDetailsEntered() {
-		app.getCurBet().create();
+	public void onStakeSelected(String stake) {
+		app.getCurBet().setReward(stake);
 		
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-	    ft.remove(createBetFragment);
+	    ft.remove(createStakeFragment);
 	    ft.commit();
 		
-	    finish();
+	    //open due date selection fragment
+	    
+	    //TODO continue
+	    //app.getCurBet().create();
+	    //finish();
 	}
+
     
 }
