@@ -1,5 +1,7 @@
 package com.betcha.activity;
 
+import javax.security.auth.Subject;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.widget.Toast;
@@ -9,20 +11,22 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.fragment.CreateBetFragment.OnBetDetailsEnteredListener;
 import com.betcha.fragment.CreateCategoryFragment;
+import com.betcha.fragment.CreateSubjectFragment;
 import com.betcha.fragment.CreateCategoryFragment.OnCategorySelectedListener;
 import com.betcha.fragment.CreateStakeFragment;
 import com.betcha.fragment.CreateStakeFragment.OnStakeSelectedListener;
+import com.betcha.fragment.CreateSubjectFragment.OnSubjectSelectedListener;
 import com.betcha.model.Bet;
 import com.betcha.model.Category;
 
-public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnStakeSelectedListener {
+public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener {
 	
 	private BetchaApp app;
 	
 	private CreateStakeFragment createStakeFragment;
 	private CreateCategoryFragment betCategoryFragment;
+	private CreateSubjectFragment createSubjectFragment;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -61,32 +65,39 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public void onCategorySelected(Category category) {
 		app.getCurBet().setCategoryId(category.getId());
 				
-		if(app.getFriends()==null) {
-			Toast.makeText(this, "No friends or contacts found", Toast.LENGTH_LONG);
-		} else {		
-			createStakeFragment = CreateStakeFragment.newInstance(getResources(), R.array.stake_names, R.array.stake_icons,app.getCurBet().getSubject());
-			
-			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
-			transaction.addToBackStack(null);
-			transaction.commit();
-		}
+		String[] subjects = { "which team win", "who get highest grade" };
+		
+		createSubjectFragment = CreateSubjectFragment.newInstance(subjects);
+		
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.create_bet_fragment_container, createSubjectFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
 	}
+	
 
+
+	@Override
+	public void onSubjectSelected(String subject) {
+		app.getCurBet().setSubject(subject);
+			
+		createStakeFragment = CreateStakeFragment.newInstance(getResources(), R.array.stake_names, R.array.stake_icons,app.getCurBet().getSubject());
+		
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
+		
+	}
 	
 	@Override
 	public void onStakeSelected(String stake) {
 		app.getCurBet().setReward(stake);
 		
-//		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-//	    ft.remove(createStakeFragment);
-//	    ft.commit();
-		
-	    //open due date selection fragment
-	    
-	    //TODO continue
+		//TODO continue
 	    //app.getCurBet().create();
 	    //finish();
+		
 	}
 
     
