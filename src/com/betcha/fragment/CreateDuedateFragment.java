@@ -188,7 +188,6 @@ public class CreateDuedateFragment extends SherlockFragment {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // TODO
             updateDateTime();
-            //submit();
         }
     };
     
@@ -197,7 +196,6 @@ public class CreateDuedateFragment extends SherlockFragment {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             // TODO
             updateDateTime();
-            //submit();
         }
     };
     

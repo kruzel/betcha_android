@@ -3,6 +3,6 @@
     <item android:id="@+id/menu_next"
           android:icon="@drawable/ic_menu_btn_add"
           android:title="Next"
-          android:showAsAction="withText" />
+          android:showAsAction="ifRoom|withText" />
     
 </menu>

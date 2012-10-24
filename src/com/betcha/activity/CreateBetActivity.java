@@ -107,6 +107,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public void onDuedateSelected(DateTime dateTime) {
         app.getCurBet().setDueDate(dateTime);
 		
+        //TODO open participants selection fragment
 	}
 
 	//TODO continue
