@@ -44,8 +44,8 @@
 	<string name="name_hint">user</string>
 	<string name="password">Password</string>
 	<string name="password_hint">password</string>
-	<string name="fb_Connect">      Login with Facebook</string>
-	<string name="email_Connect">Login with Email Address</string>
+	<string name="fb_Connect">Login with <b>Facebook</b></string>
+	<string name="email_Connect">Login with <b>Email Address</b></string>
 	
 	<string name="settings">Settings</string>
 	<string name="refresh">Refresh</string>

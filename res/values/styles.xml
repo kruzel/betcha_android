@@ -7,6 +7,24 @@
 	    <item name="android:textStyle">normal</item>
     </style>
     
+    <style name="Button" parent="@style/Text">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:shadowColor">#bb000000</item>
+        <item name="android:shadowRadius">1.5</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">-2</item>
+    </style>
+    
+    <!-- Login Screen -->
+    
+    <style name="LoginContainer">
+	    <item name="android:background">@drawable/pastelblue_flare</item>
+    </style>
+    
+    <style name="LoginFrame">
+	    <item name="android:background">@drawable/dark_frame_full</item>
+    </style>
+    
     <!-- Bets List Item -->
 
 	<style name="BetContainer">
