@@ -11,6 +11,7 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
@@ -71,6 +74,7 @@ public class CreateDuedateFragment extends SherlockFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         
         mSubject = getArguments().getString(ARG_SUBJECT);
         mStake = getArguments().getString(ARG_STAKE);
@@ -184,7 +188,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
             // TODO
             updateDateTime();
-            submit();
+            //submit();
         }
     };
     
@@ -193,7 +197,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             // TODO
             updateDateTime();
-            submit();
+            //submit();
         }
     };
     
@@ -208,6 +212,24 @@ public class CreateDuedateFragment extends SherlockFragment {
 		   return String.valueOf(c);
 		else
 		   return "0" + String.valueOf(c);
+	}
+    
+    @Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.due_date_fragment, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(
+		com.actionbarsherlock.view.MenuItem item) {
+	
+		switch (item.getItemId()) {
+	        case R.id.menu_next:
+	        	submit();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
     
 }
