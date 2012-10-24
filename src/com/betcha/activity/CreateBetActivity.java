@@ -1,10 +1,9 @@
 package com.betcha.activity;
 
-import javax.security.auth.Subject;
+import org.joda.time.DateTime;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -12,21 +11,24 @@ import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.fragment.CreateCategoryFragment;
-import com.betcha.fragment.CreateSubjectFragment;
 import com.betcha.fragment.CreateCategoryFragment.OnCategorySelectedListener;
+import com.betcha.fragment.CreateDuedateFragment;
+import com.betcha.fragment.CreateDuedateFragment.OnDuedateSelectedListener;
 import com.betcha.fragment.CreateStakeFragment;
 import com.betcha.fragment.CreateStakeFragment.OnStakeSelectedListener;
+import com.betcha.fragment.CreateSubjectFragment;
 import com.betcha.fragment.CreateSubjectFragment.OnSubjectSelectedListener;
 import com.betcha.model.Bet;
 import com.betcha.model.Category;
 
-public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener {
+public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener, OnDuedateSelectedListener {
 	
 	private BetchaApp app;
 	
 	private CreateStakeFragment createStakeFragment;
 	private CreateCategoryFragment betCategoryFragment;
 	private CreateSubjectFragment createSubjectFragment;
+	CreateDuedateFragment createDuedateFragment;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -87,18 +89,28 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
 		transaction.addToBackStack(null);
 		transaction.commit();
-		
 	}
 	
 	@Override
 	public void onStakeSelected(String stake) {
 		app.getCurBet().setReward(stake);
 		
-		//TODO continue
-	    //app.getCurBet().create();
-	    //finish();
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), app.getCurBet().getReward());
+		
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
+	}
+
+	@Override
+	public void onDuedateSelected(DateTime dateTime) {
+        app.getCurBet().setDueDate(dateTime);
 		
 	}
 
+	//TODO continue
+    //app.getCurBet().create();
+    //finish();
     
 }

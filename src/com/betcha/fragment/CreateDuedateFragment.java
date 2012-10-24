@@ -1,11 +1,15 @@
 package com.betcha.fragment;
 
+import java.util.Calendar;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
+import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,7 +35,13 @@ public class CreateDuedateFragment extends SherlockFragment {
     private String mSubject;
     private String mStake;
     
+    private TextView dateView;
+    private TextView timeView;
+    
     private DateTime mDateTime;
+    
+    DatePickerDialog dateDialog;
+	TimePickerDialog timeDialog;
     
     private OnDuedateSelectedListener mListener;
     
@@ -84,8 +94,8 @@ public class CreateDuedateFragment extends SherlockFragment {
         TextView dateHintView = (TextView) view.findViewById(R.id.tv_bet_date_hint);
         FontUtils.setTextViewTypeface(dateHintView, CustomFont.HELVETICA_CONDENSED);
 
-        TextView dateView = (TextView) view.findViewById(R.id.tv_bet_date_button);
-        TextView timeView = (TextView) view.findViewById(R.id.tv_bet_time_button);
+        dateView = (TextView) view.findViewById(R.id.tv_bet_date_button);
+        timeView = (TextView) view.findViewById(R.id.tv_bet_time_button);
         FontUtils.setTextViewTypeface(dateView, CustomFont.HELVETICA_CONDENSED_BOLD);
         FontUtils.setTextViewTypeface(timeView, CustomFont.HELVETICA_CONDENSED_BOLD);
         dateView.setOnClickListener(new OnClickListener() {
@@ -131,18 +141,42 @@ public class CreateDuedateFragment extends SherlockFragment {
     private void updateDateTime() {
         View view = getView();
         if (view != null) {
-            TextView dateView = (TextView) view.findViewById(R.id.tv_bet_date_button);
-            TextView timeView = (TextView) view.findViewById(R.id.tv_bet_time_button);
+//            TextView dateView = (TextView) view.findViewById(R.id.tv_bet_date_button);
+//            TextView timeView = (TextView) view.findViewById(R.id.tv_bet_time_button);
             updateDateTime(dateView, timeView);
         }
     }
     
     private void openDatePicker() {
-        // TODO 
+    	final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+		dateDialog = new DatePickerDialog(getActivity(), new OnDateSetListener() {
+			
+			public void onDateSet(DatePicker view, int year, int monthOfYear,
+					int dayOfMonth) {
+				dateView.setText(new StringBuilder()
+				// Month is 0 based, just add 1
+				.append(year).append("-").append(monthOfYear + 1).append("-").append(dayOfMonth));
+			}
+		}, year, month, day);
+		dateDialog.show();
     }
     
     private void openTimePicker() {
-        // TODO 
+    	final Calendar c = Calendar.getInstance();
+        int hourBefore = c.get(Calendar.HOUR_OF_DAY);
+        int minBefore = c.get(Calendar.MINUTE);
+        //int is24HourView = c.get(Calendar.AM);
+		timeDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
+			
+			public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+				timeView.setText(new StringBuilder().append(pad(hourOfDay))
+						.append(":").append(pad(minute)));
+			}
+		}, hourBefore, minBefore, true);
+		timeDialog.show();
     }
     
     private OnDateSetListener mDateSetListener = new OnDateSetListener() {
@@ -168,5 +202,12 @@ public class CreateDuedateFragment extends SherlockFragment {
             mListener.onDuedateSelected(mDateTime);
         }
     }
+    
+    private static String pad(int c) {
+		if (c >= 10)
+		   return String.valueOf(c);
+		else
+		   return "0" + String.valueOf(c);
+	}
     
 }
