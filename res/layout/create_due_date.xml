@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/BetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
+        style="@style/BetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:padding="2dp">
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="8dp"
+		    android:src="@drawable/default_avatar"
+		    android:scaleType="centerCrop" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_owner_profile_frame"
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="4dp" 
+		    android:src="@drawable/bet_avatar_frame" />
+	    
+	    <ImageView
+	        android:id="@+id/iv_bet_category"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_owner_profile_frame"
+		    android:layout_marginTop="7dp" 
+		    android:layout_marginLeft="18dp"
+		    android:src="@drawable/bet_category" />
+
+	    <RelativeLayout
+	        style="@style/BetContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_frame"
+	        android:layout_marginLeft="2dp"
+	        android:padding="5dp">
+
+	        <TextView
+	            android:id="@+id/tv_bet_topic"
+	            style="@style/BetSubject"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="4dp" />
+
+	        <LinearLayout
+	            android:id="@+id/ll_bet_reward"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="6dp"
+	            android:gravity="center">
+	            
+	            <ImageView
+				    android:id="@+id/iv_bet_reward"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:src="@drawable/bet_subject" />
+
+	            <TextView
+	                style="@style/BetReward"
+	                android:id="@+id/tv_bet_reward"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="3dp"
+	                android:gravity="center" />
+		        
+	        </LinearLayout>
+
+	        <RelativeLayout
+	            style="@style/CreateDuedateContainer"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@id/ll_bet_reward"
+	            android:layout_centerHorizontal="true">
+	            
+	            <TextView
+	                android:id="@+id/tv_bet_date_hint"
+	                style="@style/CreateDuedateHint"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentLeft="true"
+	                android:layout_centerVertical="true"
+	                android:layout_marginLeft="6dp"
+	                android:layout_marginRight="4dp"
+	                android:text="@string/create_duedate_hint" />
+	            
+	            <TextView 
+	                android:id="@+id/tv_bet_date_button"
+	                style="@style/CreateDuedateText"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_toRightOf="@id/tv_bet_date_hint"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="2dp"
+	                android:text="Sat, Aug 17th" />
+
+	            <TextView 
+	                android:id="@+id/tv_bet_time_button"
+	                style="@style/CreateDuedateText"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_toRightOf="@id/tv_bet_date_button"
+	                android:layout_centerVertical="true"
+	                android:layout_marginRight="6dp"
+	                android:text="19:00" />
+	            
+	        </RelativeLayout>
+	            
+	    </RelativeLayout>
+    	    
+    </RelativeLayout>
+	    
+</RelativeLayout>

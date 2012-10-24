@@ -27,6 +27,7 @@
 
 	<string name="create_subject_hint">What do you want to bet about?</string>
 	<string name="create_stake_hint">What\'s the stake?</string>
+	<string name="create_duedate_hint">Closes at:</string>
 	
 	<string name="stake_drink">Drink</string>
 	<string name="stake_lunch">Lunch</string>
