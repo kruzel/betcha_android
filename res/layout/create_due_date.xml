@@ -105,26 +105,25 @@
 	                android:text="@string/create_duedate_hint" />
 	            
 	            <TextView 
-	                android:id="@+id/tv_bet_date_button"
-	                style="@style/CreateDuedateText"
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:layout_toRightOf="@id/tv_bet_date_hint"
-	                android:layout_centerVertical="true"
-	                android:layout_marginRight="2dp"
-	                android:text="Sat, Aug 17th" />
-
-	            <TextView 
 	                android:id="@+id/tv_bet_time_button"
 	                style="@style/CreateDuedateText"
-	                android:layout_width="match_parent"
+	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:layout_alignParentRight="true"
-	                android:layout_toRightOf="@id/tv_bet_date_button"
 	                android:layout_centerVertical="true"
 	                android:layout_marginRight="6dp"
+	                android:layout_marginLeft="1dp"
 	                android:text="19:00" />
-	            
+
+	            <TextView 
+	                android:id="@+id/tv_bet_date_button"
+	                style="@style/CreateDuedateText"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_toLeftOf="@id/tv_bet_time_button"
+	                android:layout_centerVertical="true"
+	                android:text="Sat, Aug 17th" />
+
 	        </RelativeLayout>
 	            
 	    </RelativeLayout>
