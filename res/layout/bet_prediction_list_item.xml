@@ -8,14 +8,14 @@
         android:id="@+id/relativeLayout1"
         style="@style/PredictionPerson"
         android:layout_width="wrap_content"
-        android:layout_height="24dp" >
+        android:layout_height="24dp" 
+        android:layout_centerVertical="true">
 
         <ImageView
             android:id="@+id/iv_participant_pic"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             android:src="@drawable/default_avatar" />
 		
@@ -35,8 +35,8 @@
     <FrameLayout
         style="@style/PredictionFrame"
         android:layout_width="fill_parent"
-        android:layout_height="24dp"
-        android:layout_alignParentTop="true"
+        android:layout_height="34dp"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/cb_prediction_win"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="100dp"

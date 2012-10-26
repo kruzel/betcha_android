@@ -24,8 +24,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_margin="5dp"
-        android:text="@string/send" />
-
+        android:text="@string/done" />
+
     <EditText
         android:id="@+id/editTextSearch"
         android:layout_width="wrap_content"
