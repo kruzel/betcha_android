@@ -45,7 +45,7 @@ public class Bet extends ModelCache<Bet, String> {
 	private DateTime dueDate;
 	@DatabaseField
 	private String state; // open/due/closed
-	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true) //canBeNull = false, 
 	private Prediction ownerPrediction;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Prediction>  predictions;
@@ -162,6 +162,9 @@ public class Bet extends ModelCache<Bet, String> {
 	}
 
 	public List<Prediction> getPredictions() {
+		if(predictions==null)
+			return null;
+		
 		List<Prediction> list = new ArrayList<Prediction>(predictions);
 		return list;
 	}
@@ -218,12 +221,13 @@ public class Bet extends ModelCache<Bet, String> {
 		if (getBetClient().create(this) != null) {
 			res = 1;
 			
-			for (Prediction prediction : getPredictions()) {
-				prediction.setServerCreated(true);
-				prediction.setServerUpdated(true);
-				prediction.onLocalUpdate();
+			if(getPredictions()!=null) {
+				for (Prediction prediction : getPredictions()) {
+					prediction.setServerCreated(true);
+					prediction.setServerUpdated(true);
+					prediction.onLocalUpdate();
+				}
 			}
-			
 		}
 
 		return res;
@@ -473,12 +477,16 @@ public class Bet extends ModelCache<Bet, String> {
 			return 0;
 		}
 		
-		ownerPrediction.onLocalCreate();
+		if(ownerPrediction!=null)
+			ownerPrediction.onLocalCreate();
 		
-		int numNewFriends = addPredictions(participants);
+		int numNewFriends = 0;
+		if(participants!=null && participants.size()>0) {
+			numNewFriends = addPredictions(participants);
 		
-		if(numNewFriends>0) {
-			BetchaApp.getInstance().loadFriends();
+			if(numNewFriends>0) {
+				BetchaApp.getInstance().loadFriends();
+			}
 		}
 		
 		return res;
@@ -496,8 +504,10 @@ public class Bet extends ModelCache<Bet, String> {
 			return 0;
 		}
 		
-		for (Prediction prediction : predictions) {
-			res += prediction.onLocalUpdate();
+		if(predictions!=null) {
+			for (Prediction prediction : predictions) {
+				res += prediction.onLocalUpdate();
+			}
 		}
 		
 		try {
@@ -738,20 +748,22 @@ public class Bet extends ModelCache<Bet, String> {
 
 		try {
 			// for each prediction of bet, create it and its user if missing
-			JSONArray jsonPredictions = new JSONArray();
-			for (Prediction prediction : getPredictions()) {
-				JSONObject jsonPrediction = new JSONObject();
-
-				jsonPrediction.put("id", prediction.getId());
-				jsonPrediction.put("bet_id", prediction.getBet().getId());
-				jsonPrediction.put("user_id", prediction.getUser().getId());
-				jsonPrediction.put("prediction", prediction.getPrediction());
-				if (prediction.getResult()!=null)
-					jsonPrediction.put("result", prediction.getResult());
-				jsonPredictions.put(jsonPrediction);
+			if(getPredictions()!=null) {
+				JSONArray jsonPredictions = new JSONArray();
+				for (Prediction prediction : getPredictions()) {
+					JSONObject jsonPrediction = new JSONObject();
+	
+					jsonPrediction.put("id", prediction.getId());
+					jsonPrediction.put("bet_id", prediction.getBet().getId());
+					jsonPrediction.put("user_id", prediction.getUser().getId());
+					jsonPrediction.put("prediction", prediction.getPrediction());
+					if (prediction.getResult()!=null)
+						jsonPrediction.put("result", prediction.getResult());
+					jsonPredictions.put(jsonPrediction);
+				}
+	
+				jsonRoot.put("predictions", jsonPredictions);
 			}
-
-			jsonRoot.put("predictions", jsonPredictions);
 
 		} catch (JSONException e) {
 			e.printStackTrace();

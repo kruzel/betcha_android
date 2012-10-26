@@ -18,6 +18,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
@@ -83,7 +86,7 @@ public class BetDetailsFragment extends SherlockFragment {
 		populate();
 		super.onResume();
 	}
-
+	
 	protected void populate() {
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");

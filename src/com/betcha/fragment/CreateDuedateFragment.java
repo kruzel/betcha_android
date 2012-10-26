@@ -11,7 +11,6 @@ import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +24,7 @@ import android.widget.TimePicker;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
@@ -214,20 +214,25 @@ public class CreateDuedateFragment extends SherlockFragment {
     
     @Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.due_date_fragment, menu);
+		//inflater.inflate(R.menu.due_date_fragment, menu);
+		menu.add("Invite")
+        .setIcon(R.drawable.ic_menu_invite)
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		
 	}
+    
+    
 
 	@Override
 	public boolean onOptionsItemSelected(
 		com.actionbarsherlock.view.MenuItem item) {
 	
-		switch (item.getItemId()) {
-	        case R.id.menu_next:
-	        	submit();
-	            return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
+		if ("Invite".equals(item.getTitle())) {
+			submit();
+            return true;
 	    }
+		
+		return super.onOptionsItemSelected(item);
 	}
     
 }

@@ -46,10 +46,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	
 	private BetChatMessagesFragment betChatFragment;
 	
-	private Button btnInvite;
-	private Button btnClose;
-	private Button btnDelete;
-	
 	ListView lvFriends;
 	FriendAdapter friendAdapter;
 	
@@ -67,102 +63,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 		betDetailsFragment =  (BetDetailsFragment) getSupportFragmentManager().findFragmentById(R.id.bet_details_fragment);
 		betChatFragment = (BetChatMessagesFragment) getSupportFragmentManager().findFragmentById(R.id.chat_fragment);
-		
-		btnInvite = (Button) findViewById(R.id.button_invite);
-		btnClose = (Button) findViewById(R.id.button_close);
-		btnDelete = (Button) findViewById(R.id.button_delete);
-		
-		if(app.getFriends()==null) {
-			Toast.makeText(this, "No friends found", Toast.LENGTH_LONG);
-		} else {
-			btnInvite.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					// Create and show the dialog.
-			        final Dialog dialog = new Dialog(BetDetailsActivity.this);
-					dialog.setContentView(R.layout.friends_picker);
-					dialog.setTitle(getResources().getString(R.string.select_friends));
-									
-					lvFriends = (ListView) dialog.findViewById(R.id.friends_list);
-					friendAdapter = new FriendAdapter(BetDetailsActivity.this, R.layout.invite_list_item, app.getFriends());
-			        lvFriends.setAdapter(friendAdapter);
-			        lvFriends.setTextFilterEnabled(true);
-			        
-			        for (User friend : app.getFriends()) {
-						if(friend.getIsInvitedToBet()) {
-							friend.setIsInvitedToBet(false);
-						}
-					}
-			        
-			        EditText et = (EditText) dialog.findViewById(R.id.editTextSearch);
-			        et.addTextChangedListener(new TextWatcher() {
-						
-						@Override
-						public void onTextChanged(CharSequence s, int start, int before, int count) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void beforeTextChanged(CharSequence s, int start, int count,
-								int after) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void afterTextChanged(Editable s) {
-							friendAdapter.getFilter().filter(s);
-						}
-					});
-			        
-			        Button dialogButton = (Button) dialog.findViewById(R.id.buttonOK);
-					// if button is clicked, close the custom dialog
-					dialogButton.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							List<User> participants = new ArrayList<User>();
-					    	for (User friend : app.getFriends()) {
-								if(friend.getIsInvitedToBet()) {
-									participants.add(friend);
-								}
-							}
-					    	
-					    	app.getCurBet().addPredictions(participants);
-					    						    	
-					    	betDetailsFragment.refresh();
-					    	
-					    	dialog.dismiss();
-					    	
-						}
-					});
-			        
-			        dialog.show();
-				}
-			});
-		}
-		
-		btnClose.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				app.getCurBet().setState(Bet.STATE_CLOSED);
-				app.getCurBet().update();
-				finish();
-			}
-		});
-
-		btnDelete.setOnClickListener(new OnClickListener() {
-	
-			@Override
-			public void onClick(View v) {
-				app.getCurBet().delete();
-				app.setCurBet(null);
-				finish();
-				
-			}
-		});
 		
 		receiver = new BroadcastReceiver() {
 			
@@ -199,18 +99,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 		if(app.getCurBet()==null)
 			return;
-		
-		if(app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
-			btnInvite.setVisibility(View.VISIBLE);
-			btnClose.setVisibility(View.VISIBLE);
-			btnDelete.setVisibility(View.VISIBLE);
-			
-			View fragmentView = (View) findViewById(R.id.chat_fragment);
-			RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) fragmentView.getLayoutParams();
-			params.addRule(RelativeLayout.BELOW, R.id.buttons_frame);
-			params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-			
-		}
 
 		if (isNewBet) {
 			dialog = ProgressDialog.show(BetDetailsActivity.this,
@@ -235,29 +123,55 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-        case android.R.id.home:
-            finish();
-            return true;
-        case R.id.menu_refresh:
-        	if (dialog != null && dialog.isShowing()) {
-    			dialog.dismiss();
-    			dialog = null;
-    		}
-        	dialog = ProgressDialog.show(BetDetailsActivity.this,
-					"", getString(R.string.msg_bet_loading), true);
-        	app.getCurBet().setListener(this);
-        	app.getCurBet().get();
-        	return true;
-        default:
-            return super.onOptionsItemSelected(item);
+		if("Delete".equals(item.getTitle())) {
+			deleteBet();
+		} else if("Invite".equals(item.getTitle())) {
+			inviteFriends();
+		}else if("Close".equals(item.getTitle())) {
+			closeBet();
+		} else { 
+		
+			switch (item.getItemId()) {
+	        case android.R.id.home:
+	            finish();
+	            return true;
+	        case R.id.menu_refresh:
+	        	if (dialog != null && dialog.isShowing()) {
+	    			dialog.dismiss();
+	    			dialog = null;
+	    		}
+	        	dialog = ProgressDialog.show(BetDetailsActivity.this,
+						"", getString(R.string.msg_bet_loading), true);
+	        	app.getCurBet().setListener(this);
+	        	app.getCurBet().get();
+	        	return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+			}
 		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.bet_details_activity, menu);
+	    
+	    if(app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
+		    menu.add("Delete")
+	        .setIcon(R.drawable.ic_menu_delete)
+	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			
+			menu.add("Invite")
+	        .setIcon(R.drawable.ic_menu_invite)
+	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			
+			menu.add("Close")
+	        .setIcon(R.drawable.ic_menu_share)
+	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+	    }
+	    
 	    return true;
 	}
 
@@ -318,4 +232,82 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 	}
 
+	private void inviteFriends() {
+		if(app.getFriends()==null) {
+			Toast.makeText(this, "No friends found", Toast.LENGTH_LONG);
+		} else {
+			// Create and show the dialog.
+	        final Dialog dialog = new Dialog(BetDetailsActivity.this);
+			dialog.setContentView(R.layout.friends_picker);
+			dialog.setTitle(getResources().getString(R.string.select_friends));
+							
+			lvFriends = (ListView) dialog.findViewById(R.id.friends_list);
+			friendAdapter = new FriendAdapter(BetDetailsActivity.this, R.layout.invite_list_item, app.getFriends());
+	        lvFriends.setAdapter(friendAdapter);
+	        lvFriends.setTextFilterEnabled(true);
+	        
+	        for (User friend : app.getFriends()) {
+				if(friend.getIsInvitedToBet()) {
+					friend.setIsInvitedToBet(false);
+				}
+			}
+	        
+	        EditText et = (EditText) dialog.findViewById(R.id.editTextSearch);
+	        et.addTextChangedListener(new TextWatcher() {
+				
+				@Override
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				@Override
+				public void afterTextChanged(Editable s) {
+					friendAdapter.getFilter().filter(s);
+				}
+			});
+	        
+	        Button dialogButton = (Button) dialog.findViewById(R.id.buttonOK);
+			// if button is clicked, close the custom dialog
+			dialogButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					List<User> participants = new ArrayList<User>();
+			    	for (User friend : app.getFriends()) {
+						if(friend.getIsInvitedToBet()) {
+							participants.add(friend);
+						}
+					}
+			    	
+			    	app.getCurBet().addPredictions(participants);
+			    						    	
+			    	betDetailsFragment.refresh();
+			    	
+			    	dialog.dismiss();
+			    	
+				}
+			});
+	        
+	        dialog.show();
+		}
+	}
+	
+	private void closeBet() {
+		app.getCurBet().setState(Bet.STATE_CLOSED);
+		app.getCurBet().update();
+		finish();
+	}
+	
+	private void deleteBet() {
+		app.getCurBet().delete();
+		app.setCurBet(null);
+		finish();
+	}
 }

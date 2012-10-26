@@ -77,10 +77,11 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			return v;
 		
 		List<Prediction> predictions = bet.getPredictions();
-		if(predictions==null || predictions.size()==0)
-			return v;
+		int predictionSize = 0;
 		
-		int predictionSize = predictions.size();
+		if(predictions!=null)
+			predictionSize = predictions.size();
+			
 		
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
@@ -97,24 +98,26 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
 		    
 		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
-		    		    
-		    holder.rlPredictionItems = new PredictionHolder[predictionSize];
 		    
-		    for(int i = 0; i<predictionSize ; i++ ) {
-		    	holder.rlPredictionItems[i] = new PredictionHolder();
-		    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item, holder.lvPredictions, false);
-		    	holder.rlPredictionItems[i].ivParticipantProfPic = (ImageView) holder.rlPredictionItems[i].layout.findViewById(R.id.iv_participant_pic);
-		    	holder.rlPredictionItems[i].tvParticipantName = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_name);
-		    	holder.rlPredictionItems[i].tvParticipantPrediction = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_prediction);
-	            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantName, CustomFont.HELVETICA_CONDENSED);
-	            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantPrediction, CustomFont.HELVETICA_CONDENSED);
-		    	holder.lvPredictions.addView(holder.rlPredictionItems[i].layout);
+		    if(predictionSize>0) {		    
+			    holder.rlPredictionItems = new PredictionHolder[predictionSize];
+			    
+			    for(int i = 0; i<predictionSize ; i++ ) {
+			    	holder.rlPredictionItems[i] = new PredictionHolder();
+			    	holder.rlPredictionItems[i].layout = (RelativeLayout) inflater.inflate(R.layout.bet_prediction_short_item, holder.lvPredictions, false);
+			    	holder.rlPredictionItems[i].ivParticipantProfPic = (ImageView) holder.rlPredictionItems[i].layout.findViewById(R.id.iv_participant_pic);
+			    	holder.rlPredictionItems[i].tvParticipantName = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_name);
+			    	holder.rlPredictionItems[i].tvParticipantPrediction = (TextView) holder.rlPredictionItems[i].layout.findViewById(R.id.tv_participant_prediction);
+		            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantName, CustomFont.HELVETICA_CONDENSED);
+		            FontUtils.setTextViewTypeface(holder.rlPredictionItems[i].tvParticipantPrediction, CustomFont.HELVETICA_CONDENSED);
+			    	holder.lvPredictions.addView(holder.rlPredictionItems[i].layout);
+			    }
+			    
+			    LayoutParams itemLayoutParams = holder.rlPredictionItems[0].layout.getLayoutParams();
+			    LayoutParams layoutParams = holder.lvPredictions.getLayoutParams();
+			    layoutParams.height = 70 * predictionSize;
+			    holder.lvPredictions.setLayoutParams(layoutParams);
 		    }
-		    
-		    LayoutParams itemLayoutParams = holder.rlPredictionItems[0].layout.getLayoutParams();
-		    LayoutParams layoutParams = holder.lvPredictions.getLayoutParams();
-		    layoutParams.height = itemLayoutParams.height * predictionSize;
-		    holder.lvPredictions.setLayoutParams(layoutParams);
 					    
 		 	// associate the holder with the view for later lookup
             v.setTag(holder);
