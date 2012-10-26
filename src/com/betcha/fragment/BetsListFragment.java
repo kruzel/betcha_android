@@ -231,6 +231,11 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
  			e.printStackTrace();
  		}
         
+ 		if(bets==null) 
+ 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + 0);
+ 		else
+ 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + bets.size());
+ 		
  		if(bets!=null && bets.size()>0) {
  			if(betAdapter==null){
 	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
