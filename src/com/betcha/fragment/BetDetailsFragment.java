@@ -114,7 +114,7 @@ public class BetDetailsFragment extends SherlockFragment {
 		tvBetReward.setText(app.getCurBet().getReward());
 		
 		LayoutParams layoutParams = frmPredictionContainer.getLayoutParams();
-		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 100 * app.getCurBet().getPredictionsCount() : 200;
+		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 88 * app.getCurBet().getPredictionsCount() : 88*2;
 		frmPredictionContainer.setLayoutParams(layoutParams);
 		
 		if(predictionAdapter==null) {

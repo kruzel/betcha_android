@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 
 import utils.SoftKeyboardUtils;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -99,7 +100,12 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if ("Send".equals(item.getTitle())) {
 			app.getCurBet().create();
-			finish();
+
+			Intent i = new Intent(this, BetDetailsActivity.class);
+	        i.putExtra("bet_id", app.getCurBet().getId());
+	        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        startActivity(i);
+			
 			return true;
 		}
 		

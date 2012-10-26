@@ -302,7 +302,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	private void closeBet() {
 		app.getCurBet().setState(Bet.STATE_CLOSED);
 		app.getCurBet().update();
-		finish();
 	}
 	
 	private void deleteBet() {

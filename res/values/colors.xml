@@ -28,6 +28,7 @@
     <color name="abr_bg_pressed">#cc92979e</color>
     
     <!-- Bet List Item -->
+    <color name="bet_list_view">#ffffffff</color>
     
     <!-- Create Menu -->
     <color name="create_divider_top">#ffffffff</color>

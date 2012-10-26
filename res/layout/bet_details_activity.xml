@@ -18,44 +18,7 @@
 		        android:name="com.betcha.fragment.BetDetailsFragment"
 		        android:layout_width="fill_parent"
 		        android:layout_height="wrap_content"
-		        android:layout_alignParentTop="true" />
-								
-		    <LinearLayout
-		        android:id="@+id/buttons_frame"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_below="@+id/bet_details_fragment"
-		        android:layout_centerHorizontal="true"
-		        android:layout_gravity="center_horizontal"
-		        android:layout_margin="5dp" >
-				
-		        <Button
-		            android:id="@+id/button_invite"
-		            android:layout_width="100dp"
-		            android:layout_height="wrap_content"
-		            android:text="@string/invite" 
-		            android:visibility="invisible"
-		            android:background="@drawable/button_small"/>
-						
-		        <Button
-		            android:id="@+id/button_close"
-		            android:layout_width="100dp"
-		            android:layout_height="wrap_content"
-		            android:layout_gravity="center_horizontal"
-		            android:text="@string/close"
-		            android:visibility="invisible"
-		            android:background="@drawable/button_small" />
-				
-		        <Button
-		            android:id="@+id/button_delete"
-		            android:layout_width="100dp"
-		            android:layout_height="wrap_content"
-		            android:text="@string/delete"
-		            android:visibility="invisible"
-		            android:background="@drawable/button_small" />
-		
-		    </LinearLayout>
-		    		
+		        android:layout_alignParentTop="true" />	
 		    <fragment
 		        android:id="@+id/chat_fragment"
 		        android:name="com.betcha.fragment.BetChatMessagesFragment"
