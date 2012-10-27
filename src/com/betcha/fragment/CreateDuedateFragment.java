@@ -121,6 +121,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         }
         if (mDateTime == null) {
             mDateTime = new DateTime();
+            mDateTime = mDateTime.plusDays(2);
         }
         
         updateDateTime(dateView, timeView);
@@ -136,10 +137,10 @@ public class CreateDuedateFragment extends SherlockFragment {
     
     private void updateDateTime(TextView dateView, TextView timeView) {
         DateTimeFormatter fmtDate = DateTimeFormat.forPattern("yyyy-MM-dd");
-        dateView.setText(fmtDate.print(new DateTime()));
+        dateView.setText(fmtDate.print(mDateTime));
         
         DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
-        timeView.setText(fmtTime.print(new DateTime()));
+        timeView.setText(fmtTime.print(mDateTime));
     }
     
     private void updateDateTime() {
@@ -200,6 +201,10 @@ public class CreateDuedateFragment extends SherlockFragment {
     };
     
     private void submit() {
+    	DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm");
+    	String dt = dateView.getText().toString() + " " + timeView.getText().toString();
+    	mDateTime = DateTime.parse(dt, fmt);
+    	
         if (mListener != null) {
             mListener.onDuedateSelected(mDateTime);
         }
