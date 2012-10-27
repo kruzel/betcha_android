@@ -39,4 +39,6 @@
     
     <drawable name="create_suggestion_highlight">#22ffffff</drawable>
     
+    <color name="create_prediction_suggestion">#ff7d7d7d</color>
+    
 </resources>

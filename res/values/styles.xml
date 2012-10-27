@@ -174,5 +174,32 @@
 	<style name="CreateDuedateText" parent="@style/Text">
 	    <item name="android:textSize">16sp</item>
 	</style>
+	
+	<!-- Create Prediction -->
+	
+	<style name="CreatePredictionContainer">
+	    <item name="android:background">@drawable/offwhite_bg_full</item>
+	</style>
+
+	<style name="CreatePredictionEditbox" parent="@style/CreateEditbox">
+	    <item name="android:textSize">15sp</item>
+	    <item name="android:textStyle">bold</item>
+	    <item name="android:textColorHint">@color/text_darkhint</item>
+	    <item name="android:lines">1</item>
+	</style>
+
+	<style name="CreatePredictionLabel" parent="@style/Text">
+	    <item name="android:textColor">@color/create_prediction_suggestion</item>
+	    <item name="android:textSize">14sp</item>
+	</style>
+
+	<style name="CreatePredictionSuggestions">
+	    <item name="android:background">@drawable/highlight_down_border</item>
+	</style>
+
+	<style name="CreatePredictionSuggestionText" parent="@style/Text">
+	    <item name="android:textColor">@color/create_prediction_suggestion</item>
+	    <item name="android:textSize">16sp</item>
+	</style>
 			
 </resources>
