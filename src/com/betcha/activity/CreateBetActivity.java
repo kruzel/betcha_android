@@ -103,9 +103,10 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 
 			Intent i = new Intent(this, BetDetailsActivity.class);
 	        i.putExtra("bet_id", app.getCurBet().getId());
-	        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        startActivity(i);
-			
+
+	        finish();	
+	        
 			return true;
 		}
 		
