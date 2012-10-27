@@ -50,6 +50,10 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
             mListener = (OnPredictionSelectedListener) activity;
         }
     }
+    
+    public void setListener(OnPredictionSelectedListener mListener) {
+		this.mListener = mListener;
+	}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

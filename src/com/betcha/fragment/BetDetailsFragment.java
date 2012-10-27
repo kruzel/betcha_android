@@ -141,6 +141,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		
 		FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 		predictionDialog = CreatePredictionFragment.newInstance(prediction.getPrediction(),suggestions);
+		predictionDialog.setListener(this);
 		predictionDialog.show(ft, "dialog");
 		
 	}
