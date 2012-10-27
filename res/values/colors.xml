@@ -22,7 +22,7 @@
     <color name="text_deepocean">#ff2a2c2b</color>
     <color name="text_lightfabric">#ff7f848c</color>
     <color name="text_fabric">#ff636970</color>
-    <color name="text_darkhint">#ff888888</color>
+    <color name="text_darkhint">#ffb0b0b0</color>
     
     <!-- Action Bar -->
     <color name="abr_bg_pressed">#cc92979e</color>
@@ -37,7 +37,7 @@
     <!-- Create Suggestion -->
     <color name="create_suggestion_text">#ffebebeb</color>
     
-    <drawable name="create_suggestion_highlight">#22ffffff</drawable>
+    <drawable name="create_suggestion_highlight">#77ffffff</drawable>
     
     <color name="create_prediction_suggestion">#ff7d7d7d</color>
     

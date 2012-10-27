@@ -8,8 +8,8 @@
     <EditText
         android:id="@+id/et_prediction"
         style="@style/CreatePredictionEditbox"
-        android:layout_width="240dp"
-        android:layout_height="30dp"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
         android:padding="5dp"
         android:gravity="left|center_vertical"
         android:imeOptions="actionDone"
@@ -24,15 +24,17 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/et_prediction"
         android:layout_marginLeft="2dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:text="@string/create_prediction_label" />
     
     <LinearLayout
+        style="@style/CreatePredictionSuggestions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_prediction_label"
         android:layout_alignParentLeft="true"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="7dp"
+        android:padding="1px"
         android:orientation="vertical">
 
 	    <LinearLayout

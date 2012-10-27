@@ -132,6 +132,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
             String stake = savedInstanceState.getString(ARG_STAKE);
             if (stake != null) {
                 editText.setText(stake);
+                editText.setSelection(editText.getText().length());
             }
         }
         
@@ -160,6 +161,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(suggestion);
+            editText.setSelection(editText.getText().length());
         }
         submit(suggestion);
     }
