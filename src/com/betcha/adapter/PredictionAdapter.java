@@ -3,7 +3,6 @@ package com.betcha.adapter;
 import java.util.List;
 
 import utils.SoftKeyboardUtils;
-
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,10 +24,10 @@ import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.Prediction;
 
-public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
+public class PredictionAdapter extends ArrayAdapter<Prediction> {
 	private BetchaApp app;
 	
-	public PredictionWithCbxAdapter(Context context, int textViewResourceId,
+	public PredictionAdapter(Context context, int textViewResourceId,
 			List<Prediction> objects) {
 		super(context, textViewResourceId, objects);	
 		app = (BetchaApp) context.getApplicationContext();
@@ -87,6 +86,11 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 			        return false;
 				}
 			});
+			
+			if(tvPrediction.getText().length()==0) {
+				tvPrediction.requestFocus();
+				SoftKeyboardUtils.showSoftwareKeyboard(tvPrediction);
+			}
 			
 		} else {
 			tvPrediction.setEnabled(false);
