@@ -4,13 +4,13 @@ import java.util.List;
 
 import utils.SoftKeyboardUtils;
 import android.content.Context;
+import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -22,11 +22,28 @@ import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
+import com.betcha.fragment.CreatePredictionFragment;
 import com.betcha.model.Prediction;
 
 public class PredictionAdapter extends ArrayAdapter<Prediction> {
 	private BetchaApp app;
+	private CreatePredictionFragment predictionDialog;
 	
+	OnPredictionEditListener predictionEditListener;
+	
+	public interface OnPredictionEditListener {
+		public abstract void OnPredictionEdit(Prediction prediction, EditText predictionView);
+	}
+	
+	public OnPredictionEditListener getPredictionEditListener() {
+		return predictionEditListener;
+	}
+
+	public void setPredictionEditListener(
+			OnPredictionEditListener predictionEditListener) {
+		this.predictionEditListener = predictionEditListener;
+	}
+
 	public PredictionAdapter(Context context, int textViewResourceId,
 			List<Prediction> objects) {
 		super(context, textViewResourceId, objects);	
@@ -87,9 +104,8 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 				}
 			});
 			
-			if(tvPrediction.getText().length()==0) {
-				tvPrediction.requestFocus();
-				SoftKeyboardUtils.showSoftwareKeyboard(tvPrediction);
+			if(tvPrediction.getText().length()==0 && predictionEditListener!=null) {
+				predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
 			}
 			
 		} else {

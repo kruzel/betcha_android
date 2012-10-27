@@ -85,7 +85,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
             suggestionsContainer.addView(suggestionView);
         }
 
-        EditText editText = (EditText) view.findViewById(R.id.et_bet_prediction);
+        EditText editText = (EditText) view.findViewById(R.id.et_prediction);
         FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED);
         editText.setOnEditorActionListener(this);
         

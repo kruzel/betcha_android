@@ -8,27 +8,33 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.adapter.PredictionAdapter;
+import com.betcha.adapter.PredictionAdapter.OnPredictionEditListener;
+import com.betcha.fragment.CreatePredictionFragment.OnPredictionSelectedListener;
+import com.betcha.model.Prediction;
 
-public class BetDetailsFragment extends SherlockFragment {
+public class BetDetailsFragment extends SherlockFragment implements OnPredictionEditListener, OnPredictionSelectedListener {
 	private BetchaApp app;
+	
+	private Prediction predictionEdit;
+	private EditText predictionEditView;
+	CreatePredictionFragment predictionDialog;
 	
 	private ListView lvPredictions;
 	private FrameLayout frmPredictionContainer;
@@ -120,9 +126,35 @@ public class BetDetailsFragment extends SherlockFragment {
 		if(predictionAdapter==null) {
 			predictionAdapter = new PredictionAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
 			lvPredictions.setAdapter(predictionAdapter);
+			predictionAdapter.setPredictionEditListener(this);
 		} else {
 			predictionAdapter.notifyDataSetChanged();
 		}
+	}
+
+	@Override
+	public void OnPredictionEdit(Prediction prediction, EditText predictionView) {
+		predictionEdit = prediction;
+		predictionEditView = predictionView;
+		
+		String suggestions[] = { "Macabi", "Hapoel", "Me" };
+		
+		FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+		predictionDialog = CreatePredictionFragment.newInstance(prediction.getPrediction(),suggestions);
+		predictionDialog.show(ft, "dialog");
+		
+	}
+
+	@Override
+	public void onPredictionSelected(String prediction) {
+		if(predictionEdit!=null) {
+			predictionEdit.setPrediction(prediction);
+			predictionEditView.setText(prediction);
+			predictionDialog.dismiss();
+			
+			predictionEdit.update();
+		}
+		
 	}
 
 }
