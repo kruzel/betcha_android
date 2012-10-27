@@ -150,6 +150,7 @@
 	    <item name="android:textSize">18sp</item>
 	    <item name="android:textStyle">bold</item>
 	    <item name="android:textColorHint">@color/text_darkhint</item>
+	    <item name="android:textCursorDrawable">@null</item>
 	</style>
 
 	<style name="CreateSuggestionSubject" parent="@style/CreateSuggestionText">
@@ -182,9 +183,6 @@
 	</style>
 
 	<style name="CreatePredictionEditbox" parent="@style/CreateEditbox">
-	    <item name="android:textSize">15sp</item>
-	    <item name="android:textStyle">bold</item>
-	    <item name="android:textColorHint">@color/text_darkhint</item>
 	    <item name="android:lines">1</item>
 	</style>
 
@@ -194,7 +192,7 @@
 	</style>
 
 	<style name="CreatePredictionSuggestions">
-	    <item name="android:background">@drawable/highlight_down_border</item>
+	    <item name="android:background">@drawable/highlight_strong_down_border</item>
 	</style>
 
 	<style name="CreatePredictionSuggestionText" parent="@style/Text">

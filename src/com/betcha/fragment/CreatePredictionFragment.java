@@ -1,6 +1,7 @@
 package com.betcha.fragment;
 
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -54,7 +55,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        setStyle(STYLE_NO_FRAME, 0);
+        setStyle(STYLE_NO_FRAME, R.style.Theme_Sherlock_Dialog);
         
         mPrediction = getArguments().getString(ARG_PREDICTION);
         mSuggestions = getArguments().getStringArray(ARG_SUGGESTIONS);
@@ -62,7 +63,11 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0x77000000));
+        
         View view = inflater.inflate(R.layout.create_prediction, container, false);
+        
+        FontUtils.setTextViewTypeface(view, R.id.tv_prediction_label, CustomFont.HELVETICA_CONDENSED);
         
         ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions1);
         ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
@@ -71,7 +76,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
             View suggestionView = inflater.inflate(R.layout.create_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
-            FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_CONDENSED);
+            FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_CONDENSED_BOLD);
             textView.setText(suggestion);
             
             suggestionView.setOnClickListener(new OnClickListener() {
@@ -85,8 +90,8 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
             suggestionsContainer.addView(suggestionView);
         }
 
-        EditText editText = (EditText) view.findViewById(R.id.et_bet_prediction);
-        FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED);
+        EditText editText = (EditText) view.findViewById(R.id.et_prediction);
+        FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED_BOLD);
         editText.setOnEditorActionListener(this);
         
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_PREDICTION)) {
@@ -96,6 +101,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
             mPrediction = "";
         }
         editText.setText(mPrediction);
+        editText.setSelection(editText.getText().length());
         
         return view;
     }
@@ -113,7 +119,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
     private EditText getEditText() {
         View view = getView();
         if (view != null) {
-            return (EditText) view.findViewById(R.id.et_bet_prediction);
+            return (EditText) view.findViewById(R.id.et_prediction);
         }
         return null;
     }
@@ -124,6 +130,7 @@ public class CreatePredictionFragment extends SherlockDialogFragment implements 
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(mPrediction);
+            editText.setSelection(editText.getText().length());
         }
         
         submit(mPrediction);

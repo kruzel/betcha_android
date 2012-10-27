@@ -88,6 +88,7 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
             String subject = savedInstanceState.getString(ARG_SUBJECT);
             if (subject != null) {
                 editText.setText(subject);
+                editText.setSelection(editText.getText().length());
             }
         }
         
@@ -116,6 +117,7 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(suggestion);
+            editText.setSelection(editText.getText().length());
         }
         submit(suggestion);
     }

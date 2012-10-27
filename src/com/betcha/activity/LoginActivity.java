@@ -12,13 +12,14 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockDialogFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.fragment.CreatePredictionFragment;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
 import com.facebook.android.DialogError;
@@ -26,7 +27,7 @@ import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
-public class LoginActivity extends SherlockActivity implements
+public class LoginActivity extends SherlockFragmentActivity implements
 		IModelListener {
 
 	private BetchaApp app;
@@ -76,8 +77,12 @@ public class LoginActivity extends SherlockActivity implements
 	}
 
 	public void onSubmit(View v) {
+	    /*
 		Intent intent = new Intent(this, LoginEmailActivity.class);
 		startActivity(intent);
+		*/
+	    SherlockDialogFragment f = CreatePredictionFragment.newInstance("", new String[] { "Yes", "No", "Maybe", "Definitely", "Tomorrow", "Today", "Me", "You" });
+	    f.show(getSupportFragmentManager(), "dialog");
 	}
 
 	public void OnFBConnect(View v) {
