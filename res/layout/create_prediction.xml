@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/CreatePredictionContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="5dp">
+    
+    <EditText
+        android:id="@+id/et_prediction"
+        style="@style/CreatePredictionEditbox"
+        android:layout_width="240dp"
+        android:layout_height="30dp"
+        android:padding="5dp"
+        android:gravity="left|center_vertical"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences|textNoSuggestions"
+        android:hint="@string/create_prediction_hint" />
+    
+    <TextView
+        android:id="@+id/tv_prediction_label"
+        style="@style/CreatePredictionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/et_prediction"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/create_prediction_label" />
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_prediction_label"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical">
+
+	    <LinearLayout
+	        android:id="@+id/ll_suggestions1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" />
+
+	    <LinearLayout
+	        android:id="@+id/ll_suggestions2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" />
+	    
+    </LinearLayout>
+
+</RelativeLayout>
