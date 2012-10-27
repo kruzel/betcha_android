@@ -3,7 +3,6 @@ package com.betcha.adapter;
 import java.util.List;
 
 import utils.SoftKeyboardUtils;
-
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -87,6 +86,11 @@ public class PredictionWithCbxAdapter extends ArrayAdapter<Prediction> {
 			        return false;
 				}
 			});
+			
+			if(tvPrediction.getText().length()==0) {
+				tvPrediction.requestFocus();
+				SoftKeyboardUtils.showSoftwareKeyboard(tvPrediction);
+			}
 			
 		} else {
 			tvPrediction.setEnabled(false);

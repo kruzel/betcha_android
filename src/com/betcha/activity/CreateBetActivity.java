@@ -73,7 +73,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
         
         Prediction prediction = new Prediction(app.getCurBet());
         prediction.setUser(app.getCurUser());
-        prediction.setPrediction("---");
+        prediction.setPrediction("");
         
         app.getCurBet().setOwnerPrediction(prediction);
         
