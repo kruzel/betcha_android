@@ -1,5 +1,7 @@
 package com.betcha.fragment;
 
+import java.sql.SQLException;
+
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Hours;
@@ -49,7 +51,6 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	TextView tvBetReward;
 	
 	public void refresh() {
-		predictionAdapter = null;
 		populate();
 	}
 
@@ -134,24 +135,34 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 
 	@Override
 	public void OnPredictionEdit(Prediction prediction, TextView predictionView) {
-		predictionEdit = prediction;
-		predictionEditView = predictionView;
-		
-		String suggestions[] = { "Macabi", "Hapoel", "Me" };
-		
-		FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-		predictionDialog = CreatePredictionFragment.newInstance(prediction.getPrediction(),suggestions);
-		predictionDialog.setListener(this);
-		predictionDialog.show(ft, "dialog");
+		if(predictionDialog==null) {
+			predictionEdit = prediction;
+			predictionEditView = predictionView;
+			
+			String suggestions[] = { "Macabi", "Hapoel", "Me" };
+			
+			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+			predictionDialog = CreatePredictionFragment.newInstance(prediction.getPrediction(),suggestions);
+			predictionDialog.setListener(this);
+			predictionDialog.show(ft, "dialog");
+		}
 		
 	}
 
 	@Override
 	public void onPredictionSelected(String prediction) {
 		if(predictionEdit!=null) {
+			try {
+				Prediction.getModelDao().refresh(predictionEdit);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			predictionEdit.setPrediction(prediction);
 			predictionEditView.setText(prediction);
-			predictionDialog.dismiss();
+			if(predictionDialog!=null) {
+				predictionDialog.dismiss();
+				predictionDialog = null;
+			}
 			
 			predictionEdit.update();
 		}

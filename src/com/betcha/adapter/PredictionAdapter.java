@@ -2,32 +2,24 @@ package com.betcha.adapter;
 
 import java.util.List;
 
-import utils.SoftKeyboardUtils;
 import android.content.Context;
-import android.support.v4.app.FragmentTransaction;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.fragment.CreatePredictionFragment;
 import com.betcha.model.Prediction;
 
 public class PredictionAdapter extends ArrayAdapter<Prediction> {
 	private BetchaApp app;
-	private CreatePredictionFragment predictionDialog;
 	
 	OnPredictionEditListener predictionEditListener;
 	
@@ -58,10 +50,10 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 			v = vi.inflate((R.layout.bet_prediction_list_item), null);
 		}
 		
-		final Prediction prediction = getItem(position);
+		Prediction prediction = getItem(position);
 		
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_participant_name);
-		final TextView tvPrediction = (TextView) v.findViewById(R.id.tv_participant_prediction);
+		TextView tvPrediction = (TextView) v.findViewById(R.id.tv_participant_prediction);
 		CheckBox cbWinner = (CheckBox) v.findViewById(R.id.cb_prediction_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
 		
@@ -85,27 +77,28 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		}
 		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
+		
 		if(app.getCurUser().getId().equals(prediction.getUser().getId())) {
-										
-			if(tvPrediction.getText().length()==0 && predictionEditListener!=null) {
-				predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
-			}
-			
+													
 			tvPrediction.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					if(predictionEditListener!=null) {
-						predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
+						TextView predictionView = (TextView) v;
+						Prediction p = (Prediction) predictionView.getTag();
+						predictionEditListener.OnPredictionEdit(p, predictionView);
 					}
 				}
 			});
 			
+			if(tvPrediction.getText().length()==0 && predictionEditListener!=null) {
+				predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
+			}
+			
 		} else {
 			tvPrediction.setEnabled(false);
 		}
-		
-		
 		
 		Boolean res = prediction.getResult();
 		if(res!=null)
