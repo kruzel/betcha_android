@@ -25,14 +25,14 @@ import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.adapter.PredictionWithCbxAdapter;
+import com.betcha.adapter.PredictionAdapter;
 
 public class BetDetailsFragment extends SherlockFragment {
 	private BetchaApp app;
 	
 	private ListView lvPredictions;
 	private FrameLayout frmPredictionContainer;
-	private PredictionWithCbxAdapter predictionAdapter;
+	private PredictionAdapter predictionAdapter;
 	
 	private ImageView ivProfPic;
 	private TextView tvBetDate;
@@ -118,7 +118,7 @@ public class BetDetailsFragment extends SherlockFragment {
 		frmPredictionContainer.setLayoutParams(layoutParams);
 		
 		if(predictionAdapter==null) {
-			predictionAdapter = new PredictionWithCbxAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
+			predictionAdapter = new PredictionAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
 			lvPredictions.setAdapter(predictionAdapter);
 		} else {
 			predictionAdapter.notifyDataSetChanged();
