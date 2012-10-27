@@ -44,7 +44,7 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp" >
 
-        <EditText
+        <TextView
             android:id="@+id/tv_participant_prediction"
             style="@style/PredictionText"
             android:layout_width="match_parent"

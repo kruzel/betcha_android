@@ -32,7 +32,7 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 	OnPredictionEditListener predictionEditListener;
 	
 	public interface OnPredictionEditListener {
-		public abstract void OnPredictionEdit(Prediction prediction, EditText predictionView);
+		public abstract void OnPredictionEdit(Prediction prediction, TextView predictionView);
 	}
 	
 	public OnPredictionEditListener getPredictionEditListener() {
@@ -58,10 +58,10 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 			v = vi.inflate((R.layout.bet_prediction_list_item), null);
 		}
 		
-		Prediction prediction = getItem(position);
+		final Prediction prediction = getItem(position);
 		
 		TextView tvUserName = (TextView) v.findViewById(R.id.tv_participant_name);
-		EditText tvPrediction = (EditText) v.findViewById(R.id.tv_participant_prediction);
+		final TextView tvPrediction = (TextView) v.findViewById(R.id.tv_participant_prediction);
 		CheckBox cbWinner = (CheckBox) v.findViewById(R.id.cb_prediction_win);
 		ImageView ivProfPic = (ImageView) v.findViewById(R.id.iv_participant_pic);
 		
@@ -86,31 +86,26 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );
 		if(app.getCurUser().getId().equals(prediction.getUser().getId())) {
-							
-			tvPrediction.setOnEditorActionListener(new OnEditorActionListener() {
-				
-				@Override
-				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-					if (actionId == EditorInfo.IME_ACTION_DONE) {
-						EditText et = (EditText) v;
-						Prediction p = (Prediction) v.getTag();
-						p.setPrediction(et.getText().toString());
-						p.update();
-						et.clearFocus();
-						SoftKeyboardUtils.hideSoftwareKeyboard(v);
-			            return true;
-			        }
-			        return false;
-				}
-			});
-			
+										
 			if(tvPrediction.getText().length()==0 && predictionEditListener!=null) {
 				predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
 			}
 			
+			tvPrediction.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					if(predictionEditListener!=null) {
+						predictionEditListener.OnPredictionEdit(prediction, tvPrediction);
+					}
+				}
+			});
+			
 		} else {
 			tvPrediction.setEnabled(false);
 		}
+		
+		
 		
 		Boolean res = prediction.getResult();
 		if(res!=null)

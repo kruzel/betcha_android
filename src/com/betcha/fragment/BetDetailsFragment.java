@@ -33,7 +33,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	private BetchaApp app;
 	
 	private Prediction predictionEdit;
-	private EditText predictionEditView;
+	private TextView predictionEditView;
 	CreatePredictionFragment predictionDialog;
 	
 	private ListView lvPredictions;
@@ -133,7 +133,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	}
 
 	@Override
-	public void OnPredictionEdit(Prediction prediction, EditText predictionView) {
+	public void OnPredictionEdit(Prediction prediction, TextView predictionView) {
 		predictionEdit = prediction;
 		predictionEditView = predictionView;
 		
