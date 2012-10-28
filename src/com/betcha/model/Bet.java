@@ -47,7 +47,7 @@ public class Bet extends ModelCache<Bet, String> {
 	private String state; // open/due/closed
 	@DatabaseField(foreign = true, foreignAutoRefresh = true) //canBeNull = false, 
 	private Prediction ownerPrediction;
-	@ForeignCollectionField(eager = false)
+	@ForeignCollectionField(eager = true)
 	private ForeignCollection<Prediction>  predictions;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<ChatMessage>  chatMessages;
