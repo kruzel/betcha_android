@@ -129,6 +129,8 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			lvPredictions.setAdapter(predictionAdapter);
 			predictionAdapter.setPredictionEditListener(this);
 		} else {
+			predictionAdapter.clear();
+			predictionAdapter.addAll(app.getCurBet().getPredictions());
 			predictionAdapter.notifyDataSetChanged();
 		}
 	}
