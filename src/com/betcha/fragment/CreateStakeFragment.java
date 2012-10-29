@@ -101,7 +101,8 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         FontUtils.setTextViewTypeface(subjectView, CustomFont.HELVETICA_CONDENSED_BOLD);
         subjectView.setText(mSubject);
         
-        ViewGroup suggestionsContainer = (ViewGroup) view.findViewById(R.id.ll_suggestions);
+        ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions);
+        ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
         for (int i = 0; i < mSuggestions.length; i++) {
             final Suggestion suggestion = mSuggestions[i];
             
@@ -121,6 +122,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
                 }
             });
             
+            ViewGroup suggestionsContainer = (i % 2 == 0 ? suggestionsContainer1 : suggestionsContainer2);
             suggestionsContainer.addView(suggestionView);
         }
 

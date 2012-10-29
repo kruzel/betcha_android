@@ -191,13 +191,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		// query for all of the bets objects in the database
  		try {
  			QueryBuilder<Bet, String> betsQueryBuilder = Bet.getModelDao().queryBuilder();
-// 			QueryBuilder<Prediction, Integer> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
+ 			QueryBuilder<Prediction,String> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
  			PreparedQuery<Bet> preparedQuery = null;
  			switch (betsFiler) {				
 			case NEW_BETS:			//un-met invitations
 				betsQueryBuilder.where().ne("user_id", app.getCurUser().getId());
-//				predictionQueryBuilder.where().eq("user_id",app.getMe().getId());
-//				betsQueryBuilder.join(predictionQueryBuilder);
+				predictionQueryBuilder.where().eq("user_id",app.getCurUser().getId());
+				betsQueryBuilder.join(predictionQueryBuilder);
 				betsQueryBuilder.orderBy("dueDate", false);
 	 			preparedQuery = betsQueryBuilder.prepare();
 				List<Bet> tmpBets = Bet.getModelDao().query(preparedQuery);

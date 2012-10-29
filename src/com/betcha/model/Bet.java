@@ -45,13 +45,12 @@ public class Bet extends ModelCache<Bet, String> {
 	private DateTime dueDate;
 	@DatabaseField
 	private String state; // open/due/closed
-	@DatabaseField(foreign = true, foreignAutoRefresh = true) //canBeNull = false, 
-	private Prediction ownerPrediction;
 	@ForeignCollectionField(eager = true)
 	private ForeignCollection<Prediction>  predictions;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<ChatMessage>  chatMessages;
  
+	private Prediction ownerPrediction;
 	private List<User> participants;
 	
 	// non persistent
@@ -153,6 +152,13 @@ public class Bet extends ModelCache<Bet, String> {
 
 	// non persistent
 	public Prediction getOwnerPrediction() {
+		if(ownerPrediction==null) {
+			for (Prediction prediction : predictions) {
+				if(prediction.getUser().getId().equals(getOwner().getId()))
+					ownerPrediction = prediction;
+			}
+		}
+		
 		return ownerPrediction;
 	}
 
@@ -477,8 +483,8 @@ public class Bet extends ModelCache<Bet, String> {
 			return 0;
 		}
 		
-		if(ownerPrediction!=null)
-			ownerPrediction.onLocalCreate();
+		if(getOwnerPrediction()!=null)
+			getOwnerPrediction().onLocalCreate();
 		
 		int numNewFriends = 0;
 		if(participants!=null && participants.size()>0) {
