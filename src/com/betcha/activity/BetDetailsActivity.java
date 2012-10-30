@@ -20,7 +20,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -78,31 +77,34 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	@Override
 	protected void onResume() {
 		super.onResume();
-
-		Intent intent = getIntent();
-		String betId = intent.getStringExtra("bet_id");
-		Boolean isNewBet = intent.getBooleanExtra("is_new_bet", false);
-
-		if (betId==null || betId.equals("-1"))
-			return;
-
-		try {
+		
+		if(app.getCurBet()==null) {
+		
+			Intent intent = getIntent();
+			String betId = intent.getStringExtra("bet_id");
+			Boolean isNewBet = intent.getBooleanExtra("is_new_bet", false);
+	
+			if (betId==null || betId.equals("-1"))
+				return;
+	
+			try {
+				
+				List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
+				if(bets!=null && bets.size()>0)
+					app.setCurBet(bets.get(0));
 			
-			List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
-			if(bets!=null && bets.size()>0)
-				app.setCurBet(bets.get(0));
-		
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			return;
-		}
-		
-		if(app.getCurBet()==null)
-			return;
-
-		if (isNewBet) {
-			dialog = ProgressDialog.show(BetDetailsActivity.this,
-					"", getString(R.string.msg_bet_loading), true);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return;
+			}
+			
+			if(app.getCurBet()==null)
+				return;
+	
+			if (isNewBet) {
+				dialog = ProgressDialog.show(BetDetailsActivity.this,
+						"", getString(R.string.msg_bet_loading), true);
+			}
 		}
 		
 		final String BET_DETAILS_ACTION = "com.betcha.BetDetailsActivityReceiver";

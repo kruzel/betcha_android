@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
+import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.ConnectivityReceiver;
@@ -167,7 +168,6 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	public int get() {
 		int res = 0;
 		
-		setServerUpdated(false);
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
 		
@@ -206,9 +206,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		return res;
 	}
 		
-	public int getAllForCurUser() {
-		setServerUpdated(false);
-		
+	public int getAllForCurUser() {		
 		if(authenticateGet() && RestClient.GetToken()==null)
 			return -1;
 		
@@ -467,6 +465,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 					model.setServerCreated(true);
 					model.setServerUpdated(true);
 					model.onLocalUpdate();
+				} else {
+					Log.i("ModelCache.doInBackground()", "create failed");
 				}
 				break;
 			case UPDATE:
@@ -482,6 +482,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 						model.setServerCreated(true);
 						model.setServerUpdated(true);
 						model.onLocalUpdate();
+					} else {
+						Log.i("ModelCache.doInBackground()", "create during update failed");
 					}
 				}	
 				break;
