@@ -296,21 +296,27 @@ public class BetchaApp extends Application implements IModelListener {
 
 	public void registerToPushNotifications() {
 
-		try {
-			GCMRegistrar.checkDevice(this);
-			GCMRegistrar.checkManifest(this);
-			final String regId = GCMRegistrar.getRegistrationId(this);
-			if (regId.equals("")) {
-				GCMRegistrar.register(this, "1053196289883"); // google api
-																// project
-																// number
-			} else {
-				Log.v("BetchaApp.onCreate()", "Already registered");
+		Thread t = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				try {
+					GCMRegistrar.checkDevice(BetchaApp.this);
+					GCMRegistrar.checkManifest(BetchaApp.this);
+					final String regId = GCMRegistrar.getRegistrationId(BetchaApp.this);
+					if (regId.equals("")) {
+						GCMRegistrar.register(BetchaApp.this, "1053196289883"); // google api
+																		// project
+																		// number
+					} else {
+						Log.v("BetchaApp.onCreate()", "Already registered");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		});
+		t.start();
 	}
 
 	@Override

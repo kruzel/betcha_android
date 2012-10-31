@@ -484,6 +484,13 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 						model.onLocalUpdate();
 					} else {
 						Log.i("ModelCache.doInBackground()", "create during update failed");
+						//work around - retry
+						model.onRestUpdate();
+						if(model.getLastRestErrorCode()==HttpStatus.OK) {
+							model.setServerCreated(true);
+							model.setServerUpdated(true);
+							model.onLocalUpdate();
+						}
 					}
 				}	
 				break;

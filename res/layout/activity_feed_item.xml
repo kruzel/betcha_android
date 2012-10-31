@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/BetContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
+        style="@style/BetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:padding="2dp" >
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="8dp"
+		    android:src="@drawable/default_avatar"
+		    android:scaleType="centerCrop" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_owner_profile_frame"
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="4dp" 
+		    android:src="@drawable/bet_avatar_frame" />
+	    
+	    <ImageView
+	        android:id="@+id/iv_bet_category"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_owner_profile_frame"
+		    android:layout_marginTop="7dp" 
+		    android:layout_marginLeft="18dp"
+		    android:src="@drawable/bet_category" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_owner"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+			android:visibility="gone" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_date_icon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_category"
+		    android:layout_marginLeft="7dp"
+		    android:paddingBottom="6dp"
+		    android:src="@drawable/bet_time" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_date"
+	        style="@style/BetDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_toRightOf="@id/iv_bet_date_icon"
+	        android:layout_marginLeft="1dp"
+		    android:paddingBottom="3dp" />
+
+	    <RelativeLayout
+	        style="@style/BetContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_frame"
+	        android:layout_marginLeft="2dp"
+	        android:minHeight="130dp">
+	
+	        <TextView
+	            android:id="@+id/tv_bet_topic"
+	            style="@style/BetSubject"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="4dp" />
+
+	        <LinearLayout
+	            android:id="@+id/ll_bet_reward"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="6dp"
+	            android:gravity="center">
+	            
+	            <ImageView
+				    android:id="@+id/iv_bet_reward"
+				    android:layout_width="wrap_content"
+				    android:layout_height="wrap_content"
+				    android:src="@drawable/bet_subject" />
+
+	            <TextView
+	                style="@style/BetReward"
+	                android:id="@+id/tv_bet_reward"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="3dp"
+	                android:gravity="center" />
+		        
+	        </LinearLayout>
+	        
+	        <View
+	            android:layout_width="match_parent"
+	            android:layout_height="1dp"
+	            android:layout_alignParentLeft="true"
+	            android:layout_toLeftOf="@id/ll_bet_reward"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_marginTop="17dp"
+	            android:background="#ffd2d2d2" />
+	        
+	        <View
+	            android:layout_width="match_parent"
+	            android:layout_height="1dp"
+	            android:layout_alignParentRight="true"
+	            android:layout_toRightOf="@id/ll_bet_reward"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_marginTop="17dp"
+	            android:background="#ffd2d2d2" />
+	        	
+	        <LinearLayout
+	            android:id="@+id/lv_bet_predictions"
+	            android:layout_width="fill_parent"
+	            android:layout_height="50dp"
+	            android:layout_below="@id/ll_bet_reward"
+	            android:layout_centerHorizontal="true"
+	            android:layout_marginTop="5dp"
+	            android:layout_marginBottom="5dp"
+	            android:orientation="vertical" />
+
+	        <Button
+	            android:id="@+id/buttonHide"
+	            style="?android:attr/buttonStyleSmall"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_above="@+id/ll_bet_reward"
+	            android:layout_alignParentRight="true"
+	            android:layout_alignParentTop="true"
+	            android:text="X"
+	            android:visibility="gone" />
+	        
+	    </RelativeLayout>
+	    	    
+    </RelativeLayout>
+
+<!--     <Button -->
+<!--         android:id="@+id/buttonHide" -->
+<!--         style="?android:attr/buttonStyleSmall" -->
+<!--         android:layout_width="wrap_content" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:layout_alignParentRight="true" -->
+<!--         android:layout_alignParentTop="true" -->
+<!--         android:text="X" /> -->
+
+</RelativeLayout>

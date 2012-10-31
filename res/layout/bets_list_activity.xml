@@ -4,7 +4,44 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
     
-    <fragment android:name="com.betcha.fragment.BetsListFragment"
+    <RadioGroup
+        android:id="@+id/bet_list_filter_group"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" > 
+	 
+	    <RadioButton
+	        android:id="@+id/all_bets_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center|left"
+	        android:layout_weight="1"
+	        android:checked="true"
+	        android:text="@string/all_bets" />
+
+
+
+	    <RadioButton
+	        android:id="@+id/new_bet_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:layout_weight="1"
+	        android:text="@string/new_bets" />
+
+
+
+	    <RadioButton
+	        android:id="@+id/my_bet_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center|right"
+	        android:layout_weight="1"
+	        android:text="@string/my_bets" />
+	    
+    </RadioGroup>
+    
+    <FrameLayout 
               android:id="@+id/bets_list"
               android:layout_width="match_parent"
               android:layout_height="match_parent" />

@@ -3,12 +3,17 @@ package com.betcha.activity;
 import java.sql.SQLException;
 import java.util.List;
 
+import utils.Filter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.fragment.BetsListFragment;
 import com.betcha.model.Bet;
 
 
@@ -19,6 +24,10 @@ import com.betcha.model.Bet;
 public class BetsListActivity extends SherlockFragmentActivity {
 	private BetchaApp app;
 	private Boolean firstResume = true;
+	
+	private BetsListFragment betCategoryFragment;
+	private RadioGroup rgBetsFilterGrou;
+	Filter betsFilter = Filter.ALL_BETS;
 		
 	/** Called when the activity is first created. */
     @Override
@@ -28,6 +37,35 @@ public class BetsListActivity extends SherlockFragmentActivity {
                 
         app = (BetchaApp) getApplication();
         
+        rgBetsFilterGrou = (RadioGroup) findViewById(R.id.bet_list_filter_group);
+        
+        rgBetsFilterGrou.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.all_bets_filter:
+					betsFilter = Filter.ALL_BETS;
+					break;
+				case R.id.new_bet_filter:
+					betsFilter = Filter.NEW_BETS;
+					break;
+				case R.id.my_bet_filter:
+					betsFilter = Filter.MY_BETS;
+					break;
+				default:
+					betsFilter = Filter.ALL_BETS;	
+				}
+				betCategoryFragment.setBetsFilter(betsFilter);
+				betCategoryFragment.populate();
+			}
+		});
+        
+        betCategoryFragment = new BetsListFragment();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.add(R.id.bets_list, betCategoryFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
     }
     
 	protected void onResume() {

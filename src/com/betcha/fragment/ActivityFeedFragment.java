@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import utils.Filter;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -39,9 +41,9 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
 
-public class BetsListFragment extends SherlockFragment  implements IModelListener, OnItemClickListener {
-	
-	Filter betsFilter = Filter.ALL_BETS;
+public class ActivityFeedFragment extends SherlockFragment  implements IModelListener, OnItemClickListener {
+	enum Filter { ALL_BETS, NEW_BETS, MY_BETS };
+	Filter betsFiler = Filter.ALL_BETS;
 	
 	private BetchaApp app;
 	private BetAdapter betAdapter;
@@ -49,14 +51,13 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	private Bet newBet = null;
 	
 	private PullToRefreshListView lvBets;
+	private ProgressDialog dialog;
 	private Boolean isFirstBetsLoad = true;
 	
+	private RadioGroup rgBetsFilterGrou;
+	
 	private BroadcastReceiver receiver;
-
-	public void setBetsFilter(Filter betsFilter) {
-		this.betsFilter = betsFilter;
-	}
-
+		
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +79,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View view = (ViewGroup) inflater.inflate(R.layout.bets_list_fragment, container,false);
+		View view = (ViewGroup) inflater.inflate(R.layout.bets_list_fragment, container);
 		  
 		lvBets = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_bets_list);
         
@@ -87,12 +88,35 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 			@Override
 			public void onRefresh() {
 				lvBets.setRefreshing();
-				SyncTask.run(BetsListFragment.this);
+				SyncTask.run(ActivityFeedFragment.this);
 			}
 		});  
         
         lvBets.setOnItemClickListener(this);
-                		
+        
+        rgBetsFilterGrou = (RadioGroup) view.findViewById(R.id.bet_list_filter_group);
+        
+        rgBetsFilterGrou.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				switch (checkedId) {
+				case R.id.all_bets_filter:
+					betsFiler = Filter.ALL_BETS;
+					break;
+				case R.id.new_bet_filter:
+					betsFiler = Filter.NEW_BETS;
+					break;
+				case R.id.my_bet_filter:
+					betsFiler = Filter.MY_BETS;
+					break;
+				default:
+					betsFiler = Filter.ALL_BETS;	
+				}
+				populate();
+			}
+		});
+        		
 		return view;
 	}
 	
@@ -169,7 +193,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
  			QueryBuilder<Bet, String> betsQueryBuilder = Bet.getModelDao().queryBuilder();
  			QueryBuilder<Prediction,String> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
  			PreparedQuery<Bet> preparedQuery = null;
- 			switch (betsFilter) {				
+ 			switch (betsFiler) {				
 			case NEW_BETS:			//un-met invitations
 				betsQueryBuilder.where().ne("user_id", app.getCurUser().getId());
 				predictionQueryBuilder.where().eq("user_id",app.getCurUser().getId());

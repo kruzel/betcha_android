@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+        <RadioGroup
+        android:id="@+id/bet_list_filter_group"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" > 
+	        
+	    <RadioButton
+	        android:id="@+id/all_bets_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center|left"
+	        android:layout_weight="1"
+	        android:checked="true"
+	        android:text="@string/all_bets" />
+
+	    <RadioButton
+	        android:id="@+id/new_bet_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center"
+	        android:layout_weight="1"
+	        android:text="@string/new_bets" />
+
+	    <RadioButton
+	        android:id="@+id/my_bet_filter"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center|right"
+	        android:layout_weight="1"
+	        android:text="@string/my_bets" />
+	    
+    </RadioGroup>
+
+    <eu.erikw.PullToRefreshListView
+        android:id="@+id/pull_to_refresh_bets_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="@drawable/pastelblue_noise_tiled"
+        android:dividerHeight="5dp"
+        android:descendantFocusability="blocksDescendants" />
+
+</LinearLayout>

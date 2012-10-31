@@ -55,6 +55,11 @@ public class UserRestClient extends RestClient {
 	public JSONObject showViaEmail(String email) {
 		setLastRestErrorCode(HttpStatus.OK);
 		
+		if(email.isEmpty()) {
+			setLastRestErrorCode(HttpStatus.BAD_REQUEST);
+			return null;
+		}
+		
 		String res;
 		try {
 			res = restTemplate.getForObject(url + "/show_by_email.json?"+ GetURLTokenParam() + "&email=" + email , String.class);
@@ -282,22 +287,22 @@ public class UserRestClient extends RestClient {
 		} catch (JSONException e1) {
 		}
 		
-		if(user.getProfile_pic_url()!=null) {
-			Bitmap bm = BitmapFactory.decodeFile(user.getProfile_pic_url());
-			if(bm==null) {
-				Log.e("UserRestClient.create()", "profile picture not found in path: " + user.getProfile_pic_url());
-			} else {
-				ByteArrayOutputStream output = new ByteArrayOutputStream();  
-				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
-				byte[] bytes = output.toByteArray();
-				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-				try {
-					jsonContent.put("avatar", base64Image);
-				} catch (JSONException e1) {
-					e1.printStackTrace();
-				}
-			}
-		}
+//		if(user.getProvider().equals("email") && user.getProfile_pic_url()!=null) {
+//			Bitmap bm = BitmapFactory.decodeFile(user.getProfile_pic_url());
+//			if(bm==null) {
+//				Log.e("UserRestClient.update()", "profile picture not found in path: " + user.getProfile_pic_url());
+//			} else {
+//				ByteArrayOutputStream output = new ByteArrayOutputStream();  
+//				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
+//				byte[] bytes = output.toByteArray();
+//				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
+//				try {
+//					jsonContent.put("avatar", base64Image);
+//				} catch (JSONException e1) {
+//					e1.printStackTrace();
+//				}
+//			}
+//		}
 		
 		try {
 			jsonParent.put("user", jsonContent);

@@ -124,15 +124,15 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 88 * app.getCurBet().getPredictionsCount() : 88*2;
 		frmPredictionContainer.setLayoutParams(layoutParams);
 		
-		if(predictionAdapter==null) {
+//		if(predictionAdapter==null) {
 			predictionAdapter = new PredictionAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
 			lvPredictions.setAdapter(predictionAdapter);
 			predictionAdapter.setPredictionEditListener(this);
-		} else {
-			predictionAdapter.clear();
-			predictionAdapter.addAll(app.getCurBet().getPredictions());
-			predictionAdapter.notifyDataSetChanged();
-		}
+//		} else {
+//			predictionAdapter.clear();
+//			predictionAdapter.addAll(app.getCurBet().getPredictions());
+//			predictionAdapter.notifyDataSetChanged();
+//		}
 	}
 
 	@Override
@@ -154,11 +154,11 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	@Override
 	public void onPredictionSelected(String prediction) {
 		if(predictionEdit!=null) {
-			try {
-				Prediction.getModelDao().refresh(predictionEdit);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Prediction.getModelDao().refresh(predictionEdit);
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
 			predictionEdit.setPrediction(prediction);
 			predictionEditView.setText(prediction);
 			if(predictionDialog!=null) {

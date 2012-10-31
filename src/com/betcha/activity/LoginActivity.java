@@ -164,6 +164,7 @@ public class LoginActivity extends SherlockFragmentActivity implements
 
 					@Override
 					public void onCancel() {
+						onCreateComplete(User.class, HttpStatus.SERVICE_UNAVAILABLE);
 					}
 				});
 
@@ -174,9 +175,7 @@ public class LoginActivity extends SherlockFragmentActivity implements
 
 		if (clazz.getSimpleName().contentEquals("User")) {
 			String msg = "";
-			if (dialog != null && dialog.isShowing())
-				dialog.dismiss();
-
+			
 			switch (errorCode) {
 			case OK:
 			case CREATED:
@@ -209,6 +208,9 @@ public class LoginActivity extends SherlockFragmentActivity implements
 			}
 
 			lastErrorCode = errorCode;
+			
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
 
 			dialog = ProgressDialog.show(this,
 					getResources().getString(R.string.register), msg, true);

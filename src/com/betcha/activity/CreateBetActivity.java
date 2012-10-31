@@ -81,7 +81,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
         
         betCategoryFragment = CreateCategoryFragment.newInstance(sections);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.add(R.id.create_bet_fragment_container, betCategoryFragment);
+		transaction.replace(R.id.create_bet_fragment_container, betCategoryFragment);
 		transaction.addToBackStack(null);
 		transaction.commit();
     }
