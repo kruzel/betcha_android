@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.Bet;
@@ -29,6 +30,8 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 	}
 	
 	public static void run(IModelListener modelListener) {
+		Log.i("SyncTask.run()", "called");	
+		
 		if (syncThread != null
 				&& (syncThread.getStatus() == Status.RUNNING || syncThread
 						.getStatus() == Status.PENDING))
@@ -37,11 +40,14 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		syncThread = new SyncTask();
 		syncThread.setListener(modelListener);
 		syncThread.execute();
+		
+		Log.i("SyncTask.run()", "calling exectue");	
 
 	}
 
 	@Override
 	protected HttpStatus doInBackground(Void... params) {
+		Log.i("SyncTask.doInBackground()", "started");	
 		
 		if(!RestClient.isOnline()) {
 			ModelCache.enableConnectivityReciever();
@@ -152,11 +158,15 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 			}
 		}
 
+		Log.i("SyncTask.doInBackground()", "done");	
+		
 		return HttpStatus.OK;
 	}
 
 	@Override
 	protected void onPostExecute(HttpStatus errorCode) {
+		Log.i("SyncTask.onPostExecute()", "errorCode " + errorCode);	
+		
 		if(errorCode==HttpStatus.OK) {
 			BetchaApp.getInstance().setLastSyncTime(new DateTime());
 		}

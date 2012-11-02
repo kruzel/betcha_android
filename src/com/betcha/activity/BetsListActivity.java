@@ -16,6 +16,7 @@ import com.betcha.R;
 import com.betcha.fragment.ActivityFeedFragment;
 import com.betcha.fragment.BetsListFragment;
 import com.betcha.model.Bet;
+import com.betcha.model.task.SyncTask;
 
 
 /**
@@ -36,9 +37,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bets_list_activity);
-                
-        app = (BetchaApp) getApplication();
-        
+                        
         rgBetsFilterGrou = (RadioGroup) findViewById(R.id.bet_list_filter_group);
         
         rgBetsFilterGrou.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -82,6 +81,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
     }
     
 	protected void onResume() {
+		app = (BetchaApp) getApplication();
 		
 		if(app.getCurUser()==null || app.getCurUser().getId()==null) {
         	Intent intent = new Intent();
@@ -109,6 +109,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 			}
 			
 			if(count==0 && firstResume) {
+				SyncTask.run(null);
 				Intent intent = new Intent(this,CreateBetActivity.class);
 				startActivity(intent);
 				firstResume=false;

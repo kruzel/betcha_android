@@ -227,7 +227,7 @@ public class LoginActivity extends SherlockFragmentActivity implements
 					if (dialog != null && dialog.isShowing())
 						dialog.dismiss();
 
-					if (lastErrorCode == HttpStatus.OK)
+					if (lastErrorCode == HttpStatus.OK || lastErrorCode == HttpStatus.CREATED)
 						finish();
 				}
 			});

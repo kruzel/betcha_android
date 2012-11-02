@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,13 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	
 	@Override
 	public void onResume() {
+		if(isFirstBetsLoad && app.getCurUser()==null)
+			Log.e("ActivityFeedFragment.onResume()", "missing user in first time !!!");
+		else if(app.getCurUser()==null)
+			Log.e("ActivityFeedFragment.onResume()", "missing user in N time !!!");
+		else
+			Log.i("ActivityFeedFragment.onResume()", "user " + app.getCurUser().getId());	
+			
 		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 //			if(isFirstBetsLoad) {
@@ -184,6 +192,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 
 	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
+		Log.i("ActivityFeedFragment.onGetComplete()", "errorcode " + errorCode);	
 		
 		lvActivities.onRefreshComplete();
 		

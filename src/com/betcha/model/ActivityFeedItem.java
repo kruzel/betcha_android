@@ -67,9 +67,16 @@ public class ActivityFeedItem {
 		Iterator<Prediction> predictionItr = predictions.iterator();
 		Iterator<ChatMessage> chatMessageItr = chatMessages.iterator();
 		
-		Bet bet = betItr.next();
-		Prediction prediction = predictionItr.next();
-		ChatMessage chatMessage = chatMessageItr.next();
+		Bet bet = null;
+		Prediction prediction = null;
+		ChatMessage chatMessage = null;
+		
+		if(betItr.hasNext())
+			bet = betItr.next();
+		if(predictionItr.hasNext())
+			prediction = predictionItr.next();
+		if(chatMessageItr.hasNext())
+			chatMessage = chatMessageItr.next();
 		
 		ActivityFeedItem item = null;
 		
