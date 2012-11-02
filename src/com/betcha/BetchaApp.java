@@ -89,7 +89,7 @@ public class BetchaApp extends Application implements IModelListener {
 		//init friends list
 		loadFriends();
 		
-		ActivityFeedItem.init();
+		//ActivityFeedItem.init();
 		
 		List<ActivityFeedItem> activities = ActivityFeedItem.getActivities();
 		

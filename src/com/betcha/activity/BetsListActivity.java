@@ -50,12 +50,13 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				switch (checkedId) {
 				case R.id.new_bet_filter:
 					betsFilter = Filter.NEW_BETS;
+					betListFragment = new BetsListFragment();
+					betListFragment.setBetsFilter(betsFilter);
+					break;
 				case R.id.my_bet_filter:
 					betsFilter = Filter.MY_BETS;
-					//if(betListFragment==null) {
-						betListFragment = new BetsListFragment();
-						betListFragment.setBetsFilter(betsFilter);
-					//}
+					betListFragment = new BetsListFragment();
+					betListFragment.setBetsFilter(betsFilter);
 					transaction.replace(R.id.bets_list, betListFragment);
 					transaction.commit();
 					break;
