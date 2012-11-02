@@ -88,7 +88,6 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	
 	@Override
 	public void onResume() {
-		activities = ActivityFeedItem.getActivities();
 		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 //			if(isFirstBetsLoad) {

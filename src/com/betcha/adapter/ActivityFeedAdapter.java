@@ -101,6 +101,11 @@ public class ActivityFeedAdapter extends BaseAdapter {
 			datetime = bet.getUpdated_at();
 			break;
 		case PREDICTION_CREATE:
+			prediction = (Prediction) activityItem.getObj();
+			bet = prediction.getBet();
+			user = bet.getOwner();
+			datetime = prediction.getUpdated_at();
+			break;
 		case PREDICTION_UPDATE:
 			prediction = (Prediction) activityItem.getObj();
 			bet = prediction.getBet();
@@ -121,20 +126,21 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		if(datetime.plusHours(24).isAfterNow()) {
 			if(datetime.plusMinutes(60).isAfterNow()) {
 				//less then 1 hr
-				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(DateTime.now(), datetime).getMinutes()) + " m");
+				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(datetime,DateTime.now()).getMinutes()) + " m");
 			} else {
 				//less then 24 hours 
-				holder.betDate.setText(Integer.toString(Hours.hoursBetween(DateTime.now(), datetime).getHours()) + " hr");
+				holder.betDate.setText(Integer.toString(Hours.hoursBetween(datetime, DateTime.now()).getHours()) + " hr");
 			}
 		} else {
 			//more then 24 hours 
-			holder.betDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), datetime).getDays()) + " d");
+			holder.betDate.setText(Integer.toString(Days.daysBetween(datetime, DateTime.now()).getDays()) + " d");
  		}
 				
 		holder.tvUser.setText(bet.getOwner().getName());		
 		
 		//TODO fill in tvBetUpdate with latest bet updates, chat, prediction changes, etc...
 		holder.tvActivityDescription.setText(activityItem.getText());
+		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
 		
 		return v;
 	}

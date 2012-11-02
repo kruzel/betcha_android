@@ -80,12 +80,11 @@
 
 	        <TextView
 	            android:id="@+id/tv_activity_description"
+	            style="@style/ActivityFeedMessage"
 	            android:layout_width="fill_parent"
-	            android:layout_height="50dp"
-	            android:layout_centerHorizontal="true"
-	            android:layout_marginBottom="5dp"
-	            android:layout_marginTop="5dp"
-	            android:orientation="vertical" />
+	            android:layout_height="wrap_content"
+	            android:gravity="top|left"
+	            android:layout_margin="5dp"/>
 	    </RelativeLayout>
 	    	    
     </RelativeLayout>

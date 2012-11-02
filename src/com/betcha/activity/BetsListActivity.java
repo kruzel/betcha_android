@@ -52,6 +52,8 @@ public class BetsListActivity extends SherlockFragmentActivity {
 					betsFilter = Filter.NEW_BETS;
 					betListFragment = new BetsListFragment();
 					betListFragment.setBetsFilter(betsFilter);
+					transaction.replace(R.id.bets_list, betListFragment);
+					transaction.commit();
 					break;
 				case R.id.my_bet_filter:
 					betsFilter = Filter.MY_BETS;

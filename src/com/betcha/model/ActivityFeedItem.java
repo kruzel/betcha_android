@@ -43,19 +43,19 @@ public class ActivityFeedItem {
 			
 			PreparedQuery<Bet> betsPreparedQuery = null;
 			betsQueryBuilder = Bet.getModelDao().queryBuilder();
-			betsQueryBuilder.orderBy("updated_at", true);
+			betsQueryBuilder.orderBy("updated_at", false);
 			betsPreparedQuery = betsQueryBuilder.prepare();
 			bets = Bet.getModelDao().query(betsPreparedQuery);
 			
 			PreparedQuery<Prediction> predictionsPreparedQuery = null;
 			predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
-			predictionQueryBuilder.orderBy("updated_at", true);
+			predictionQueryBuilder.orderBy("updated_at", false);
 			predictionsPreparedQuery = predictionQueryBuilder.prepare();
 			predictions = Prediction.getModelDao().query(predictionsPreparedQuery);
 			
 			PreparedQuery<ChatMessage> chatMessagesPreparedQuery = null;
 			chatMessageQueryBuilder = ChatMessage.getModelDao().queryBuilder();
-			chatMessageQueryBuilder.orderBy("updated_at", true);
+			chatMessageQueryBuilder.orderBy("updated_at", false);
 			chatMessagesPreparedQuery = chatMessageQueryBuilder.prepare();
 			chatMessages = ChatMessage.getModelDao().query(chatMessagesPreparedQuery);
 			
@@ -77,9 +77,9 @@ public class ActivityFeedItem {
 			
 			if(betItr.hasNext() && 
 				((!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (!bet.getUpdated_at().isAfter(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (!bet.getUpdated_at().isAfter(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
-				 (!bet.getUpdated_at().isAfter(prediction.getUpdated_at()) && !bet.getUpdated_at().isAfter(chatMessage.getUpdated_at())))) {
+				 (!bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (!bet.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
+				 (!bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !bet.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
 				item.obj = bet;
@@ -92,13 +92,13 @@ public class ActivityFeedItem {
 					bet = betItr.next();
 			} else if(predictionItr.hasNext() &&
 				((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (!prediction.getUpdated_at().isAfter(bet.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isAfter(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isAfter(bet.getUpdated_at()) && !prediction.getUpdated_at().isAfter(chatMessage.getUpdated_at())))) {
+				 (!prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (!prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
+				 (!prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
 				item.obj = prediction;
-				if(prediction.getUpdated_at().equals(prediction.getCreated_at())) {
+				if(prediction.getUpdated_at().equals(prediction.getCreated_at()) || prediction.getPrediction().length()==0) {
 					item.type = Type.PREDICTION_CREATE;
 				} else {
 					item.type = Type.PREDICTION_UPDATE;
@@ -125,19 +125,19 @@ public class ActivityFeedItem {
 		switch (type) {
 			case BET_CREATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a " + bet.getReward();
+				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward() + "\"";
 		case BET_UPDATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has update the bet to " + bet.getSubject() + " winner wins a " + bet.getReward();
+				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward() + "\"";
 			case PREDICTION_CREATE:
 				prediction = (Prediction) obj;
 				return prediction.getBet().getOwner().getName() + " has added " + prediction.getUser().getName() + " as a new participant";
 			case PREDICTION_UPDATE:
 				prediction = (Prediction) obj;
-				return prediction.getUser().getName() + " has updated his bet to " + prediction.getPrediction();
+				return prediction.getUser().getName() + " has updated his bet to \"" + prediction.getPrediction() + "\"";
 			case CHAT_CREATE:
 				chatMessage = (ChatMessage) obj;
-				return chatMessage.getUser().getName() + " hase send a chat message, \"" + chatMessage.getMessage() + "\"";
+				return chatMessage.getUser().getName() + " has send a chat message, \"" + chatMessage.getMessage() + "\"";
 			case OTHER:
 			default:
 				return "";
