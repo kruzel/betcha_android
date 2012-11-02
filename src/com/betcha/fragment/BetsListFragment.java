@@ -101,11 +101,11 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		app = BetchaApp.getInstance();
 		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
-			if(isFirstBetsLoad) {
-				isFirstBetsLoad = false;
-	        	lvBets.setRefreshing();
-	        	SyncTask.run(this);
-	        }
+//			if(isFirstBetsLoad) {
+//				isFirstBetsLoad = false;
+//	        	lvBets.setRefreshing();
+//	        	SyncTask.run(this);
+//	        }
 			
 			populate();
         } 

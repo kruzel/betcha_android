@@ -91,11 +91,11 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 		activities = ActivityFeedItem.getActivities();
 		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
-			if(isFirstBetsLoad) {
-				isFirstBetsLoad = false;
-	        	lvActivities.setRefreshing();
-	        	SyncTask.run(this);
-	        }
+//			if(isFirstBetsLoad) {
+//				isFirstBetsLoad = false;
+//	        	lvActivities.setRefreshing();
+//	        	SyncTask.run(this);
+//	        }
 			
 			populate();
         } 

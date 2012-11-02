@@ -48,26 +48,24 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 				
 				switch (checkedId) {
-				case R.id.all_bets_filter:
-					betsFilter = Filter.ALL_BETS;
-					if(activityFeedFragment==null)
-						activityFeedFragment = new ActivityFeedFragment();
-					transaction.replace(R.id.bets_list, activityFeedFragment);
-					transaction.commit();
-					break;
 				case R.id.new_bet_filter:
 					betsFilter = Filter.NEW_BETS;
 				case R.id.my_bet_filter:
 					betsFilter = Filter.MY_BETS;
-					if(betListFragment==null) {
+					//if(betListFragment==null) {
 						betListFragment = new BetsListFragment();
 						betListFragment.setBetsFilter(betsFilter);
-					}
+					//}
 					transaction.replace(R.id.bets_list, betListFragment);
 					transaction.commit();
 					break;
+				case R.id.all_bets_filter:
 				default:
-					betsFilter = Filter.ALL_BETS;	
+					betsFilter = Filter.ALL_BETS;
+					//if(activityFeedFragment==null)
+					activityFeedFragment = new ActivityFeedFragment();
+					transaction.replace(R.id.bets_list, activityFeedFragment);
+					transaction.commit();
 				}
 				
 			}
