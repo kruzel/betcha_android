@@ -98,6 +98,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	
 	@Override
 	public void onResume() {
+		app = BetchaApp.getInstance();
+		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 			if(isFirstBetsLoad) {
 				isFirstBetsLoad = false;

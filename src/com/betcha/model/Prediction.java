@@ -118,6 +118,7 @@ public class Prediction extends ModelCache<Prediction, String> {
 	public static Dao<Prediction, String> getModelDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Prediction.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
@@ -126,6 +127,7 @@ public class Prediction extends ModelCache<Prediction, String> {
 	protected Dao<Prediction, String> getDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Prediction.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}

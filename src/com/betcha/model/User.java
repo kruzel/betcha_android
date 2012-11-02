@@ -193,6 +193,7 @@ public class User extends ModelCache<User,String> {
 	public static Dao<User,String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(User.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
@@ -201,6 +202,7 @@ public class User extends ModelCache<User,String> {
 	protected Dao<User, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(User.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}

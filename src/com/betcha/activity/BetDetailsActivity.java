@@ -85,7 +85,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			if (betId==null || betId.equals("-1"))
 				return;
 			
-			if(app.getCurBet()==null || !app.getCurBet().getId().equals(betId)) {
+			if(app.getCurBet()==null || (app.getCurBet()==null && !app.getCurBet().getId().equals(betId))) {
 				Bet bet = null;
 				try {
 					

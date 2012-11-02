@@ -21,6 +21,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 
+import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
@@ -87,7 +88,11 @@ public class BetchaApp extends Application implements IModelListener {
 		
 		//init friends list
 		loadFriends();
-
+		
+		ActivityFeedItem.init();
+		
+		List<ActivityFeedItem> activities = ActivityFeedItem.getActivities();
+		
 		super.onCreate();
 	}
 

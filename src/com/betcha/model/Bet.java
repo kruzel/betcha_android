@@ -197,6 +197,7 @@ public class Bet extends ModelCache<Bet, String> {
 	public static Dao<Bet, String> getModelDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Bet.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
@@ -205,6 +206,7 @@ public class Bet extends ModelCache<Bet, String> {
 	protected Dao<Bet, String> getDao() throws SQLException {
 		if (dao == null) {
 			dao = getDbHelper().getDao(Bet.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}

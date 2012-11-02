@@ -85,15 +85,24 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 
 		for (Bet bet : bets) {
 			if (!bet.isServerCreated()) {
-				if(bet.onRestCreate()>0) {
-					bet.setServerCreated(true);
-					bet.setServerUpdated(true);
-					try {
-						Bet.getModelDao().update(bet);
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				} 
+//				if(bet.onRestCreate()>0) {
+//					bet.setServerCreated(true);
+//					bet.setServerUpdated(true);
+//					try {
+//						Bet.getModelDao().update(bet);
+//					} catch (SQLException e) {
+//						e.printStackTrace();
+//					}
+//				} 
+				//TODO handle create of existing bet properly
+				bet.onRestCreate();
+				bet.setServerCreated(true);
+				bet.setServerUpdated(true);
+				try {
+					Bet.getModelDao().update(bet);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 
 				continue;
 			}

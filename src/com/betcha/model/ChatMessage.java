@@ -71,6 +71,7 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 	public static Dao<ChatMessage,String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(ChatMessage.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
@@ -79,6 +80,7 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 	protected Dao<ChatMessage, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(ChatMessage.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}

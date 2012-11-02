@@ -13,6 +13,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.fragment.ActivityFeedFragment;
 import com.betcha.fragment.BetsListFragment;
 import com.betcha.model.Bet;
 
@@ -25,7 +26,8 @@ public class BetsListActivity extends SherlockFragmentActivity {
 	private BetchaApp app;
 	private Boolean firstResume = true;
 	
-	private BetsListFragment betCategoryFragment;
+	private ActivityFeedFragment activityFeedFragment;
+	private BetsListFragment betListFragment;
 	private RadioGroup rgBetsFilterGrou;
 	Filter betsFilter = Filter.ALL_BETS;
 		
@@ -43,29 +45,39 @@ public class BetsListActivity extends SherlockFragmentActivity {
 			
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
+				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+				
 				switch (checkedId) {
 				case R.id.all_bets_filter:
 					betsFilter = Filter.ALL_BETS;
+					if(activityFeedFragment==null)
+						activityFeedFragment = new ActivityFeedFragment();
+					transaction.replace(R.id.bets_list, activityFeedFragment);
+					transaction.commit();
 					break;
 				case R.id.new_bet_filter:
 					betsFilter = Filter.NEW_BETS;
-					break;
 				case R.id.my_bet_filter:
 					betsFilter = Filter.MY_BETS;
+					if(betListFragment==null) {
+						betListFragment = new BetsListFragment();
+						betListFragment.setBetsFilter(betsFilter);
+					}
+					transaction.replace(R.id.bets_list, betListFragment);
+					transaction.commit();
 					break;
 				default:
 					betsFilter = Filter.ALL_BETS;	
 				}
-				betCategoryFragment.setBetsFilter(betsFilter);
-				betCategoryFragment.populate();
+				
 			}
 		});
         
-        betCategoryFragment = new BetsListFragment();
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-		transaction.add(R.id.bets_list, betCategoryFragment);
-		transaction.addToBackStack(null);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        activityFeedFragment = new ActivityFeedFragment();
+		transaction.replace(R.id.bets_list, activityFeedFragment);
 		transaction.commit();
+        
     }
     
 	protected void onResume() {

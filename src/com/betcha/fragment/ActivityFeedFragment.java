@@ -1,25 +1,19 @@
 package com.betcha.fragment;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.RadioGroup;
-import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
@@ -30,13 +24,11 @@ import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.LoginActivity;
-import com.betcha.adapter.BetAdapter;
+import com.betcha.adapter.ActivityFeedAdapter;
+import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
-import com.betcha.model.Prediction;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.task.SyncTask;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
@@ -46,16 +38,13 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	Filter betsFiler = Filter.ALL_BETS;
 	
 	private BetchaApp app;
-	private BetAdapter betAdapter;
-	private List<Bet> bets;
+	private ActivityFeedAdapter activityAdapter;
+	private List<ActivityFeedItem> activities;
 	private Bet newBet = null;
 	
-	private PullToRefreshListView lvBets;
-	private ProgressDialog dialog;
+	private PullToRefreshListView lvActivities;
 	private Boolean isFirstBetsLoad = true;
-	
-	private RadioGroup rgBetsFilterGrou;
-	
+		
 	private BroadcastReceiver receiver;
 		
 	/** Called when the activity is first created. */
@@ -79,53 +68,32 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View view = (ViewGroup) inflater.inflate(R.layout.bets_list_fragment, container);
+		View view = (ViewGroup) inflater.inflate(R.layout.activity_feed_fragment, container,false);
 		  
-		lvBets = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_bets_list);
+		lvActivities = (PullToRefreshListView) view.findViewById(R.id.pull_to_refresh_bets_list);
         
-        lvBets.setOnRefreshListener(new OnRefreshListener() {
+        lvActivities.setOnRefreshListener(new OnRefreshListener() {
 
 			@Override
 			public void onRefresh() {
-				lvBets.setRefreshing();
+				lvActivities.setRefreshing();
 				SyncTask.run(ActivityFeedFragment.this);
 			}
 		});  
         
-        lvBets.setOnItemClickListener(this);
-        
-        rgBetsFilterGrou = (RadioGroup) view.findViewById(R.id.bet_list_filter_group);
-        
-        rgBetsFilterGrou.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			
-			@Override
-			public void onCheckedChanged(RadioGroup group, int checkedId) {
-				switch (checkedId) {
-				case R.id.all_bets_filter:
-					betsFiler = Filter.ALL_BETS;
-					break;
-				case R.id.new_bet_filter:
-					betsFiler = Filter.NEW_BETS;
-					break;
-				case R.id.my_bet_filter:
-					betsFiler = Filter.MY_BETS;
-					break;
-				default:
-					betsFiler = Filter.ALL_BETS;	
-				}
-				populate();
-			}
-		});
-        		
+        lvActivities.setOnItemClickListener(this);
+                		
 		return view;
 	}
 	
 	@Override
 	public void onResume() {
+		activities = ActivityFeedItem.getActivities();
+		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 			if(isFirstBetsLoad) {
 				isFirstBetsLoad = false;
-	        	lvBets.setRefreshing();
+	        	lvActivities.setRefreshing();
 	        	SyncTask.run(this);
 	        }
 			
@@ -169,7 +137,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	            startActivity(intent);
 	            return true;
 	        case R.id.menu_refresh:
-	        	lvBets.setRefreshing();
+	        	lvActivities.setRefreshing();
 	        	SyncTask.run(this);
 	            return true;
 	        default:
@@ -188,67 +156,20 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	}
 
 	public void populate() {
-		// query for all of the bets objects in the database
- 		try {
- 			QueryBuilder<Bet, String> betsQueryBuilder = Bet.getModelDao().queryBuilder();
- 			QueryBuilder<Prediction,String> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
- 			PreparedQuery<Bet> preparedQuery = null;
- 			switch (betsFiler) {				
-			case NEW_BETS:			//un-met invitations
-				betsQueryBuilder.where().ne("user_id", app.getCurUser().getId());
-				predictionQueryBuilder.where().eq("user_id",app.getCurUser().getId());
-				betsQueryBuilder.join(predictionQueryBuilder);
-				betsQueryBuilder.orderBy("dueDate", false);
-	 			preparedQuery = betsQueryBuilder.prepare();
-				List<Bet> tmpBets = Bet.getModelDao().query(preparedQuery);
-				bets = new ArrayList<Bet>();
-				for (Bet bet : tmpBets) {
-					for (Prediction prediction : bet.getPredictions()) {
-						if(prediction.getUser()==app.getCurUser() && prediction.equals("")) {
-							bets.add(bet);
-						}
-					}
-				}
-				break;
-			case MY_BETS:	//bets I created
-				betsQueryBuilder.where().eq("user_id", app.getCurUser().getId());
-				betsQueryBuilder.orderBy("dueDate", false);
-	 			preparedQuery = betsQueryBuilder.prepare();
-				bets = Bet.getModelDao().query(preparedQuery);
-				break;
-			case ALL_BETS:
-			default:
-				betsQueryBuilder = Bet.getModelDao().queryBuilder();
-				betsQueryBuilder.orderBy("dueDate", false);
-	 			preparedQuery = betsQueryBuilder.prepare();
-				bets = Bet.getModelDao().query(preparedQuery);
-			}
- 			
- 			
- 			
- 		} catch (SQLException e) {
- 			Log.e(getClass().getSimpleName(), ".onCreate() - failed getting bet list");
- 			e.printStackTrace();
- 		}
-        
- 		if(bets==null) 
- 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + 0);
- 		else
- 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + bets.size());
- 		
- 		if(bets!=null && bets.size()>0) {
- 			if(betAdapter==null){
-	 			betAdapter = new BetAdapter(getActivity(), R.layout.bets_list_item, bets);
-		        lvBets.setAdapter(betAdapter);    
+		 		
+ 		if(activities!=null && activities.size()>0) {
+ 			if(activityAdapter==null){
+	 			activityAdapter = new ActivityFeedAdapter(getActivity(), R.layout.activity_feed_fragment, activities);
+		        lvActivities.setAdapter(activityAdapter);    
  			} else {
-	 			betAdapter.clear();
-	 			betAdapter.addAll(bets);
-	 			betAdapter.notifyDataSetChanged();
+	 			activityAdapter.clear();
+	 			activityAdapter.addAll(activities);
+	 			activityAdapter.notifyDataSetChanged();
  			}
  		} else {
- 			if(betAdapter!=null) {
- 				betAdapter.clear();
- 				betAdapter.notifyDataSetChanged();
+ 			if(activityAdapter!=null) {
+ 				activityAdapter.clear();
+ 				activityAdapter.notifyDataSetChanged();
  			}
  		}
  			
@@ -270,7 +191,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		
-		lvBets.onRefreshComplete();
+		lvActivities.onRefreshComplete();
 		
 		if(errorCode==HttpStatus.OK ) {
 			populate();
@@ -298,9 +219,12 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+		Bet bet = activities.get(position).getBet();
+		if(bet==null)
+			return;
+			
 		Intent i = new Intent(getActivity(), BetDetailsActivity.class);
-        String betId = bets.get(position).getId();
-        i.putExtra("bet_id", betId);
+        i.putExtra("bet_id", bet.getId());
         getActivity().startActivity(i);
 	}
 }

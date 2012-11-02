@@ -82,6 +82,7 @@ public class Friend extends ModelCache<Friend, String> {
 	public static Dao<Friend, String> getModelDao() throws SQLException  {
 		if(dao==null){
 			dao = getDbHelper().getDao(Friend.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
@@ -90,6 +91,7 @@ public class Friend extends ModelCache<Friend, String> {
 	protected Dao<Friend, String> getDao() throws SQLException {
 		if(dao==null){
 			dao = getDbHelper().getDao(Friend.class);
+			dao.setObjectCache(true);
 		}
 		return dao;
 	}
