@@ -100,13 +100,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	public void onResume() {
 		app = BetchaApp.getInstance();
 		
-		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
-//			if(isFirstBetsLoad) {
-//				isFirstBetsLoad = false;
-//	        	lvBets.setRefreshing();
-//	        	SyncTask.run(this);
-//	        }
-			
+		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {			
 			populate();
         } 
 		
@@ -202,17 +196,15 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				bets = Bet.getModelDao().query(preparedQuery);
 			}
  			
- 			
- 			
  		} catch (SQLException e) {
- 			Log.e(getClass().getSimpleName(), ".onCreate() - failed getting bet list");
+ 			Log.e(getClass().getSimpleName() + ".onCreate()", "failed getting bet list");
  			e.printStackTrace();
  		}
         
  		if(bets==null) 
- 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + 0);
+ 			Log.i(getClass().getSimpleName() + ".populate()", "bets size= " + 0);
  		else
- 			Log.i(getClass().getSimpleName(), ".populate() - bets size= " + bets.size());
+ 			Log.i(getClass().getSimpleName() + ".populate()", "bets size= " + bets.size());
  		
  		if(bets!=null && bets.size()>0) {
  			if(betAdapter==null){

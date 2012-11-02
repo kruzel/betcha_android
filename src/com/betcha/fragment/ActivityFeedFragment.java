@@ -89,21 +89,8 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	
 	@Override
 	public void onResume() {
-		if(isFirstBetsLoad && app.getCurUser()==null)
-			Log.e("ActivityFeedFragment.onResume()", "missing user in first time !!!");
-		else if(app.getCurUser()==null)
-			Log.e("ActivityFeedFragment.onResume()", "missing user in N time !!!");
-		else
-			Log.i("ActivityFeedFragment.onResume()", "user " + app.getCurUser().getId());	
-			
 		
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
-//			if(isFirstBetsLoad) {
-//				isFirstBetsLoad = false;
-//	        	lvActivities.setRefreshing();
-//	        	SyncTask.run(this);
-//	        }
-			
 			populate();
         } 
 		
