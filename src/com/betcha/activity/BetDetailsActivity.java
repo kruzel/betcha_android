@@ -76,6 +76,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 
 	@Override
 	protected void onResume() {
+
 		super.onResume();
 		
 			Intent intent = getIntent();
@@ -85,24 +86,26 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 			if (betId==null || betId.equals("-1"))
 				return;
 			
-			if(app.getCurBet()==null || (app.getCurBet()==null && !app.getCurBet().getId().equals(betId))) {
-				Bet bet = null;
-				try {
-					
-					List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
-					if(bets!=null && bets.size()>0)
-						bet = bets.get(0);
+//			if(app.getCurBet()==null || (app.getCurBet()==null && !app.getCurBet().getId().equals(betId))) {
+//				
+//			}
+			
+			Bet bet = null;
+			try {
 				
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-					return;
-				}
-				
-				if(bet==null)
-					return;
-				
-				app.setCurBet(bet);
+				List<Bet> bets = Bet.getModelDao().queryForEq("id",betId);
+				if(bets!=null && bets.size()>0)
+					bet = bets.get(0);
+			
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+				return;
 			}
+			
+			if(bet==null)
+				return;
+			
+			app.setCurBet(bet);
 	
 		if (isNewBet) {
 			dialog = ProgressDialog.show(BetDetailsActivity.this,

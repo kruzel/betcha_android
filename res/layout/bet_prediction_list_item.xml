@@ -8,13 +8,13 @@
         android:id="@+id/relativeLayout1"
         style="@style/PredictionPerson"
         android:layout_width="wrap_content"
-        android:layout_height="24dp" 
+        android:layout_height="32dp" 
         android:layout_centerVertical="true">
 
         <ImageView
             android:id="@+id/iv_participant_pic"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
             android:src="@drawable/default_avatar" />
@@ -27,7 +27,8 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/iv_participant_pic"
             android:paddingLeft="3dp"
-            android:paddingRight="3dp" />
+            android:paddingRight="3dp"
+            android:maxLength="7" />
 
         
     </RelativeLayout>

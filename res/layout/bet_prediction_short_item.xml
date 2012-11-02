@@ -7,12 +7,12 @@
     <RelativeLayout
         style="@style/PredictionPerson"
 	    android:layout_width="wrap_content"
-	    android:layout_height="24dp">
+	    android:layout_height="32dp">
         
 	    <ImageView
 	        android:id="@+id/iv_participant_pic"
-	        android:layout_width="24dp"
-	        android:layout_height="24dp"
+	        android:layout_width="30dp"
+	        android:layout_height="30dp"
 	        android:layout_alignParentLeft="true"
 	        android:scaleType="centerCrop"
 	        android:src="@drawable/default_avatar" />
@@ -25,14 +25,15 @@
 	        android:layout_toRightOf="@+id/iv_participant_pic"
 	        android:layout_centerVertical="true"
 	        android:paddingLeft="3dp"
-	        android:paddingRight="3dp" />
+	        android:paddingRight="3dp" 
+	        android:maxLength="7"/>
 	    
     </RelativeLayout>
 
     <FrameLayout
         style="@style/PredictionFrame"
 	    android:layout_width="wrap_content"
-	    android:layout_height="24dp"
+	    android:layout_height="26dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="100dp"

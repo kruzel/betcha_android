@@ -115,7 +115,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			    
 			    LayoutParams itemLayoutParams = holder.rlPredictionItems[0].layout.getLayoutParams();
 			    LayoutParams layoutParams = holder.lvPredictions.getLayoutParams();
-			    layoutParams.height = 70 * predictionSize;
+			    layoutParams.height = 80 * predictionSize;
 			    holder.lvPredictions.setLayoutParams(layoutParams);
 		    }
 					    

@@ -98,8 +98,8 @@
 	            
 	            <ImageView
 				    android:id="@+id/iv_bet_reward"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
+				    android:layout_width="40dp"
+				    android:layout_height="40dp"
 				    android:src="@drawable/bet_subject" />
 
 	            <TextView
@@ -154,14 +154,6 @@
 	    </RelativeLayout>
 	    	    
     </RelativeLayout>
-
-<!--     <Button -->
-<!--         android:id="@+id/buttonHide" -->
-<!--         style="?android:attr/buttonStyleSmall" -->
-<!--         android:layout_width="wrap_content" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:layout_alignParentRight="true" -->
-<!--         android:layout_alignParentTop="true" -->
-<!--         android:text="X" /> -->
+
 
 </RelativeLayout>

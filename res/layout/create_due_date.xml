@@ -8,7 +8,7 @@
         android:id="@+id/rl_bet_item_container"
         style="@style/BetFrame"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="120dp"
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
         android:padding="2dp">
@@ -72,8 +72,8 @@
 	            
 	            <ImageView
 				    android:id="@+id/iv_bet_reward"
-				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
+				    android:layout_width="40dp"
+				    android:layout_height="40dp"
 				    android:src="@drawable/bet_subject" />
 
 	            <TextView

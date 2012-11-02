@@ -243,7 +243,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		    	
 		    	
 		    	menu.add("Send")
-		        .setIcon(R.drawable.ic_menu_share)
+		        .setIcon(R.drawable.ic_menu_forward)
 		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 			}
 		});

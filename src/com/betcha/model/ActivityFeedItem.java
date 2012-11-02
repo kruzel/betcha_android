@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.joda.time.Hours;
+import org.joda.time.Seconds;
+
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -25,12 +28,8 @@ public class ActivityFeedItem {
 	private static List<ActivityFeedItem> activities = new ArrayList<ActivityFeedItem>();
 	
 	public static List<ActivityFeedItem> getActivities() {
-		if(activities==null || activities.size()==0)
-			init();
-		return activities;
-	}
-
-	public static void init() {
+		activities.clear();
+		
 		List<Bet> bets = null;
 		List<Prediction> predictions = null;
 		List<ChatMessage> chatMessages = null;
@@ -90,7 +89,7 @@ public class ActivityFeedItem {
 				
 				item = new ActivityFeedItem();
 				item.obj = bet;
-				if(bet.getUpdated_at().equals(bet.getCreated_at())) {
+				if(Seconds.secondsBetween(bet.getCreated_at(), bet.getUpdated_at()).isLessThan(Seconds.seconds(10))) {
 					item.type = Type.BET_CREATE;
 				} else {
 					item.type = Type.BET_UPDATE;
@@ -105,7 +104,7 @@ public class ActivityFeedItem {
 				
 				item = new ActivityFeedItem();
 				item.obj = prediction;
-				if(prediction.getUpdated_at().equals(prediction.getCreated_at()) || prediction.getPrediction().length()==0) {
+				if(Seconds.secondsBetween(prediction.getCreated_at(), prediction.getUpdated_at()).isLessThan(Seconds.seconds(10)) || prediction.getPrediction().length()==0) {
 					item.type = Type.PREDICTION_CREATE;
 				} else {
 					item.type = Type.PREDICTION_UPDATE;
@@ -120,8 +119,15 @@ public class ActivityFeedItem {
 					chatMessage = chatMessageItr.next();
 			}
 			
-			activities.add(item);
+			if(item.type!=Type.PREDICTION_CREATE)
+				activities.add(item);
 		}	
+		
+		return activities;
+	}
+	
+	public void remove(String objId) {
+		
 	}
 	
 	public String getText() {
