@@ -156,7 +156,8 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	}
 
 	public void populate() {
-		 		
+		activities = ActivityFeedItem.getActivities();
+		
  		if(activities!=null && activities.size()>0) {
  			if(activityAdapter==null){
 	 			activityAdapter = new ActivityFeedAdapter(getActivity(), R.layout.activity_feed_fragment, activities);
