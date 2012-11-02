@@ -25,7 +25,8 @@ public class ActivityFeedItem {
 	private static List<ActivityFeedItem> activities = new ArrayList<ActivityFeedItem>();
 	
 	public static List<ActivityFeedItem> getActivities() {
-		init();
+		if(activities==null || activities.size()==0)
+			init();
 		return activities;
 	}
 

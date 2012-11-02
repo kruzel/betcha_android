@@ -159,14 +159,8 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 		activities = ActivityFeedItem.getActivities();
 		
  		if(activities!=null && activities.size()>0) {
- 			if(activityAdapter==null){
-	 			activityAdapter = new ActivityFeedAdapter(getActivity(), R.layout.activity_feed_fragment, activities);
-		        lvActivities.setAdapter(activityAdapter);    
- 			} else {
-	 			activityAdapter.clear();
-	 			activityAdapter.addAll(activities);
-	 			activityAdapter.notifyDataSetChanged();
- 			}
+ 			activityAdapter = new ActivityFeedAdapter(getActivity(), R.layout.activity_feed_fragment, activities);
+	        lvActivities.setAdapter(activityAdapter);  
  		} else {
  			if(activityAdapter!=null) {
  				activityAdapter.clear();
