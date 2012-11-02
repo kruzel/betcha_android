@@ -1,5 +1,6 @@
 package com.betcha.adapter;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -12,7 +13,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,10 +26,38 @@ import com.betcha.model.ChatMessage;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 
-public class ActivityFeedAdapter extends ArrayAdapter<ActivityFeedItem> {
+public class ActivityFeedAdapter extends BaseAdapter {
+	
+	private List<ActivityFeedItem> activities;
+	private Context context;
 	
 	public ActivityFeedAdapter(Context context, int textViewResourceId, List<ActivityFeedItem> activities) {
-		super(context, textViewResourceId, activities);
+		super();
+		this.activities = activities;
+		this.context = context;
+	}
+	
+	public void clear() {
+		activities.clear();
+	}
+	
+	public void addAll(List<ActivityFeedItem> activities) {
+		this.activities.addAll(activities);
+	}
+	
+	@Override
+	public int getCount() {
+		return activities.size();
+	}
+
+	@Override
+	public Object getItem(int location) {
+		return activities.get(location);
+	}
+
+	@Override
+	public long getItemId(int location) {
+		return location;
 	}
 
 	@Override
@@ -36,10 +65,10 @@ public class ActivityFeedAdapter extends ArrayAdapter<ActivityFeedItem> {
 		View v = convertView;
         ViewHolder holder = null; // to reference the child views for later actions
         
-        ActivityFeedItem activityItem = getItem(position);
+        ActivityFeedItem activityItem = activities.get(position);
 				
 		if (v == null) {
-			LayoutInflater inflater = ((Activity)getContext()).getLayoutInflater();
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
 	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
 		    		    
 		    holder = new ViewHolder();
