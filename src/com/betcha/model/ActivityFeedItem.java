@@ -62,6 +62,9 @@ public class ActivityFeedItem {
 			e.printStackTrace();
 		}	
 		
+		if(bets==null)
+			return activities;
+		
 		Iterator<Bet> betItr = bets.iterator();
 		Iterator<Prediction> predictionItr = predictions.iterator();
 		Iterator<ChatMessage> chatMessageItr = chatMessages.iterator();
@@ -138,10 +141,10 @@ public class ActivityFeedItem {
 		switch (type) {
 			case BET_CREATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward() + "\"";
+				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 		case BET_UPDATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward() + "\"";
+				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case PREDICTION_CREATE:
 				prediction = (Prediction) obj;
 				return prediction.getBet().getOwner().getName() + " has added " + prediction.getUser().getName() + " as a new participant";

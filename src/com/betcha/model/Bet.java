@@ -66,7 +66,7 @@ public class Bet extends ModelCache<Bet, String> {
 		this.id = bet.getId();
 		this.user = bet.getOwner();
 		this.subject = bet.getSubject();
-		this.reward = bet.getReward();
+		this.reward = bet.getReward().getName(); //TODO replace with Reward object
 		this.date = bet.getDate();
 		this.dueDate = bet.getDueDate();
 		this.state = bet.getState();
@@ -110,12 +110,20 @@ public class Bet extends ModelCache<Bet, String> {
 		this.subject = betSubject;
 	}
 
-	public String getReward() {
-		return reward;
+	public Reward getReward() {
+		Reward r = Reward.getReward(reward); //TODO replace with Reward object as memeber, currently the reard name is the id;
+		
+		if(r==null) {
+			r = new Reward();
+			r.setId("0");
+			r.setName(reward);
+		}
+		
+		return r;
 	}
 
 	public void setReward(String betReward) {
-		this.reward = betReward;
+		this.reward = betReward; //TODO replace with Reward object as memeber, currently the reard name is the id
 	}
 
 	public DateTime getDate() {
@@ -148,6 +156,16 @@ public class Bet extends ModelCache<Bet, String> {
 
 	public void setCategoryId(String categoryId) {
 		this.categoryId = categoryId;
+	}
+	
+	
+
+	public String getReward_id() {
+		return reward;  //TODO replace with Reward object
+	}
+
+	public void setReward_id(String reward_id) {
+		this.reward = reward_id; //TODO replace with Reward object
 	}
 
 	// non persistent

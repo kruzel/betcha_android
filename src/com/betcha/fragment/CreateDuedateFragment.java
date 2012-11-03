@@ -43,8 +43,8 @@ public class CreateDuedateFragment extends SherlockFragment {
     
     private DateTime mDateTime;
     
-    DatePickerDialog dateDialog;
-	TimePickerDialog timeDialog;
+    private DatePickerDialog dateDialog;
+    private TimePickerDialog timeDialog;
     
     private OnDuedateSelectedListener mListener;
     

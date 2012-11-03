@@ -99,8 +99,8 @@
 	            <ImageView
 				    android:id="@+id/iv_bet_reward"
 				    android:layout_width="wrap_content"
-				    android:layout_height="wrap_content"
-				    android:src="@drawable/bet_subject" />
+				    android:layout_height="wrap_content" />
+<!-- 				    android:src="@drawable/bet_subject" /> -->
 
 	            <TextView
 	                style="@style/BetReward"

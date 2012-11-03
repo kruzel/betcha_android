@@ -41,6 +41,7 @@ import com.betcha.fragment.CreateSubjectFragment.OnSubjectSelectedListener;
 import com.betcha.model.Bet;
 import com.betcha.model.Category;
 import com.betcha.model.Prediction;
+import com.betcha.model.Reward;
 import com.betcha.model.User;
 
 public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener, OnDuedateSelectedListener {
@@ -133,14 +134,12 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		transaction.addToBackStack(null);
 		transaction.commit();
 	}
-	
-
 
 	@Override
 	public void onSubjectSelected(String subject) {
 		app.getCurBet().setSubject(subject);
 			
-		createStakeFragment = CreateStakeFragment.newInstance(getResources(), R.array.stake_names, R.array.stake_icons,app.getCurBet().getSubject());
+		createStakeFragment = CreateStakeFragment.newInstance(Reward.getIds(), Reward.getNames(), Reward.getDrawables(),app.getCurBet().getSubject());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
@@ -149,10 +148,11 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	}
 	
 	@Override
-	public void onStakeSelected(String stake) {
+	public void onStakeSelected(String stake_id, String stake) {
 		app.getCurBet().setReward(stake);
+		app.getCurBet().setReward_id(stake_id);
 		
-		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), app.getCurBet().getReward());
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), app.getCurBet().getReward().getName());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);

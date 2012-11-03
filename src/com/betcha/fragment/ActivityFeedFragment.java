@@ -43,9 +43,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	private List<ActivityFeedItem> activities;
 	private Bet newBet = null;
 	
-	private PullToRefreshListView lvActivities;
-	private Boolean isFirstBetsLoad = true;
-		
+	private PullToRefreshListView lvActivities;		
 	private BroadcastReceiver receiver;
 		
 	/** Called when the activity is first created. */

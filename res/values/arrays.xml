@@ -2,33 +2,21 @@
 <resources>
     
     <array name="stake_names">
-        <item>@string/stake_drink</item>
-        <item>@string/stake_lunch</item>
-        <item>@string/stake_cd</item>
-        <item>@string/stake_drink</item>
-        <item>@string/stake_lunch</item>
-        <item>@string/stake_cd</item>
-        <item>@string/stake_drink</item>
-        <item>@string/stake_lunch</item>
-        <item>@string/stake_cd</item>
-        <item>@string/stake_drink</item>
-        <item>@string/stake_lunch</item>
-        <item>@string/stake_cd</item>
+        <item>@string/stake_beer</item>
+        <item>@string/stake_meal</item>
+        <item>@string/stake_movie</item>
+        <item>@string/stake_twist</item>
+        <item>@string/stake_groupon</item>
+        <item>@string/stake_coins</item>
     </array>
     
     <array name="stake_icons">
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
-        <item>@drawable/stake_lunch</item>
+        <item>@drawable/stake_beer</item>
+        <item>@drawable/stake_meal</item>
+        <item>@drawable/stake_movie</item>
+        <item>@drawable/stake_twist</item>
+        <item>@drawable/stake_groupon</item>
+        <item>@drawable/stake_coins</item>
     </array>
     
 </resources>

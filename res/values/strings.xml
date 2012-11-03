@@ -32,9 +32,12 @@
 	<string name="create_prediction_hint">What\'s going to happen?</string>
 	<string name="create_prediction_label">Enter your prediction, or pick one of these:</string>
 		
-	<string name="stake_drink">Drink</string>
-	<string name="stake_lunch">Lunch</string>
-	<string name="stake_cd">CD</string>
+	<string name="stake_beer">Drink</string>
+	<string name="stake_meal">Lunch</string>
+	<string name="stake_movie">Movie</string>
+	<string name="stake_twist">Twist</string>
+	<string name="stake_groupon">Groupon</string>
+	<string name="stake_coins">Conins</string>
 			
 	<string name="email_address">Email address</string>
 	<string name="email_address_hint">user@domain.com</string>
@@ -59,6 +62,7 @@
 	<string name="done">Done</string>
 	
 	<string name="all_bets">All bets</string>
+	<string name="bets_feed">Timeline</string>
 	<string name="new_bets">New bets</string>
 	<string name="my_bets">My bets</string>
 	

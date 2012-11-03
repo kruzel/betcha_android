@@ -33,6 +33,7 @@ import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
+import com.betcha.model.Reward;
 
 public class BetAdapter extends ArrayAdapter<Bet> {
 	
@@ -95,6 +96,8 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    // internal frame 
 		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
+		    holder.ivBetRewardImage = (ImageView) v.findViewById(R.id.iv_bet_reward);
+		    
 		    holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
 		    
 		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
@@ -165,7 +168,11 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 				
 		holder.tvBetOwner.setText(bet.getOwner().getName());		
 		holder.tvBetSubject.setText(bet.getSubject());
-		holder.tvBetReward.setText(bet.getReward());
+		
+		Reward r = bet.getReward();
+		if(!r.getId().equals("0")) //not a customer reward
+			holder.ivBetRewardImage.setImageResource(r.getDrawable_id());
+		holder.tvBetReward.setText(r.getName());
 		
 		for(int i = 0; i<predictionSize ; i++ ) {
 			Prediction prediction = predictions.get(i);
@@ -190,6 +197,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		// internal frame 
 		TextView tvBetSubject;
 		TextView tvBetReward;
+		ImageView ivBetRewardImage;
 		
 		Button buttonHide;
 		

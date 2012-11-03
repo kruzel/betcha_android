@@ -22,33 +22,23 @@ import com.betcha.R;
 
 public class CreateStakeFragment extends SherlockFragment implements OnEditorActionListener {
     
+	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
     private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
     private static final String ARG_SUGGESTION_DRAWABLES = "suggestionDrawables";
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
+    private static final String ARG_STAKE_ID = "stake_id";
     
     private Suggestion[] mSuggestions;
     private String mSubject;
     
     private OnStakeSelectedListener mListener;
     
-    public static CreateStakeFragment newInstance(Resources resources, int suggestionNamesId, int suggestionDrawablesId, String subject) {
-        String[] suggestionNames = resources.getStringArray(suggestionNamesId);
-        
-        TypedArray drawablesArray = resources.obtainTypedArray(suggestionDrawablesId);
-        int[] suggestionDrawables = new int[drawablesArray.length()];
-        for (int i = 0; i < drawablesArray.length(); i++) {
-            suggestionDrawables[i] = drawablesArray.getResourceId(i, 0);
-        }
-        drawablesArray.recycle();
-        
-        return newInstance(suggestionNames, suggestionDrawables, subject);
-    }
-    
-    public static CreateStakeFragment newInstance(String[] suggestionNames, int[] suggestionDrawables, String subject) {
+    public static CreateStakeFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String subject) {
         CreateStakeFragment f = new CreateStakeFragment();
         
         Bundle args = new Bundle();
+        args.putStringArray(ARG_SUGGESTION_IDS, suggestionIds);
         args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
         args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
         args.putString(ARG_SUBJECT, subject);
@@ -58,7 +48,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     }
     
     public interface OnStakeSelectedListener {
-        void onStakeSelected(String stake);
+        void onStakeSelected(String stakeId, String stake);
     }
     
     @Override
@@ -73,6 +63,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        String[] suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
         String[] suggestionNames = getArguments().getStringArray(ARG_SUGGESTION_NAMES);
         int[] suggestionDrawables = getArguments().getIntArray(ARG_SUGGESTION_DRAWABLES);
         if (suggestionNames.length != suggestionDrawables.length) {
@@ -82,6 +73,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         mSuggestions = new Suggestion[suggestionNames.length];
         for (int i = 0; i < suggestionNames.length; i++) {
             Suggestion suggestion = new Suggestion();
+            suggestion.id = suggestionIds[i];
             suggestion.name = suggestionNames[i];
             suggestion.drawable = suggestionDrawables[i];
             mSuggestions[i] = suggestion;
@@ -118,7 +110,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onSuggestionClicked(suggestion.name);
+                    onSuggestionClicked(suggestion);
                 }
             });
             
@@ -132,9 +124,11 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         
         if (savedInstanceState != null) {
             String stake = savedInstanceState.getString(ARG_STAKE);
+            String stake_id = savedInstanceState.getString(ARG_STAKE_ID);
             if (stake != null) {
+            	editText.setTag(stake_id);
                 editText.setText(stake);
-                editText.setSelection(editText.getText().length());
+                editText.setSelection(editText.getText().length());   
             }
         }
         
@@ -148,6 +142,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         EditText editText = getEditText();
         if (editText != null) {
             outState.putString(ARG_STAKE, editText.getText().toString());
+            outState.putString(ARG_STAKE_ID, editText.getTag().toString());
         }
     }
     
@@ -159,13 +154,14 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         return null;
     }
     
-    private void onSuggestionClicked(String suggestion) {
+    private void onSuggestionClicked(Suggestion suggestion) {
         EditText editText = getEditText();
         if (editText != null) {
-            editText.setText(suggestion);
+            editText.setText(suggestion.name);
+            editText.setTag(suggestion.id);
             editText.setSelection(editText.getText().length());
         }
-        submit(suggestion);
+        submit(suggestion.id, suggestion.name);
     }
 
     @Override
@@ -174,18 +170,19 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         if (TextUtils.isEmpty(stake)) {
             v.setError(getString(R.string.error_missing_bet_reward));
         } else {
-            submit(v.getText().toString());
+            submit("0", stake); //custome stake
         }
         return true;
     }
     
-    private void submit(String stake) {
+    private void submit(String suggestionId, String suggestionName) {
         if (mListener != null) {
-            mListener.onStakeSelected(stake);
+            mListener.onStakeSelected(suggestionId, suggestionName);
         }
     }
     
     private class Suggestion {
+    	String id;
         String name;
         int drawable;
     }

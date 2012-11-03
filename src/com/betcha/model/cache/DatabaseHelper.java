@@ -11,6 +11,7 @@ import com.betcha.model.Bet;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
+import com.betcha.model.Reward;
 import com.betcha.model.User;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.ChatMessageRestClient;
@@ -111,6 +112,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "/users/{user_id}/friends");
 		ChatMessageRestClient.setUrl(context.getString(R.string.betcha_api)
 				+ "/bets/{bet_id}/chat_messages");
+		
+		Reward.init(context);
 
 		return true;
 	}

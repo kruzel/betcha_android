@@ -17,37 +17,69 @@ public class Reward {
 	private String Name;
 	private String description;
 	private Bitmap image;
+	private int drawable_id;
 	
 	private static Map<String, Reward> rewardsList;
 	
-	private static void init(Context context) {
+	public static void init(Context context) {
 		//TODO load categories from model coming from server
 		
 		rewardsList = new HashMap<String, Reward>();
+		Reward reward = null;
+				
+		reward = new Reward();
+		reward.setId("Drink");
+		reward.setGroup("Drink");
+		reward.setName("Drink");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_beer));
+		reward.setDrawable_id(R.drawable.stake_beer);
+		rewardsList.put(reward.getId(),reward);
 		
-		Reward reward1 = new Reward();
-		reward1.setId("1");
-		reward1.setGroup("Custom");
-		reward1.setName("Custom");
-		reward1.setDescription("Any reward you like");
-		reward1.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
-		rewardsList.put(reward1.getId(), reward1);
+		reward = new Reward();
+		reward.setId("Lunch");
+		reward.setGroup("Food");
+		reward.setName("Lunch");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_meal);
+		rewardsList.put(reward.getId(),reward);
 		
-		Reward reward2 = new Reward();
-		reward2.setId("2");
-		reward2.setGroup("Drink");
-		reward2.setName("Beer");
-		reward2.setDescription("....");
-		reward2.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
-		rewardsList.put(reward2.getId(),reward2);
+		reward = new Reward();
+		reward.setId("Movie");
+		reward.setGroup("Fun");
+		reward.setName("Movie");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_movie);
+		rewardsList.put(reward.getId(),reward);
 		
-		Reward reward3 = new Reward();
-		reward3.setId("3");
-		reward3.setGroup("Sweet");
-		reward3.setName("Ice Cream");
-		reward3.setDescription("....");
-		reward3.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
-		rewardsList.put(reward3.getId(),reward3);	
+		reward = new Reward();
+		reward.setId("Twist");
+		reward.setGroup("Twist");
+		reward.setName("Twist");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_twist);
+		rewardsList.put(reward.getId(),reward);
+		
+		reward = new Reward();
+		reward.setId("Groupon");
+		reward.setGroup("Coupons");
+		reward.setName("Groupon");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_groupon);
+		rewardsList.put(reward.getId(),reward);
+		
+		reward = new Reward();
+		reward.setId("Coins");
+		reward.setGroup("Virtual Currency");
+		reward.setName("Coins");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_coins);
+		rewardsList.put(reward.getId(),reward);
 	}
 	
 	public static List<Reward> getRewards(Context context, String rewardGroup) {
@@ -104,5 +136,40 @@ public class Reward {
 	public void setImage(Bitmap image) {
 		this.image = image;
 	}
+	public int getDrawable_id() {
+		return drawable_id;
+	}
+	public void setDrawable_id(int resource_id) {
+		this.drawable_id = resource_id;
+	}
+	
+	public static String[] getIds() {
+		String[] strArray = new String[rewardsList.size()];
+		int i = 0;
+		for (Reward reward : rewardsList.values()) {
+			strArray[i] = reward.getId();
+			i++;
+		}
+		return strArray;
+	}
+	
+	public static String[] getNames() {
+		String[] strArray = new String[rewardsList.size()];
+		int i = 0;
+		for (Reward reward : rewardsList.values()) {
+			strArray[i] = reward.getName();
+			i++;
+		}
+		return strArray;
+	}
 
+	public static int[] getDrawables() {
+		int[] array = new int[rewardsList.size()];
+		int i = 0;
+		for (Reward reward : rewardsList.values()) {
+			array[i] = reward.getDrawable_id();
+			i++;
+		}
+		return array;
+	}
 }
