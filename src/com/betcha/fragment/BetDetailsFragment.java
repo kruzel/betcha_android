@@ -101,7 +101,11 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		//bet owner and other details (outer frame)
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM HH:mm");
 		app.getCurBet().getOwner().setProfilePhoto(ivProfPic);
-		tvBetOwner.setText(app.getCurBet().getOwner().getName());
+		String name = app.getCurBet().getOwner().getName();
+		int spacePos = name.indexOf(" ");
+		if(spacePos==-1)
+			spacePos=name.length();
+		tvBetOwner.setText(name.substring(0, spacePos));
 		
 		if(app.getCurBet().getDueDate().isAfterNow()) {
 			if(app.getCurBet().getDueDate().minusHours(24).isBeforeNow()) {
@@ -117,7 +121,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 				tvBetDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), app.getCurBet().getDueDate()).getDays()) + " d");
 	 		}
 		} else {
-			tvBetDate.setText("--");
+			tvBetDate.setText("Due");
 		}
 		
 		tvBetSubject.setText(app.getCurBet().getSubject());
@@ -130,15 +134,9 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 88 * app.getCurBet().getPredictionsCount() : 88*2;
 		frmPredictionContainer.setLayoutParams(layoutParams);
 		
-//		if(predictionAdapter==null) {
-			predictionAdapter = new PredictionAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
-			lvPredictions.setAdapter(predictionAdapter);
-			predictionAdapter.setPredictionEditListener(this);
-//		} else {
-//			predictionAdapter.clear();
-//			predictionAdapter.addAll(app.getCurBet().getPredictions());
-//			predictionAdapter.notifyDataSetChanged();
-//		}
+		predictionAdapter = new PredictionAdapter(getActivity(), R.layout.bet_prediction_list_item, app.getCurBet().getPredictions());
+		lvPredictions.setAdapter(predictionAdapter);
+		predictionAdapter.setPredictionEditListener(this);
 	}
 
 	@Override

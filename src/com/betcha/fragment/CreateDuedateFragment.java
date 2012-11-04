@@ -28,15 +28,18 @@ import com.actionbarsherlock.view.MenuItem;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
+import com.betcha.model.Reward;
 
 public class CreateDuedateFragment extends SherlockFragment {
     
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
+    private static final String ARG_STAKE_ID = "stake_id";
     private static final String ARG_DUEDATE = "duedate";
     
     private String mSubject;
     private String mStake;
+    private String mStakeId;
     
     private TextView dateView;
     private TextView timeView;
@@ -48,12 +51,13 @@ public class CreateDuedateFragment extends SherlockFragment {
     
     private OnDuedateSelectedListener mListener;
     
-    public static CreateDuedateFragment newInstance(String subject, String stake) {
+    public static CreateDuedateFragment newInstance(String subject, String stake, String stake_id) {
         CreateDuedateFragment f = new CreateDuedateFragment();
         
         Bundle args = new Bundle();
         args.putString(ARG_SUBJECT, subject);
         args.putString(ARG_STAKE, stake);
+        args.putString(ARG_STAKE_ID, stake_id);
         f.setArguments(args);
         
         return f;
@@ -78,6 +82,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         
         mSubject = getArguments().getString(ARG_SUBJECT);
         mStake = getArguments().getString(ARG_STAKE);
+        mStakeId = getArguments().getString(ARG_STAKE_ID);
     }
     
     @Override
@@ -94,6 +99,13 @@ public class CreateDuedateFragment extends SherlockFragment {
         TextView stakeView = (TextView) view.findViewById(R.id.tv_bet_reward);
         FontUtils.setTextViewTypeface(stakeView, CustomFont.HELVETICA_CONDENSED);
         stakeView.setText(mStake);
+        
+        ImageView stakeImageView = (ImageView) view.findViewById(R.id.iv_bet_reward);
+        Reward r = Reward.getReward(mStakeId);
+        if(r!=null)
+        	stakeImageView.setImageResource(r.getDrawable_id());
+        else 
+        	stakeImageView.setImageResource(android.R.color.transparent);
         
         TextView dateHintView = (TextView) view.findViewById(R.id.tv_bet_date_hint);
         FontUtils.setTextViewTypeface(dateHintView, CustomFont.HELVETICA_CONDENSED);

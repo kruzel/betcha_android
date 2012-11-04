@@ -152,7 +152,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		app.getCurBet().setReward(stake);
 		app.getCurBet().setReward_id(stake_id);
 		
-		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), app.getCurBet().getReward().getName());
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), stake,stake_id);
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);

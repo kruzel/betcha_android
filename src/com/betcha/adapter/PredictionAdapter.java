@@ -70,10 +70,11 @@ public class PredictionAdapter extends ArrayAdapter<Prediction> {
 		
 		if(prediction.getUser()!=null) { //should not happen
 			prediction.getUser().setProfilePhoto(ivProfPic);
-			if(prediction.getUser().getName()==null)
-				tvUserName.setText(prediction.getUser().getEmail().substring(0, prediction.getUser().getEmail().indexOf('@')));
-			else
-				tvUserName.setText(prediction.getUser().getName());
+			String name = prediction.getUser().getName();
+			int spacePos = name.indexOf(" ");
+			if(spacePos==-1)
+				spacePos=name.length();
+			tvUserName.setText(name.substring(0, spacePos));
 		}
 		
 		tvPrediction.setText(prediction.getPrediction()==null ? "" : prediction.getPrediction() );

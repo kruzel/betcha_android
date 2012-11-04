@@ -80,6 +80,24 @@ public class Reward {
 		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
 		reward.setDrawable_id(R.drawable.stake_coins);
 		rewardsList.put(reward.getId(),reward);
+		
+		reward = new Reward();
+		reward.setId("FB brag");
+		reward.setGroup("Brag");
+		reward.setName("FB brag");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_facebook);
+		rewardsList.put(reward.getId(),reward);
+		
+		reward = new Reward();
+		reward.setId("Tweet");
+		reward.setGroup("Brag");
+		reward.setName("Tweet");
+		reward.setDescription("....");
+		//reward.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.stake_meal));
+		reward.setDrawable_id(R.drawable.stake_tweeter);
+		rewardsList.put(reward.getId(),reward);
 	}
 	
 	public static List<Reward> getRewards(Context context, String rewardGroup) {

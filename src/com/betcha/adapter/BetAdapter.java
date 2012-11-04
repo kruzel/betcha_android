@@ -163,21 +163,32 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 				holder.betDueDate.setText(Integer.toString(Days.daysBetween(DateTime.now(), bet.getDueDate()).getDays()) + " d");
 	 		}
 		} else {
-			holder.betDueDate.setText("--");
+			holder.betDueDate.setText("Due");
 		}
 				
-		holder.tvBetOwner.setText(bet.getOwner().getName());		
+		String name = bet.getOwner().getName();
+		int spacePos = name.indexOf(" ");
+		if(spacePos==-1)
+			spacePos=name.length();
+		holder.tvBetOwner.setText(name.substring(0, spacePos));		
 		holder.tvBetSubject.setText(bet.getSubject());
 		
 		Reward r = bet.getReward();
 		if(!r.getId().equals("0")) //not a customer reward
 			holder.ivBetRewardImage.setImageResource(r.getDrawable_id());
+		else
+			holder.ivBetRewardImage.setImageResource(android.R.color.transparent);
 		holder.tvBetReward.setText(r.getName());
 		
 		for(int i = 0; i<predictionSize ; i++ ) {
 			Prediction prediction = predictions.get(i);
 			prediction.getUser().setProfilePhoto(holder.rlPredictionItems[i].ivParticipantProfPic);
-	    	holder.rlPredictionItems[i].tvParticipantName.setText(prediction.getUser().getName());
+			String partName = prediction.getUser().getName();
+			int partSpacePos = partName.indexOf(" ");
+			if(partSpacePos==-1)
+				partSpacePos=partName.length();
+	    	holder.rlPredictionItems[i].tvParticipantName.setText(partName.substring(0, partSpacePos));
+	    	
 	    	if (!TextUtils.isEmpty(prediction.getPrediction())) {
 	            holder.rlPredictionItems[i].tvParticipantPrediction.setText(prediction.getPrediction());
 	    	} else {
