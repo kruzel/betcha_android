@@ -141,7 +141,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.CREATE);
+		restTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, RestMethod.CREATE);
+		//restTask.execute(RestMethod.CREATE);
 		
 		return res;
 	}
@@ -160,7 +161,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.UPDATE);
+		//restTask.execute(RestMethod.UPDATE);
+		restTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,RestMethod.UPDATE);
 		
 		return res;
 	}
@@ -180,7 +182,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.GET);
+		//restTask.execute(RestMethod.GET);
+		restTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,RestMethod.GET);
 		
 		return res;
 	}
@@ -201,7 +204,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.DELETE);
+		//restTask.execute(RestMethod.DELETE);
+		restTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,RestMethod.DELETE);
 		
 		return res;
 	}
@@ -219,7 +223,8 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
 		restTask.setModelClass(getClass());
-		restTask.execute(RestMethod.GET_FOR_CUR_USER);
+		//restTask.execute(RestMethod.GET_FOR_CUR_USER);
+		restTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,RestMethod.GET_FOR_CUR_USER);
 		
 		return 1;
 	}

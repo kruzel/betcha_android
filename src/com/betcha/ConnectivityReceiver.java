@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.betcha.model.cache.ModelCache;
-import com.betcha.model.task.SyncTask;
+import com.betcha.model.cache.SyncTask;
 
 public class ConnectivityReceiver extends BroadcastReceiver {
 

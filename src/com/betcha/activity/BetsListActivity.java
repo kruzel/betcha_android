@@ -16,7 +16,7 @@ import com.betcha.R;
 import com.betcha.fragment.ActivityFeedFragment;
 import com.betcha.fragment.BetsListFragment;
 import com.betcha.model.Bet;
-import com.betcha.model.task.SyncTask;
+import com.betcha.model.cache.SyncTask;
 
 
 /**
@@ -108,7 +108,7 @@ public class BetsListActivity extends SherlockFragmentActivity {
 				e.printStackTrace();
 			}
 			
-			if(count==0 && firstResume) {
+			if(count==0 && firstResume && app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 				SyncTask.run(null);
 				Intent intent = new Intent(this,CreateBetActivity.class);
 				startActivity(intent);

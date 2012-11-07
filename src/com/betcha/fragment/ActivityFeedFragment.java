@@ -29,7 +29,7 @@ import com.betcha.adapter.ActivityFeedAdapter;
 import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.IModelListener;
-import com.betcha.model.task.SyncTask;
+import com.betcha.model.cache.SyncTask;
 
 import eu.erikw.PullToRefreshListView;
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
@@ -207,6 +207,9 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+		if(activities==null)
+			return;
+		
 		Bet bet = activities.get(position).getBet();
 		if(bet==null)
 			return;

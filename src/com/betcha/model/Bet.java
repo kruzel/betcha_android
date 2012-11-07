@@ -40,6 +40,8 @@ public class Bet extends ModelCache<Bet, String> {
 	@DatabaseField
 	private String reward; // benefit
 	@DatabaseField
+	private String reward_id; // benefit
+	@DatabaseField
 	private DateTime date;
 	@DatabaseField
 	private DateTime dueDate;
@@ -67,9 +69,11 @@ public class Bet extends ModelCache<Bet, String> {
 		this.user = bet.getOwner();
 		this.subject = bet.getSubject();
 		this.reward = bet.getReward().getName(); //TODO replace with Reward object
+		this.reward_id = bet.getReward_id();
 		this.date = bet.getDate();
 		this.dueDate = bet.getDueDate();
 		this.state = bet.getState();
+		this.categoryId = bet.getCategoryId();
 	}
 
 	public BetRestClient getBetClient() {
@@ -161,11 +165,11 @@ public class Bet extends ModelCache<Bet, String> {
 	
 
 	public String getReward_id() {
-		return reward;  //TODO replace with Reward object
+		return reward_id;  //TODO replace with Reward object
 	}
 
 	public void setReward_id(String reward_id) {
-		this.reward = reward_id; //TODO replace with Reward object
+		this.reward_id = reward_id; //TODO replace with Reward object
 	}
 
 	// non persistent
@@ -760,7 +764,7 @@ public class Bet extends ModelCache<Bet, String> {
 			jsonBetContent.put("id", getId());
 			jsonBetContent.put("user_id", getOwner().getId());
 			jsonBetContent.put("subject", getSubject());
-			jsonBetContent.put("reward", getReward());
+			jsonBetContent.put("reward", getReward().getName());
 			if (getDueDate() != null)
 				jsonBetContent.put("due_date", getDueDate().toString());
 			if (getState() != null)

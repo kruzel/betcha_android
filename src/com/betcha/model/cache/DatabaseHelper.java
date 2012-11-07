@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.betcha.R;
 import com.betcha.model.Bet;
+import com.betcha.model.Category;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
@@ -31,9 +32,9 @@ import com.j256.ormlite.table.TableUtils;
 public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 	// name of the database file for your application -- change to something appropriate for your app
-	private static final String DATABASE_NAME = "betcha.db";
+	private static final String DATABASE_NAME = "dropabet.db";
 	// any time you make changes to your database objects, you may have to increase the database version
-	private static final int DATABASE_VERSION = 24;
+	private static final int DATABASE_VERSION = 25;
 
 	public DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -114,6 +115,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "/bets/{bet_id}/chat_messages");
 		
 		Reward.init(context);
+		Category.init(context);
 
 		return true;
 	}

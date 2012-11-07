@@ -82,7 +82,7 @@ public class ActivityFeedItem {
 		
 		ActivityFeedItem item = null;
 		
-		while(betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) {
+		while((betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) && (bet!=null && prediction!=null && chatMessage!=null)) {
 			
 			if(betItr.hasNext() && 
 				((!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 

@@ -32,7 +32,7 @@ import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.cache.IModelListener;
-import com.betcha.model.task.SyncTask;
+import com.betcha.model.cache.SyncTask;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 

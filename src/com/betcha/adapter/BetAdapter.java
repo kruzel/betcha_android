@@ -7,13 +7,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
-import org.joda.time.Seconds;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,8 +26,8 @@ import android.widget.TextView;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.activity.BetDetailsActivity;
 import com.betcha.model.Bet;
+import com.betcha.model.Category;
 import com.betcha.model.Prediction;
 import com.betcha.model.Reward;
 
@@ -92,13 +88,14 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
 		    holder.betDueDate = (TextView) v.findViewById(R.id.tv_bet_date);
 		    holder.tvBetOwner = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
 		    
 		    // internal frame 
 		    holder.tvBetSubject = (TextView) v.findViewById(R.id.tv_bet_topic);
 		    holder.tvBetReward = (TextView) v.findViewById(R.id.tv_bet_reward);
 		    holder.ivBetRewardImage = (ImageView) v.findViewById(R.id.iv_bet_reward);
 		    
-		    holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
+		    //holder.buttonHide = (Button) v.findViewById(R.id.buttonHide);
 		    
 		    holder.lvPredictions = (LinearLayout) v.findViewById(R.id.lv_bet_predictions);
 		    
@@ -129,25 +126,30 @@ public class BetAdapter extends ArrayAdapter<Bet> {
             FontUtils.setTextViewTypeface(holder.tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
             FontUtils.setTextViewTypeface(holder.tvBetReward, CustomFont.HELVETICA_CONDENSED);
                      
-            holder.buttonHide.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Bet bet = (Bet) v.getTag();
-					bet.delete();
-					items.remove(bet);
-					BetAdapter.this.notifyDataSetChanged();
-				}
-			});
+//            holder.buttonHide.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					Bet bet = (Bet) v.getTag();
+//					bet.delete();
+//					items.remove(bet);
+//					BetAdapter.this.notifyDataSetChanged();
+//				}
+//			});
 		    
 		} else {
             // view already exists, get the holder instance from the view
             holder = (ViewHolder)v.getTag();
         }
 			
-		holder.buttonHide.setTag(bet);
+		//holder.buttonHide.setTag(bet);
 		
 		bet.getOwner().setProfilePhoto(holder.ivProfPic);
+		
+		if(bet.getCategoryId()!=null)
+			holder.ivBetCategory.setImageBitmap(Category.getCategory(bet.getCategoryId()).getImage());
+		else
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
 		
 		if(bet.getDueDate().isAfterNow()) {
 			if(bet.getDueDate().minusHours(24).isBeforeNow()) {
@@ -204,6 +206,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		ImageView ivProfPic;
 		TextView betDueDate;
 		TextView tvBetOwner;
+		ImageView ivBetCategory;
 		
 		// internal frame 
 		TextView tvBetSubject;

@@ -1,4 +1,4 @@
-package com.betcha.model.task;
+package com.betcha.model.cache;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -6,14 +6,13 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
-import com.betcha.model.cache.IModelListener;
-import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.RestClient;
 
 public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
@@ -29,6 +28,7 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		this.modelListener = modelListener;
 	}
 	
+	@TargetApi(11)
 	public static void run(IModelListener modelListener) {
 		Log.i("SyncTask.run()", "called");	
 		
@@ -39,7 +39,7 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 
 		syncThread = new SyncTask();
 		syncThread.setListener(modelListener);
-		syncThread.execute();
+		syncThread.executeOnExecutor(THREAD_POOL_EXECUTOR, (Void[])null);
 		
 		Log.i("SyncTask.run()", "calling exectue");	
 
@@ -51,11 +51,14 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		
 		if(!RestClient.isOnline()) {
 			ModelCache.enableConnectivityReciever();
+			Log.i("SyncTask.doInBackground()", "service unavailable");	
 			return HttpStatus.SERVICE_UNAVAILABLE;
 		}
 		
-		if(BetchaApp.getInstance().getCurUser()==null)
+		if(BetchaApp.getInstance().getCurUser()==null) {
+			Log.i("SyncTask.doInBackground()", "user not defined");	
 			return HttpStatus.UNAUTHORIZED;
+		}
 		
 		if(!BetchaApp.getInstance().getCurUser().isServerCreated()) {
 			if(BetchaApp.getInstance().getCurUser().onRestCreate()>0) {
@@ -63,18 +66,23 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 				BetchaApp.getInstance().getCurUser().setServerUpdated(true);
 				BetchaApp.getInstance().getCurUser().onLocalUpdate();
 			} else {
+				Log.i("SyncTask.doInBackground()", "user creation failed");	
 				return HttpStatus.UNAUTHORIZED;
 			}
 		}
 		
 		if(RestClient.GetToken()==null || RestClient.GetToken().length()==0) {
-			if(BetchaApp.getInstance().getCurUser().restCreateToken()==0) 
+			if(BetchaApp.getInstance().getCurUser().restCreateToken()==0) {
+				Log.i("SyncTask.doInBackground()", "missing token");	
 				return HttpStatus.UNAUTHORIZED;
+			}
 		}
 		
 		// get all updates from server (bets and their predictions and chat_messages
 		// TODO - use the show all update for current user
 		Bet.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		
+		Log.i("SyncTask.doInBackground()", "done getAllUpdatesForCurUser");	
 
 		// push all bets that not yet pushed to server
 		

@@ -137,7 +137,11 @@ public class CategoryAdapter extends BaseAdapter {
 		TextView tvCategory = (TextView) convertView.findViewById(R.id.tv_bet_category);
         TextView tvDescription = (TextView) convertView.findViewById(R.id.tv_bet_category_description);
 		
-		//ivCategoryImage.setImageBitmap(bm);
+        if(category!=null)
+        	ivCategoryImage.setImageBitmap(category.getImage());
+        else
+        	ivCategoryImage.setImageResource(android.R.color.transparent);
+		
 		ivMarker.setColorFilter(getItemMarkerColor(position), PorterDuff.Mode.MULTIPLY);
 		tvCategory.setText(category.getName());
 		if (!TextUtils.isEmpty(category.getDescription())) {

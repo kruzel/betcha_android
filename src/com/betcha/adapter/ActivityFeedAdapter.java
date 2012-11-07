@@ -1,6 +1,5 @@
 package com.betcha.adapter;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -22,6 +21,7 @@ import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
+import com.betcha.model.Category;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
@@ -76,6 +76,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
 		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
 		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
 		    
 		 	// associate the holder with the view for later lookup
             v.setTag(holder);
@@ -123,6 +124,11 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		
 		user.setProfilePhoto(holder.ivProfPic);
 		
+		if(bet.getCategoryId()!=null)
+			holder.ivBetCategory.setImageBitmap(Category.getCategory(bet.getCategoryId()).getImage());
+		else
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		
 		if(datetime.plusHours(24).isAfterNow()) {
 			if(datetime.plusMinutes(60).isAfterNow()) {
 				//less then 1 hr
@@ -151,6 +157,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		TextView betDate;
 		TextView tvUser;
 		TextView tvActivityDescription;
+		ImageView ivBetCategory;
 	}
 
 }

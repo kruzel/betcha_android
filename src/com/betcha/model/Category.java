@@ -20,7 +20,7 @@ public class Category {
 	
 	private static Map<String, Category> categoriesList;
 	
-	private static void init(Context context) {
+	public static void init(Context context) {
 		//TODO load categories from model coming from server
 		
 		categoriesList = new HashMap<String, Category>();
@@ -30,7 +30,7 @@ public class Category {
 		cat1.setGroup("Custom");
 		cat1.setName("Custom");
 		cat1.setDescription("Any bet you like");
-		cat1.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+		cat1.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.category_custom));
 		categoriesList.put(cat1.getId(), cat1);
 		
 		Category cat2 = new Category();
@@ -38,7 +38,7 @@ public class Category {
 		cat2.setGroup("Sport");
 		cat2.setName("Footbal");
 		cat2.setDescription("....");
-		cat2.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+		cat2.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.category_football));
 		categoriesList.put(cat2.getId(),cat2);
 		
 		Category cat3 = new Category();
@@ -46,7 +46,7 @@ public class Category {
 		cat3.setGroup("Sport");
 		cat3.setName("Soccer");
 		cat3.setDescription("....");
-		cat3.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_launcher));
+		cat3.setImage(BitmapFactory.decodeResource(context.getResources(), R.drawable.category_soccer));
 		categoriesList.put(cat3.getId(),cat3);	
 	}
 	

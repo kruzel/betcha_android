@@ -29,6 +29,7 @@ import com.betcha.R;
 import com.betcha.adapter.PredictionAdapter;
 import com.betcha.adapter.PredictionAdapter.OnPredictionEditListener;
 import com.betcha.fragment.CreatePredictionFragment.OnPredictionSelectedListener;
+import com.betcha.model.Category;
 import com.betcha.model.Prediction;
 import com.betcha.model.Reward;
 
@@ -46,11 +47,12 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	private ImageView ivProfPic;
 	private TextView tvBetDate;
 	private TextView tvBetOwner;
+	private ImageView ivBetCategory;
 	
 	// internal frame 
-	TextView tvBetSubject;
-	TextView tvBetReward;
-	ImageView ivBetRewardImage;
+	private TextView tvBetSubject;
+	private TextView tvBetReward;
+	private ImageView ivBetRewardImage;
 	
 	public void refresh() {
 		populate();
@@ -77,6 +79,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		ivProfPic = (ImageView) view.findViewById(R.id.iv_bet_owner_profile_pic);
 		tvBetDate = (TextView) view.findViewById(R.id.tv_bet_date);
 		tvBetOwner = (TextView) view.findViewById(R.id.tv_bet_owner);
+		ivBetCategory = (ImageView) view.findViewById(R.id.iv_bet_category);
 		
 		// internal frame 
 		tvBetSubject = (TextView) view.findViewById(R.id.tv_bet_topic);
@@ -129,6 +132,11 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		Reward r = Reward.getReward(app.getCurBet().getReward().getName());
 		if(r!=null)
 			ivBetRewardImage.setImageResource(r.getDrawable_id());
+		
+		if(app.getCurBet().getCategoryId()!=null)
+			ivBetCategory.setImageBitmap(Category.getCategory(app.getCurBet().getCategoryId()).getImage());
+		else
+			ivBetCategory.setImageResource(android.R.color.transparent);
 		
 		LayoutParams layoutParams = frmPredictionContainer.getLayoutParams();
 		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 88 * app.getCurBet().getPredictionsCount() : 88*2;
