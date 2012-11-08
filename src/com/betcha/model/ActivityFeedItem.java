@@ -8,6 +8,9 @@ import java.util.List;
 import org.joda.time.Hours;
 import org.joda.time.Seconds;
 
+import android.util.Log;
+
+import com.betcha.BetchaApp;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
@@ -42,7 +45,7 @@ public class ActivityFeedItem {
 			
 			PreparedQuery<Bet> betsPreparedQuery = null;
 			betsQueryBuilder = Bet.getModelDao().queryBuilder();
-			betsQueryBuilder.orderBy("updated_at", false);
+			betsQueryBuilder.orderBy("created_at", false);
 			betsPreparedQuery = betsQueryBuilder.prepare();
 			bets = Bet.getModelDao().query(betsPreparedQuery);
 			
@@ -83,31 +86,25 @@ public class ActivityFeedItem {
 		ActivityFeedItem item = null;
 		
 		while(betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) {
+			//Log.i("getActivities()", "bet: " + bet.getCreated_at().toString() + " | prediction: " + prediction.getUpdated_at().toString() + " | chat: " + chatMessage.getUpdated_at().toString() );
 			
 			if(betItr.hasNext() && 
 				((prediction==null && chatMessage==null) ||
 				 (!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (prediction!=null && !bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (chatMessage!=null && !bet.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
-				 (!bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !bet.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
+				 (prediction!=null && !bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (chatMessage!=null && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
+				 (!bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
 				item.obj = bet;
-				if(Seconds.secondsBetween(bet.getCreated_at(), bet.getUpdated_at()).isLessThan(Seconds.seconds(10))) {
-					item.type = Type.BET_CREATE;
-				} else {
-					//item.type = Type.BET_UPDATE;
-					if(betItr.hasNext())
-						bet = betItr.next();
-					continue;
-				}
-				if(betItr.hasNext())
-					bet = betItr.next();
+				item.type = Type.BET_CREATE;
+				bet = betItr.next();
+					
 			} else if(predictionItr.hasNext() &&
 				((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (bet!=null && !prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (bet!=null && !prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !chatMessageItr.hasNext()) ||
 				 (chatMessage!=null && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
+				 (!prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
 				item.obj = prediction;
@@ -116,15 +113,14 @@ public class ActivityFeedItem {
 				} else {
 					item.type = Type.PREDICTION_UPDATE;
 				}
-				if(predictionItr.hasNext())
-					prediction = predictionItr.next();
+					
+				prediction = predictionItr.next();
 			} else if(chatMessageItr.hasNext()){
 				item = new ActivityFeedItem();
 				item.obj = chatMessage;
 				item.type = Type.CHAT_CREATE;
-				if(chatMessageItr.hasNext())
-					chatMessage = chatMessageItr.next();
-			}
+				chatMessage = chatMessageItr.next();
+			} 
 			
 			if(item.type!=Type.PREDICTION_CREATE)
 				activities.add(item);
@@ -141,11 +137,15 @@ public class ActivityFeedItem {
 		Bet bet = null;
 		Prediction prediction = null;
 		ChatMessage chatMessage = null;
+		User curUser = BetchaApp.getInstance().getCurUser();
 		
 		switch (type) {
 			case BET_CREATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+				if(bet.getOwner().getId().equals(curUser.getId()))
+					return "You have just created a bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+				else
+					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case BET_UPDATE:
 				bet = (Bet) obj;
 				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
