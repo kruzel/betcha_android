@@ -17,15 +17,15 @@ import com.betcha.model.server.api.RestClient;
 
 public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 	private static SyncTask syncThread;
-	private IModelListener modelListener;
+	private static IModelListener modelListener;
 	
 	public SyncTask() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public void setListener(IModelListener modelListener) {
-		this.modelListener = modelListener;
+	public static void setListener(IModelListener modelListener) {
+		SyncTask.modelListener = modelListener;
 	}
 	
 	@TargetApi(11)
@@ -38,7 +38,7 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 			return;
 
 		syncThread = new SyncTask();
-		syncThread.setListener(modelListener);
+		SyncTask.setListener(modelListener);
 		syncThread.executeOnExecutor(THREAD_POOL_EXECUTOR, (Void[])null);
 		
 		Log.i("SyncTask.run()", "calling exectue");	

@@ -114,6 +114,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	@Override
 	public void onPause() {
 		getActivity().unregisterReceiver(receiver);
+		SyncTask.setListener(null);
 		super.onPause();
 	}
 

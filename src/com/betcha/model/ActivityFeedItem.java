@@ -82,12 +82,13 @@ public class ActivityFeedItem {
 		
 		ActivityFeedItem item = null;
 		
-		while((betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) && (bet!=null && prediction!=null && chatMessage!=null)) {
+		while(betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) {
 			
 			if(betItr.hasNext() && 
-				((!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (!bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (!bet.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
+				((prediction==null && chatMessage==null) ||
+				 (!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
+				 (prediction!=null && !bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (chatMessage!=null && !bet.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
 				 (!bet.getUpdated_at().isBefore(prediction.getUpdated_at()) && !bet.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
@@ -95,14 +96,17 @@ public class ActivityFeedItem {
 				if(Seconds.secondsBetween(bet.getCreated_at(), bet.getUpdated_at()).isLessThan(Seconds.seconds(10))) {
 					item.type = Type.BET_CREATE;
 				} else {
-					item.type = Type.BET_UPDATE;
+					//item.type = Type.BET_UPDATE;
+					if(betItr.hasNext())
+						bet = betItr.next();
+					continue;
 				}
 				if(betItr.hasNext())
 					bet = betItr.next();
 			} else if(predictionItr.hasNext() &&
 				((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (!prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
+				 (bet!=null && !prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+				 (chatMessage!=null && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
 				 (!prediction.getUpdated_at().isBefore(bet.getUpdated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
 				
 				item = new ActivityFeedItem();
@@ -142,7 +146,7 @@ public class ActivityFeedItem {
 			case BET_CREATE:
 				bet = (Bet) obj;
 				return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
-		case BET_UPDATE:
+			case BET_UPDATE:
 				bet = (Bet) obj;
 				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case PREDICTION_CREATE:

@@ -102,6 +102,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	@Override
 	public void onPause() {
 		getActivity().unregisterReceiver(receiver);
+		SyncTask.setListener(null);
 		super.onPause();
 	}
 
