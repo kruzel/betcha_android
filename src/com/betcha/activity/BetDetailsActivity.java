@@ -140,7 +140,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 			switch (item.getItemId()) {
 	        case android.R.id.home:
-	        	app.getCurBet().update();
+	        	//app.getCurBet().update();
 	            finish();
 	            return true;
 	        case R.id.menu_refresh:
