@@ -56,6 +56,17 @@ public class Prediction extends ModelCache<Prediction, String> {
 		setCreated_at(newPrediction.getCreated_at());
 		setUpdated_at(newPrediction.getUpdated_at());
 	}
+	
+	public static Prediction get(String id) {
+		Prediction prediction = null;
+		try {
+			prediction = getModelDao().queryForId(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return prediction;
+	}
 
 	public PredictionRestClient getPredictionRestClient() {
 		if (predictionRestClient == null)

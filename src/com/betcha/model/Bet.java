@@ -63,6 +63,17 @@ public class Bet extends ModelCache<Bet, String> {
 	// private static GetUserBetsTask getUserBetsTask;
 	private static BetRestClient betClient;
 	private static Dao<Bet, String> dao;
+	
+	public static Bet get(String id) {
+		Bet bet = null;
+		try {
+			bet = getModelDao().queryForId(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return bet;
+	}
 
 	public void setBet(Bet bet) {
 		this.id = bet.getId();
@@ -115,7 +126,7 @@ public class Bet extends ModelCache<Bet, String> {
 	}
 
 	public Reward getReward() {
-		Reward r = Reward.getReward(reward); //TODO replace with Reward object as memeber, currently the reard name is the id;
+		Reward r = Reward.get(reward); //TODO replace with Reward object as memeber, currently the reard name is the id;
 		
 		if(r==null) {
 			r = new Reward();

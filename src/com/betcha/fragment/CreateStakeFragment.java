@@ -16,8 +16,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.model.Category;
+import com.betcha.model.User;
 import com.betcha.R;
 
 public class CreateStakeFragment extends SherlockFragment implements OnEditorActionListener {
@@ -28,13 +31,17 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
     private static final String ARG_STAKE_ID = "stake_id";
+    private static final String ARG_CATEGORY = "categoryId";
+    private static final String ARG_USER = "userId";
     
     private Suggestion[] mSuggestions;
     private String mSubject;
+    private String mCategoryId;
+    private String mUserId;
     
     private OnStakeSelectedListener mListener;
     
-    public static CreateStakeFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String subject) {
+    public static CreateStakeFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String categorId, String userId, String subject) {
         CreateStakeFragment f = new CreateStakeFragment();
         
         Bundle args = new Bundle();
@@ -42,6 +49,8 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
         args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
         args.putString(ARG_SUBJECT, subject);
+        args.putString(ARG_CATEGORY, categorId);
+        args.putString(ARG_USER, userId);
         f.setArguments(args);
         
         return f;
@@ -80,6 +89,8 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         }
 
         mSubject = getArguments().getString(ARG_SUBJECT);
+        mCategoryId = getArguments().getString(ARG_CATEGORY);
+        mUserId = getArguments().getString(ARG_USER);
     }
     
     @Override
@@ -87,7 +98,10 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         View view = inflater.inflate(R.layout.create_stake, container, false);
         
         ImageView profileView = (ImageView) view.findViewById(R.id.iv_bet_owner_profile_pic);
-        // TODO set user's image
+        User.get(mUserId).setProfilePhoto(profileView);
+        
+        ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
+        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
         
         TextView subjectView = (TextView) view.findViewById(R.id.tv_bet_topic);
         FontUtils.setTextViewTypeface(subjectView, CustomFont.HELVETICA_CONDENSED_BOLD);
@@ -140,7 +154,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         super.onSaveInstanceState(outState);
         
         EditText editText = getEditText();
-        if (editText != null) {
+        if (editText != null && editText.getTag()!=null) {
             outState.putString(ARG_STAKE, editText.getText().toString());
             outState.putString(ARG_STAKE_ID, editText.getTag().toString());
         }

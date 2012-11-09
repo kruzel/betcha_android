@@ -28,8 +28,8 @@
 
 	<string name="create_subject_hint">What do you want to bet about?</string>
 	<string name="create_stake_hint">What\'s the stake?</string>
-	<string name="create_duedate_hint">Closes at:</string>
-	<string name="create_prediction_hint">What\'s going to happen?</string>
+	<string name="create_duedate_hint">Close</string>
+	<string name="create_prediction_hint">What\'s your bet?</string>
 	<string name="create_prediction_label">Enter your prediction, or pick one of these:</string>
 		
 	<string name="stake_beer">Drink</string>

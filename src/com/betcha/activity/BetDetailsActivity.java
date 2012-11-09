@@ -166,7 +166,7 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		MenuInflater inflater = getSupportMenuInflater();
 	    inflater.inflate(R.menu.bet_details_activity, menu);
 	    
-	    if(app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
+	    if(app.getCurBet()!=null && app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
 		    menu.add("Delete")
 	        .setIcon(R.drawable.ic_menu_delete)
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);

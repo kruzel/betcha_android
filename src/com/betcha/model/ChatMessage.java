@@ -38,6 +38,17 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 	public HttpStatus getLastRestErrorCode() {
 		return getChatMessageRestClient().getLastRestErrorCode();
 	}
+	
+	public static ChatMessage get(String id) {
+		ChatMessage chatMessage = null;
+		try {
+			chatMessage = getModelDao().queryForId(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return chatMessage;
+	}
 
 	public User getUser() {
 		return user;

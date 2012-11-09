@@ -66,7 +66,7 @@ public class Category {
 		return tmpCategoriesList;
 	}
 	
-	public static Category getCategory(String id) {
+	public static Category get(String id) {
 		return categoriesList.get(id);
 	}
 	

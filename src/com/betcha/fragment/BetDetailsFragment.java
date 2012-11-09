@@ -28,7 +28,7 @@ import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.adapter.PredictionAdapter;
 import com.betcha.adapter.PredictionAdapter.OnPredictionEditListener;
-import com.betcha.fragment.CreatePredictionFragment.OnPredictionSelectedListener;
+import com.betcha.fragment.ChangePredictionDialogFragment.OnPredictionSelectedListener;
 import com.betcha.model.Category;
 import com.betcha.model.Prediction;
 import com.betcha.model.Reward;
@@ -38,7 +38,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	
 	private Prediction predictionEdit;
 	private TextView predictionEditView;
-	CreatePredictionFragment predictionDialog;
+	ChangePredictionDialogFragment predictionDialog;
 	
 	private ListView lvPredictions;
 	private FrameLayout frmPredictionContainer;
@@ -129,12 +129,12 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		
 		tvBetSubject.setText(app.getCurBet().getSubject());
 		tvBetReward.setText(app.getCurBet().getReward().getName());
-		Reward r = Reward.getReward(app.getCurBet().getReward().getName());
+		Reward r = Reward.get(app.getCurBet().getReward().getName());
 		if(r!=null)
 			ivBetRewardImage.setImageResource(r.getDrawable_id());
 		
 		if(app.getCurBet().getCategoryId()!=null)
-			ivBetCategory.setImageBitmap(Category.getCategory(app.getCurBet().getCategoryId()).getImage());
+			ivBetCategory.setImageBitmap(Category.get(app.getCurBet().getCategoryId()).getImage());
 		else
 			ivBetCategory.setImageResource(android.R.color.transparent);
 		
@@ -156,7 +156,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			String suggestions[] = { "Macabi", "Hapoel", "Me" };
 			
 			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			predictionDialog = CreatePredictionFragment.newInstance(prediction.getPrediction(),suggestions);
+			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getPrediction(),suggestions);
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
 		}

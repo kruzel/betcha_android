@@ -125,7 +125,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		user.setProfilePhoto(holder.ivProfPic);
 		
 		if(bet.getCategoryId()!=null)
-			holder.ivBetCategory.setImageBitmap(Category.getCategory(bet.getCategoryId()).getImage());
+			holder.ivBetCategory.setImageBitmap(Category.get(bet.getCategoryId()).getImage());
 		else
 			holder.ivBetCategory.setImageResource(android.R.color.transparent);
 		

@@ -182,8 +182,22 @@
 	</style>
 	
 	<!-- Create Prediction -->
-	
 	<style name="CreatePredictionContainer">
+	    <item name="android:background">@drawable/beveled_white_frame</item>
+	</style>
+	
+	<style name="CreatePredictionHint" parent="@style/Text">
+	    <item name="android:textSize">20sp</item>
+	    <item name="android:textColorHint">@color/text_darkhint</item>
+	</style>
+	
+	<style name="CreatePredictionText" parent="@style/Text">
+	    <item name="android:textSize">20sp</item>
+	</style>
+	
+	<!-- Change Prediction Dialog -->
+	
+	<style name="CreatePredictionDialogContainer">
 	    <item name="android:background">@drawable/offwhite_bg_full</item>
 	</style>
 

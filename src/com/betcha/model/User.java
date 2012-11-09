@@ -85,6 +85,17 @@ public class User extends ModelCache<User,String> {
 		setCreated_at(newUser.getCreated_at());
 		setUpdated_at(newUser.getUpdated_at());
 	}
+	
+	public static User get(String id) {
+		User user = null;
+		try {
+			user = getModelDao().queryForId(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return user;
+	}
 
 	public UserRestClient getUserClient() {
 		if(userClient==null)

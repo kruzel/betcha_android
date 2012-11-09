@@ -15,23 +15,31 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.FontUtils;
-import com.betcha.R;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.R;
+import com.betcha.model.Category;
+import com.betcha.model.User;
 
 public class CreateSubjectFragment extends SherlockFragment implements OnEditorActionListener {
     
     private static final String ARG_SUGGESTIONS = "suggestions";
     private static final String ARG_SUBJECT = "subject";
+    private static final String ARG_CATEGORY = "categoryId";
+    private static final String ARG_USER = "userId";
     
     private String[] mSuggestions;
+    private String mCategoryId;
+    private String mUserId;
     
     private OnSubjectSelectedListener mListener; 
     
-    public static CreateSubjectFragment newInstance(String[] suggestions) {
+    public static CreateSubjectFragment newInstance(String[] suggestions, String categorId, String userId) {
         CreateSubjectFragment f = new CreateSubjectFragment();
         
         Bundle args = new Bundle();
         args.putStringArray(ARG_SUGGESTIONS, suggestions);
+        args.putString(ARG_CATEGORY, categorId);
+        args.putString(ARG_USER, userId);
         f.setArguments(args);
         
         return f;
@@ -53,6 +61,8 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mSuggestions = getArguments().getStringArray(ARG_SUGGESTIONS);
+        mCategoryId = getArguments().getString(ARG_CATEGORY);
+        mUserId = getArguments().getString(ARG_USER);
     }
     
     @Override
@@ -60,7 +70,10 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         View view = inflater.inflate(R.layout.create_subject, container, false);
         
         ImageView profileView = (ImageView) view.findViewById(R.id.iv_bet_owner_profile_pic);
-        // TODO set user's image
+        User.get(mUserId).setProfilePhoto(profileView);
+        
+        ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
+        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
         
         ViewGroup suggestionsContainer = (ViewGroup) view.findViewById(R.id.ll_suggestions);
         for (final String suggestion : mSuggestions) {

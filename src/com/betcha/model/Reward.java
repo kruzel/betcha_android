@@ -120,7 +120,7 @@ public class Reward {
 		return tmpRewardsList;
 	}
 	
-	public static Reward getReward(String id) {
+	public static Reward get(String id) {
 		return rewardsList.get(id);
 	}
 	

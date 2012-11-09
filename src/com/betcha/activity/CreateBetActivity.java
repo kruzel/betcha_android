@@ -34,6 +34,8 @@ import com.betcha.fragment.CreateCategoryFragment;
 import com.betcha.fragment.CreateCategoryFragment.OnCategorySelectedListener;
 import com.betcha.fragment.CreateDuedateFragment;
 import com.betcha.fragment.CreateDuedateFragment.OnDuedateSelectedListener;
+import com.betcha.fragment.CreatePredictionFragment;
+import com.betcha.fragment.CreatePredictionFragment.OnPredictionSelectedListener;
 import com.betcha.fragment.CreateStakeFragment;
 import com.betcha.fragment.CreateStakeFragment.OnStakeSelectedListener;
 import com.betcha.fragment.CreateSubjectFragment;
@@ -44,7 +46,7 @@ import com.betcha.model.Prediction;
 import com.betcha.model.Reward;
 import com.betcha.model.User;
 
-public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener, OnDuedateSelectedListener {
+public class CreateBetActivity extends SherlockFragmentActivity implements OnCategorySelectedListener, OnSubjectSelectedListener, OnStakeSelectedListener, OnPredictionSelectedListener, OnDuedateSelectedListener {
 	
 	private BetchaApp app;
 	
@@ -52,6 +54,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	private CreateCategoryFragment betCategoryFragment;
 	private CreateSubjectFragment createSubjectFragment;
 	private CreateDuedateFragment createDuedateFragment;
+	private CreatePredictionFragment createPredictionFragment;
 	
 	private ListView lvFriends;
 	private FriendAdapter friendAdapter;
@@ -102,15 +105,10 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		if ("Send".equals(item.getTitle())) {
 			app.getCurBet().create();
 
-			Intent i = new Intent(this, BetDetailsActivity.class);
-	        i.putExtra("bet_id", app.getCurBet().getId());
-	        startActivity(i);
-
-	        finish();	
+			finish();	
 	        
 			return true;
 		}
-		
 		
 		switch (item.getItemId()) {
         case android.R.id.home:
@@ -127,7 +125,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 				
 		String[] subjects = { "which team win", "who get highest grade" };
 		
-		createSubjectFragment = CreateSubjectFragment.newInstance(subjects);
+		createSubjectFragment = CreateSubjectFragment.newInstance(subjects,category.getId(), app.getCurUser().getId());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createSubjectFragment);
@@ -139,7 +137,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public void onSubjectSelected(String subject) {
 		app.getCurBet().setSubject(subject);
 			
-		createStakeFragment = CreateStakeFragment.newInstance(Reward.getIds(), Reward.getNames(), Reward.getDrawables(),app.getCurBet().getSubject());
+		createStakeFragment = CreateStakeFragment.newInstance(Reward.getIds(), Reward.getNames(), Reward.getDrawables(), app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId() ,app.getCurBet().getSubject());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createStakeFragment);
@@ -148,11 +146,28 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	}
 	
 	@Override
-	public void onStakeSelected(String stake_id, String stake) {
+	public void onStakeSelected(String stakeId, String stake) {
 		app.getCurBet().setReward(stake);
-		app.getCurBet().setReward_id(stake_id);
+		app.getCurBet().setReward_id(stakeId);
 		
-		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getSubject(), stake,stake_id);
+		String[] suggestionsIds = { "0", "1", "2" };
+		String[] suggestions = { "Your own prediction", "Macabi", "Hapoel" };
+		int suggestionsDrawables[] = { R.drawable.category_custom, R.drawable.prediction_macabi, R.drawable.prediction_hapoel };
+		
+		createPredictionFragment = CreatePredictionFragment.newInstance(suggestionsIds, suggestions, suggestionsDrawables, app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId(), app.getCurBet().getSubject(), stake, stakeId);
+		
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.create_bet_fragment_container, createPredictionFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
+	}
+	
+	@Override
+	public void onPredictionSelected(String suggestionId, String prediction) {
+		//TODO add prediction to bet
+		app.getCurBet().getOwnerPrediction().setPrediction(prediction);
+		
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId() , app.getCurBet().getSubject(), app.getCurBet().getReward().getId(),app.getCurBet().getReward_id(), app.getCurBet().getOwnerPrediction().getPrediction());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);
@@ -243,11 +258,12 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		    	
 		    	
 		    	menu.add("Send")
-		        .setIcon(R.drawable.ic_menu_forward)
+		        .setIcon(R.drawable.ic_menu_save)
 		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 			}
 		});
         
         dialog.show();
-	}    
+	}
+	  
 }

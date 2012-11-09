@@ -35,6 +35,26 @@ public class Friend extends ModelCache<Friend, String> {
 	
 	private static FriendRestClient restClient;
 	
+	public Friend() {
+		super();
+	}
+	
+	public Friend(User user) {
+		super();
+		this.user = user;
+	}
+	
+	public static Friend get(String id) {
+		Friend friend = null;
+		try {
+			friend = getModelDao().queryForId(id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return friend;
+	}
+	
 	public FriendRestClient getFriendRestClient() {
 		if(restClient==null)
 			//nested url = bets/:bet_id/predictions
@@ -45,15 +65,6 @@ public class Friend extends ModelCache<Friend, String> {
 	
 	public HttpStatus getLastRestErrorCode() {
 		return getFriendRestClient().getLastRestErrorCode();
-	}
-	
-	public Friend() {
-		super();
-	}
-	
-	public Friend(User user) {
-		super();
-		this.user = user;
 	}
 
 	public User getUser() {

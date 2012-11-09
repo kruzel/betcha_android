@@ -1,52 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/CreatePredictionContainer"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:padding="5dp">
+    style="@style/BetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
     
-    <EditText
-        android:id="@+id/et_prediction"
-        style="@style/CreatePredictionEditbox"
-        android:layout_width="280dp"
-        android:layout_height="40dp"
-        android:padding="5dp"
-        android:gravity="left|center_vertical"
-        android:imeOptions="actionDone"
-        android:inputType="textCapSentences|textNoSuggestions"
-        android:hint="@string/create_prediction_hint" />
-    
-    <TextView
-        android:id="@+id/tv_prediction_label"
-        style="@style/CreatePredictionLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@id/et_prediction"
-        android:layout_marginLeft="2dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/create_prediction_label" />
+    <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
+        style="@style/BetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="155dp"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:padding="2dp">
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="8dp"
+		    android:src="@drawable/default_avatar"
+		    android:scaleType="centerCrop" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_owner_profile_frame"
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="4dp" 
+		    android:src="@drawable/bet_avatar_frame" />
+	    
+	    <ImageView
+	        android:id="@+id/iv_bet_category"
+	        android:layout_width="42dp"
+	        android:layout_height="42dp"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_owner_profile_frame"
+		    android:layout_marginTop="7dp" 
+		    android:layout_marginLeft="7dp"
+		    android:layout_marginBottom="7dp"
+		    android:src="@drawable/bet_category" />
+
+	    <RelativeLayout
+	        style="@style/BetContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_alignParentTop="true"
+	        android:layout_alignParentRight="true"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_frame"
+	        android:layout_marginLeft="2dp"
+	        android:padding="5dp">
+
+	        <TextView
+	            android:id="@+id/tv_bet_topic"
+	            style="@style/BetSubject"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="4dp" />
+
+	        <LinearLayout
+	            android:id="@+id/ll_bet_reward"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_below="@id/tv_bet_topic"
+	            android:layout_centerHorizontal="true"
+	            android:layout_margin="6dp"
+	            android:gravity="center">
+	            
+	            <ImageView
+				    android:id="@+id/iv_bet_reward"
+				    android:layout_width="40dp"
+				    android:layout_height="40dp"
+				    android:src="@drawable/bet_subject" />
+
+	            <TextView
+	                style="@style/BetReward"
+	                android:id="@+id/tv_bet_reward"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginLeft="3dp"
+	                android:gravity="center" />
+		        
+	        </LinearLayout>
+	        
+	        <EditText
+	            android:id="@+id/et_bet_prediction"
+	            style="@style/CreateEditbox"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentBottom="true"
+	            android:padding="5dp"
+	            android:gravity="left|top"
+	            android:imeOptions="actionNext"
+	            android:inputType="textCapWords|textNoSuggestions"
+	            android:hint="@string/create_prediction_hint" />
+	            
+	    </RelativeLayout>
+    	    
+    </RelativeLayout>
     
     <LinearLayout
-        style="@style/CreatePredictionSuggestions"
-        android:layout_width="wrap_content"
+        android:id="@+id/ll_suggestions"
+        style="@style/CreateSuggestionsContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_prediction_label"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="7dp"
-        android:padding="1px"
-        android:orientation="vertical">
-
-	    <LinearLayout
-	        android:id="@+id/ll_suggestions1"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" />
-
-	    <LinearLayout
-	        android:id="@+id/ll_suggestions2"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" />
+        android:layout_alignParentBottom="true"
+        android:paddingTop="4dp"
+        android:orientation="vertical" />
 	    
-    </LinearLayout>
-
 </RelativeLayout>
