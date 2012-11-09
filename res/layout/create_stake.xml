@@ -7,7 +7,7 @@
     <ScrollView
         style="@style/CreateSuggestionsContainer"
         android:layout_width="match_parent"
-        android:layout_height="124dp"
+        android:layout_height="164dp"
         android:layout_alignParentBottom="true"
         android:paddingTop="4dp"
         android:scrollbars="vertical" >
@@ -20,12 +20,12 @@
 	        <LinearLayout
 		        android:id="@+id/ll_suggestions"
 		        android:layout_width="wrap_content"
-		        android:layout_height="60dp" />
+		        android:layout_height="80dp" />
 	
 	        <LinearLayout
 		        android:id="@+id/ll_suggestions2"
 		        android:layout_width="wrap_content"
-		        android:layout_height="60dp" />
+		        android:layout_height="80dp" />
         
 	        </LinearLayout>
     </ScrollView>
