@@ -119,7 +119,7 @@
 	            android:layout_alignParentLeft="true"
 	            android:layout_toLeftOf="@id/ll_bet_reward"
 	            android:layout_below="@id/tv_bet_topic"
-	            android:layout_marginTop="17dp"
+	            android:layout_marginTop="27dp"
 	            android:background="#ffd2d2d2" />
 	        
 	        <View
@@ -128,7 +128,7 @@
 	            android:layout_alignParentRight="true"
 	            android:layout_toRightOf="@id/ll_bet_reward"
 	            android:layout_below="@id/tv_bet_topic"
-	            android:layout_marginTop="17dp"
+	            android:layout_marginTop="27dp"
 	            android:background="#ffd2d2d2" />
 				<FrameLayout 
 			    android:id="@+id/frm_bet_predictions_container"
