@@ -69,7 +69,12 @@ public class User extends ModelCache<User,String> {
 	private static DisplayImageOptions defaultOptions;
 	
 	private Boolean isInvitedToBet = false;
-	
+	private Boolean ShouldCreateToken = false;
+		
+	public void setShouldCreateToken(Boolean shouldCreateToken) {
+		ShouldCreateToken = shouldCreateToken;
+	}
+
 	public void setUser(User newUser) {
 		this.id = newUser.getId();
 		this.name = newUser.getName();
@@ -236,12 +241,14 @@ public class User extends ModelCache<User,String> {
 		if(restCreateUserAccount()==0)
 			return 0;
 		
-		if(restCreateToken()==0)
-			return 0;
-			
-		//get friends
-		if(getProvider().equals("facebook"))
-			friend.onRestGetAllForCurUser();
+		if(ShouldCreateToken) {
+			if(restCreateToken()==0)
+				return 0;
+				
+			//get friends
+			if(getProvider().equals("facebook"))
+				friend.onRestGetAllForCurUser();
+		}
 		
 		return 1;
 	}

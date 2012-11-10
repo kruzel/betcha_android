@@ -136,6 +136,7 @@ public class LoginActivity extends SherlockFragmentActivity implements
 
 								int res = 0;
 								if (tmpMe.getId() == null) {
+									tmpMe.setShouldCreateToken(true);
 									res = tmpMe.create();
 								} else {
 									res = tmpMe.update();

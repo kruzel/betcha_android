@@ -162,6 +162,7 @@ public class LoginEmailActivity extends SherlockActivity implements
 
 				tmpMe.setListener(this);
 
+				tmpMe.setShouldCreateToken(true);
 				res = tmpMe.create();
 
 			} else {

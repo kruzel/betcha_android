@@ -143,21 +143,33 @@ public class ActivityFeedItem {
 			case BET_CREATE:
 				bet = (Bet) obj;
 				if(bet.getOwner().getId().equals(curUser.getId()))
-					return "You have just created a bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return "You have created a bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 				else
 					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case BET_UPDATE:
 				bet = (Bet) obj;
-				return bet.getOwner().getName() + " has update the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+				if(bet.getOwner().getId().equals(curUser.getId()))
+					return "You have updated the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+				else
+					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case PREDICTION_CREATE:
 				prediction = (Prediction) obj;
-				return prediction.getBet().getOwner().getName() + " has added " + prediction.getUser().getName() + " as a new participant";
+				if(prediction.getBet().getOwner().getId().equals(curUser.getId()))
+					return "You have added " + prediction.getUser().getName() + " as a new participant";
+				else
+					return prediction.getBet().getOwner().getName() + " has added " + prediction.getUser().getName() + " as a new participant";
 			case PREDICTION_UPDATE:
 				prediction = (Prediction) obj;
-				return prediction.getUser().getName() + " has updated his bet to \"" + prediction.getPrediction() + "\"";
+				if(prediction.getUser().getId().equals(curUser.getId()))
+					return "You have updated your bet to \"" + prediction.getPrediction() + "\"";
+				else
+					return prediction.getUser().getName() + " has updated his bet to \"" + prediction.getPrediction() + "\"";
 			case CHAT_CREATE:
 				chatMessage = (ChatMessage) obj;
-				return chatMessage.getUser().getName() + " has send a chat message, \"" + chatMessage.getMessage() + "\"";
+				if(chatMessage.getUser().getId().equals(curUser.getId()))
+					return "You have sent a chat message, \"" + chatMessage.getMessage() + "\"";
+				else
+					return chatMessage.getUser().getName() + " has sent a chat message, \"" + chatMessage.getMessage() + "\"";
 			case OTHER:
 			default:
 				return "";
