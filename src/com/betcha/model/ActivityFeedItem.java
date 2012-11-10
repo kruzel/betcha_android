@@ -86,7 +86,7 @@ public class ActivityFeedItem {
 					 (!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
 					 (prediction!=null && !bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
 					 (chatMessage!=null && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
-					 (!bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()))) {
+					 (chatMessage!=null && prediction!=null && !bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()))) {
 					
 					item = new ActivityFeedItem();
 					item.obj = bet;
@@ -94,10 +94,11 @@ public class ActivityFeedItem {
 				 }
 			} else if(predictionItr.hasNext()) {
 				prediction = predictionItr.next();
-				if ((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
+				if ((bet==null && chatMessage==null) ||
+				 (!betItr.hasNext() && !chatMessageItr.hasNext()) || 
 				 (bet!=null && !prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !chatMessageItr.hasNext()) ||
 				 (chatMessage!=null && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()))) {
+				 (chatMessage!=null && bet!=null && !prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()))) {
 				
 					item = new ActivityFeedItem();
 					item.obj = prediction;
