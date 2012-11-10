@@ -175,6 +175,10 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
             editText.setTag(suggestion.id);
             editText.setSelection(editText.getText().length());
         }
+        
+        //if coins let user set #
+        
+        
         submit(suggestion.id, suggestion.name);
     }
 

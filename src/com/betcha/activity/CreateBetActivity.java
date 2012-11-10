@@ -3,6 +3,7 @@ package com.betcha.activity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.joda.time.DateTime;
 
 import utils.SoftKeyboardUtils;
@@ -19,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
@@ -102,13 +104,13 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if ("Send".equals(item.getTitle())) {
-			app.getCurBet().create();
-
-			finish();	
-	        
-			return true;
-		}
+//		if ("Send".equals(item.getTitle())) {
+//			app.getCurBet().create();
+//
+//			finish();	
+//	        
+//			return true;
+//		}
 		
 		switch (item.getItemId()) {
         case android.R.id.home:
@@ -256,10 +258,21 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		    	
 		    	dialog.dismiss();
 		    	
+		    	ImageView ivSendButton = (ImageView) findViewById(R.id.iv_start_button);
+		    	ivSendButton.setVisibility(View.VISIBLE);
 		    	
-		    	menu.add("Send")
-		        .setIcon(R.drawable.ic_menu_save)
-		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		    	ivSendButton.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						app.getCurBet().create();
+						finish();	
+					}
+				});
+		    	
+//		    	menu.add("Send")
+//		        .setIcon(R.drawable.ic_menu_save)
+//		        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 			}
 		});
         
