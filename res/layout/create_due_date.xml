@@ -8,7 +8,7 @@
         android:id="@+id/rl_bet_item_container"
         style="@style/BetFrame"
         android:layout_width="match_parent"
-        android:layout_height="155dp"
+        android:layout_height="165dp"
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
         android:padding="2dp">
@@ -60,7 +60,8 @@
 	            android:layout_height="wrap_content"
 	            android:layout_alignParentTop="true"
 	            android:layout_centerHorizontal="true"
-	            android:layout_margin="4dp" />
+	            android:layout_margin="4dp"
+	            android:maxLines="1" />
 
 	        <LinearLayout
 	            android:id="@+id/ll_bet_reward"
@@ -104,7 +105,8 @@
 	                android:layout_centerVertical="true"
 	                android:layout_marginLeft="6dp"
 	                android:layout_marginRight="6dp"
-	                android:text="---" />
+	                android:text="---" 
+	                android:maxLines="1"/>
 	              
 	        </RelativeLayout>
 
@@ -117,23 +119,12 @@
 	            android:layout_centerHorizontal="true">
 	            
 	            <TextView
-	                android:id="@+id/tv_bet_date_hint"
-	                style="@style/CreateDuedateHint"
-	                android:layout_width="wrap_content"
-	                android:layout_height="wrap_content"
-	                android:layout_alignParentLeft="true"
-	                android:layout_centerVertical="true"
-	                android:layout_marginLeft="6dp"
-	                android:layout_marginRight="4dp"
-	                android:text="@string/create_duedate_hint" />
-
-	            <TextView
 	                android:id="@+id/tv_bet_date_button"
 	                style="@style/CreateDuedateText"
 	                android:layout_width="wrap_content"
 	                android:layout_height="wrap_content"
 	                android:layout_centerVertical="true"
-	                android:layout_toRightOf="@id/tv_bet_date_hint"
+	                android:layout_alignParentLeft="true"
 	                android:layout_marginLeft="6dp"
 	                android:layout_marginRight="6dp"
 	                android:text="Sat, Aug 17th" />
@@ -148,6 +139,18 @@
 	                android:layout_marginRight="6dp"
 	                android:layout_toRightOf="@id/tv_bet_date_button"
 	                android:text="19:00" />
+	              
+	              <TextView
+	                android:id="@+id/tv_bet_date_hint"
+	                style="@style/CreateDuedateHint"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_alignParentRight="true"
+	                android:layout_toRightOf="@id/tv_bet_time_button"
+	                android:layout_centerVertical="true"
+	                android:layout_marginLeft="6dp"
+	                android:layout_marginRight="6dp"
+	                android:text="@string/create_duedate_hint" />
 	              
 	        </RelativeLayout>
 	            

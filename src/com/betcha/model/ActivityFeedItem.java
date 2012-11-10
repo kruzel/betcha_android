@@ -75,51 +75,44 @@ public class ActivityFeedItem {
 		Bet bet = null;
 		Prediction prediction = null;
 		ChatMessage chatMessage = null;
-		
-		if(betItr.hasNext())
-			bet = betItr.next();
-		if(predictionItr.hasNext())
-			prediction = predictionItr.next();
-		if(chatMessageItr.hasNext())
-			chatMessage = chatMessageItr.next();
-		
 		ActivityFeedItem item = null;
 		
 		while(betItr.hasNext() || predictionItr.hasNext() || chatMessageItr.hasNext()) {
 			//Log.i("getActivities()", "bet: " + bet.getCreated_at().toString() + " | prediction: " + prediction.getUpdated_at().toString() + " | chat: " + chatMessage.getUpdated_at().toString() );
 			
-			if(betItr.hasNext() && 
-				((prediction==null && chatMessage==null) ||
-				 (!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
-				 (prediction!=null && !bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
-				 (chatMessage!=null && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
-				 (!bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at())))) {
-				
-				item = new ActivityFeedItem();
-				item.obj = bet;
-				item.type = Type.BET_CREATE;
+			if(betItr.hasNext()) { 
 				bet = betItr.next();
+				if((prediction==null && chatMessage==null) ||
+					 (!predictionItr.hasNext() && !chatMessageItr.hasNext()) || 
+					 (prediction!=null && !bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !chatMessageItr.hasNext()) ||
+					 (chatMessage!=null && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()) && !predictionItr.hasNext()) ||
+					 (!bet.getCreated_at().isBefore(prediction.getUpdated_at()) && !bet.getCreated_at().isBefore(chatMessage.getUpdated_at()))) {
 					
-			} else if(predictionItr.hasNext() &&
-				((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
+					item = new ActivityFeedItem();
+					item.obj = bet;
+					item.type = Type.BET_CREATE;
+				 }
+			} else if(predictionItr.hasNext()) {
+				prediction = predictionItr.next();
+				if ((!betItr.hasNext() && !chatMessageItr.hasNext()) || 
 				 (bet!=null && !prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !chatMessageItr.hasNext()) ||
 				 (chatMessage!=null && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()) && !betItr.hasNext()) ||
-				 (!prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at())))) {
+				 (!prediction.getUpdated_at().isBefore(bet.getCreated_at()) && !prediction.getUpdated_at().isBefore(chatMessage.getUpdated_at()))) {
 				
-				item = new ActivityFeedItem();
-				item.obj = prediction;
-				if(Seconds.secondsBetween(prediction.getCreated_at(), prediction.getUpdated_at()).isLessThan(Seconds.seconds(10)) || prediction.getPrediction().length()==0) {
-					item.type = Type.PREDICTION_CREATE;
-				} else {
-					item.type = Type.PREDICTION_UPDATE;
-				}
+					item = new ActivityFeedItem();
+					item.obj = prediction;
+					if(Seconds.secondsBetween(prediction.getCreated_at(), prediction.getUpdated_at()).isLessThan(Seconds.seconds(10)) || prediction.getPrediction().length()==0) {
+						item.type = Type.PREDICTION_CREATE;
+					} else {
+						item.type = Type.PREDICTION_UPDATE;
+					}
 					
-				prediction = predictionItr.next();
+				}
 			} else if(chatMessageItr.hasNext()){
+				chatMessage = chatMessageItr.next();
 				item = new ActivityFeedItem();
 				item.obj = chatMessage;
 				item.type = Type.CHAT_CREATE;
-				chatMessage = chatMessageItr.next();
 			} 
 			
 			if(item.type!=Type.PREDICTION_CREATE)
