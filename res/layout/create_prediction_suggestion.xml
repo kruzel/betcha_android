@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/CreateSuggestion"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
     
     <View
-        android:layout_width="70dp"
-        android:layout_height="60dp"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
         android:layout_centerInParent="true"
-        android:background="@drawable/highlight_strong_up_border" />
+        android:background="@drawable/highlight_up_border" />
     
     <TextView 
         android:id="@+id/tv_suggestion_text"
-        style="@style/CreatePredictionSuggestionText"
+        style="@style/CreateSuggestionSubject"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="32dp"
         android:layout_centerInParent="true"
         android:gravity="center" />
+
+    <ImageView
+        android:id="@+id/iv_team_logo_1"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@id/tv_suggestion_text"
+        android:layout_marginRight="5dp" />
     
 </RelativeLayout>

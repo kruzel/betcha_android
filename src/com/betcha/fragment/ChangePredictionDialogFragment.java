@@ -17,30 +17,38 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
+import com.betcha.model.PredictionSuggestion;
 
 public class ChangePredictionDialogFragment extends SherlockDialogFragment implements OnEditorActionListener {
     
+	private static final String ARG_SUGGESTION_ID = "suggestionId";
     private static final String ARG_PREDICTION = "prediction";
-    private static final String ARG_SUGGESTIONS = "suggestions";
+	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
+	private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
+    private static final String ARG_SUGGESTION_DRAWABLES = "suggestionDrawables";
     
+    private String mSuggestionId;
     private String mPrediction;
-    private String[] mSuggestions;
+    private Suggestion[] mSuggestions;
     
     private OnPredictionSelectedListener mListener; 
     
-    public static ChangePredictionDialogFragment newInstance(String current, String[] suggestions) {
+    public static ChangePredictionDialogFragment newInstance(String suggestionId, String current, String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables) {
         ChangePredictionDialogFragment f = new ChangePredictionDialogFragment();
         
         Bundle args = new Bundle();
         args.putString(ARG_PREDICTION, current);
-        args.putStringArray(ARG_SUGGESTIONS, suggestions);
+        args.putString(ARG_SUGGESTION_ID, suggestionId);
+        args.putStringArray(ARG_SUGGESTION_IDS, suggestionIds);
+        args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
+        args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
         f.setArguments(args);
         
         return f;
     }
     
     public interface OnPredictionSelectedListener {
-        void onPredictionSelected(String prediction);
+        void onPredictionSelected(String suggestionId, String prediction);
     }
     
     @Override
@@ -62,7 +70,23 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         setStyle(STYLE_NO_FRAME, R.style.Theme_Sherlock_Dialog);
         
         mPrediction = getArguments().getString(ARG_PREDICTION);
-        mSuggestions = getArguments().getStringArray(ARG_SUGGESTIONS);
+        mSuggestionId = getArguments().getString(ARG_SUGGESTION_ID);
+    
+        String[] suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
+        String[] suggestionNames = getArguments().getStringArray(ARG_SUGGESTION_NAMES);
+        int[] suggestionDrawables = getArguments().getIntArray(ARG_SUGGESTION_DRAWABLES);
+        if (suggestionNames.length != suggestionDrawables.length) {
+            throw new IllegalArgumentException();
+        }
+        
+        mSuggestions = new Suggestion[suggestionNames.length];
+        for (int i = 0; i < suggestionNames.length; i++) {
+            Suggestion suggestion = new Suggestion();
+            suggestion.id = suggestionIds[i];
+            suggestion.name = suggestionNames[i];
+            suggestion.drawable = suggestionDrawables[i];
+            mSuggestions[i] = suggestion;
+        }
     }
     
     @Override
@@ -76,17 +100,20 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions1);
         ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
         for (int i = 0; i < mSuggestions.length; ++i) {
-            final String suggestion = mSuggestions[i];
-            View suggestionView = inflater.inflate(R.layout.create_prediction_suggestion, null);
+            final Suggestion suggestion = mSuggestions[i];
+            View suggestionView = inflater.inflate(R.layout.create_dialog_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_CONDENSED_BOLD);
-            textView.setText(suggestion);
+            textView.setText(suggestion.name);
+            textView.setTag(suggestion.id);
             
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onSuggestionClicked(suggestion);
+                	TextView tv = (TextView) v.findViewById(R.id.tv_suggestion_text);
+                	if(tv.getTag()!=null && tv.getText()!=null) 
+                    onSuggestionClicked(tv.getTag().toString(),tv.getText().toString());
                 }
             });
             
@@ -100,11 +127,16 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         
         if (savedInstanceState != null && savedInstanceState.containsKey(ARG_PREDICTION)) {
             mPrediction = savedInstanceState.getString(ARG_PREDICTION);
+            mSuggestionId = savedInstanceState.getString(ARG_SUGGESTION_ID);
         }
+        if(mSuggestionId!=null && !mSuggestionId.equals("0"))
+        	mPrediction = PredictionSuggestion.get(mSuggestionId).getName();
+        
         if (mPrediction == null) {
             mPrediction = "";
         }
         editText.setText(mPrediction);
+        editText.setTag(mSuggestionId);
         editText.setSelection(editText.getText().length());
         
         return view;
@@ -117,6 +149,7 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         EditText editText = getEditText();
         if (editText != null) {
             outState.putString(ARG_PREDICTION, editText.getText().toString());
+            outState.putString(ARG_SUGGESTION_ID, editText.getTag().toString());
         }
     }
     
@@ -128,8 +161,9 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         return null;
     }
     
-    private void onSuggestionClicked(String suggestion) {
+    private void onSuggestionClicked(String suggestionId, String suggestion) {
         mPrediction = suggestion;
+        mSuggestionId = suggestionId;
         
         EditText editText = getEditText();
         if (editText != null) {
@@ -137,26 +171,33 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
             editText.setSelection(editText.getText().length());
         }
         
-        submit(mPrediction);
+        submit(suggestionId, mPrediction);
     }
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         mPrediction = v.getText().toString();
+        mSuggestionId = "0";
         
         if (TextUtils.isEmpty(mPrediction)) {
             v.setError(getString(R.string.error_missing_bet_prediction));
         } else {
-            submit(mPrediction);
+            submit(mSuggestionId, mPrediction);
         }
         
         return true;
     }
     
-    private void submit(String prediction) {
+    private void submit(String suggestionId, String prediction) {
         if (mListener != null) {
-            mListener.onPredictionSelected(prediction);
+            mListener.onPredictionSelected(suggestionId, prediction);
         }
+    }
+    
+    private class Suggestion {
+    	String id;
+        String name;
+        int drawable;
     }
     
 }

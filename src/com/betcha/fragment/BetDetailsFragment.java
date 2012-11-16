@@ -1,6 +1,7 @@
 package com.betcha.fragment;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -15,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -31,6 +31,7 @@ import com.betcha.adapter.PredictionAdapter.OnPredictionEditListener;
 import com.betcha.fragment.ChangePredictionDialogFragment.OnPredictionSelectedListener;
 import com.betcha.model.Category;
 import com.betcha.model.Prediction;
+import com.betcha.model.PredictionSuggestion;
 import com.betcha.model.Reward;
 
 public class BetDetailsFragment extends SherlockFragment implements OnPredictionEditListener, OnPredictionSelectedListener {
@@ -153,10 +154,30 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			predictionEdit = prediction;
 			predictionEditView = predictionView;
 			
-			String suggestions[] = { "Macabi", "Hapoel", "Me" };
+			//String suggestions[] = { "Macabi", "Hapoel", "Me" };
+			
+			String suggestionId = null;
+			if(prediction.getPredictionSuggestion()!=null)
+					suggestionId = prediction.getPredictionSuggestion().getId();
+			
+			String topicId = "0";
+			if(prediction.getBet().getTopic()!=null)
+				topicId = prediction.getBet().getTopic().getId();
+			
+			List<PredictionSuggestion> suggestionList = PredictionSuggestion.getForTopic(getActivity(), topicId);
+			String[] suggestionsarray = new String[suggestionList.size()];	
+			String[] suggestionsIdsarray = new String[suggestionList.size()];
+			int[] suggestionsDrawablessarray = new int[suggestionList.size()];
+			int i = 0;
+			for (PredictionSuggestion suggestion : suggestionList) {
+				suggestionsarray[i] = suggestion.getName();
+				suggestionsIdsarray[i] = suggestion.getId();
+				suggestionsDrawablessarray[i] = 0; //TODO
+				i++;
+			}
 			
 			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getPrediction(),suggestions);
+			predictionDialog = ChangePredictionDialogFragment.newInstance(suggestionId, prediction.getPrediction(), suggestionsIdsarray, suggestionsarray,suggestionsDrawablessarray);
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
 		}
@@ -164,7 +185,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	}
 
 	@Override
-	public void onPredictionSelected(String prediction) {
+	public void onPredictionSelected(String suggestionId, String prediction) {
 		if(predictionEdit!=null) {
 //			try {
 //				Prediction.getModelDao().refresh(predictionEdit);
@@ -172,6 +193,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 //				e.printStackTrace();
 //			}
 			predictionEdit.setPrediction(prediction);
+			predictionEdit.setPredictionSuggestion(PredictionSuggestion.get(suggestionId));
 			predictionEditView.setText(prediction);
 			if(predictionDialog!=null) {
 				predictionDialog.dismiss();

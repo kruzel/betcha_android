@@ -30,6 +30,8 @@ public class Prediction extends ModelCache<Prediction, String> {
 	private Boolean result;
 	@DatabaseField
 	private String user_ack; // Yes/No/Pending
+	@DatabaseField(defaultValue = "0")
+	private String predictionSuggestionId;
 
 	private static PredictionRestClient predictionRestClient;
 	private static UpdateBatchPredictionsTask updatePredictionsTask;
@@ -118,6 +120,14 @@ public class Prediction extends ModelCache<Prediction, String> {
 
 	public void setResult(Boolean result) {
 		this.result = result;
+	}
+	
+	public PredictionSuggestion getPredictionSuggestion() {
+		return PredictionSuggestion.get(predictionSuggestionId);
+	}
+
+	public void setPredictionSuggestion(PredictionSuggestion predictionSuggestion) {
+		this.predictionSuggestionId = predictionSuggestion.getId();
 	}
 
 	/**

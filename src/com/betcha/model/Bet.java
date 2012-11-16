@@ -51,7 +51,16 @@ public class Bet extends ModelCache<Bet, String> {
 	private ForeignCollection<Prediction>  predictions;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<ChatMessage>  chatMessages;
+	
+	private Topic topic;
  
+	public Topic getTopic() {
+		return topic;
+	}
+	public void setTopic(Topic topic) {
+		this.topic = topic;
+	}
+
 	private Prediction ownerPrediction;
 	private List<User> participants;
 	

@@ -1,5 +1,7 @@
 package com.betcha.fragment;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,14 +20,13 @@ import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.Category;
+import com.betcha.model.PredictionSuggestion;
 import com.betcha.model.Reward;
 import com.betcha.model.User;
 
 public class CreatePredictionFragment extends SherlockFragment implements OnEditorActionListener {
     
-	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
-    private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
-    private static final String ARG_SUGGESTION_DRAWABLES = "suggestionDrawables";
+	private static final String ARG_TOPIC_ID = "topicId";
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
     private static final String ARG_STAKE_ID = "stake_id";
@@ -34,24 +35,23 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
     private static final String ARG_PREDICTION = "prediction";
     private static final String ARG_PREDICTION_ID = "predictionId";
     
-    private Suggestion[] mSuggestions;
+    //private Suggestion[] mSuggestions;
     private String mSubject;
     private String mCategoryId;
     private String mUserId;
     private String mStakeId;
     private String mStake;
     private String mPrediction;
-    private String mPredictionId;
+    private String mSuggestionId;
+    private String mTopicId;
     
     private OnPredictionSelectedListener mListener;
     
-    public static CreatePredictionFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String categorId, String userId, String subject, String stake, String stakeId) {
+    public static CreatePredictionFragment newInstance(String topicIds, String categorId, String userId, String subject, String stake, String stakeId) {
         CreatePredictionFragment f = new CreatePredictionFragment();
         
         Bundle args = new Bundle();
-        args.putStringArray(ARG_SUGGESTION_IDS, suggestionIds);
-        args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
-        args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
+        args.putString(ARG_TOPIC_ID, topicIds);
         args.putString(ARG_SUBJECT, subject);
         args.putString(ARG_CATEGORY, categorId);
         args.putString(ARG_USER, userId);
@@ -78,29 +78,14 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        String[] suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
-        String[] suggestionNames = getArguments().getStringArray(ARG_SUGGESTION_NAMES);
-        int[] suggestionDrawables = getArguments().getIntArray(ARG_SUGGESTION_DRAWABLES);
-        if (suggestionNames.length != suggestionDrawables.length) {
-            throw new IllegalArgumentException();
-        }
-        
-        mSuggestions = new Suggestion[suggestionNames.length];
-        for (int i = 0; i < suggestionNames.length; i++) {
-            Suggestion suggestion = new Suggestion();
-            suggestion.id = suggestionIds[i];
-            suggestion.name = suggestionNames[i];
-            suggestion.drawable = suggestionDrawables[i];
-            mSuggestions[i] = suggestion;
-        }
-
+        mTopicId = getArguments().getString(ARG_TOPIC_ID);
         mSubject = getArguments().getString(ARG_SUBJECT);
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
         mStakeId = getArguments().getString(ARG_STAKE_ID);
         mStake = getArguments().getString(ARG_STAKE);
         mPrediction = getArguments().getString(ARG_PREDICTION);
-        mPredictionId = getArguments().getString(ARG_PREDICTION_ID);
+        mSuggestionId = getArguments().getString(ARG_PREDICTION_ID);
     }
     
     @Override
@@ -118,12 +103,20 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         subjectView.setText(mSubject);
         
         ViewGroup suggestionsContainer = (ViewGroup) view.findViewById(R.id.ll_suggestions);
-        for (final Suggestion suggestion : mSuggestions) {
-            View suggestionView = inflater.inflate(R.layout.create_subject_suggestion, null);
+        List<PredictionSuggestion> suggestions = PredictionSuggestion.getForTopic(getActivity(), mTopicId);
+        
+        for (final PredictionSuggestion suggestion : suggestions) {
+            View suggestionView = inflater.inflate(R.layout.create_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
-            textView.setText(suggestion.name);
+            textView.setText(suggestion.getName());
+            textView.setTag(suggestion.getId());
+            
+            ImageView logo1 = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_1);
+            
+            if(suggestion.getImage()!=null)
+            	logo1.setImageBitmap(suggestion.getImage());
             
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -151,10 +144,10 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         editText.setOnEditorActionListener(this);
         
         if (savedInstanceState != null) {
-        	if(mStakeId!=null) {
-        		editText.setTag(mPredictionId);
+        	if(mSuggestionId!=null) {
+        		editText.setTag(mSuggestionId);
         	}
-            if (mStake != null) {
+            if (mPrediction != null) {
                 editText.setText(mPrediction);
                 editText.setSelection(editText.getText().length());   
             }
@@ -182,14 +175,14 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         return null;
     }
     
-    private void onSuggestionClicked(Suggestion suggestion) {
+    private void onSuggestionClicked(PredictionSuggestion suggestion) {
         EditText editText = getEditText();
         if (editText != null) {
-            editText.setText(suggestion.name);
-            editText.setTag(suggestion.id);
+            editText.setText(suggestion.getName());
+            editText.setTag(suggestion.getId());
             editText.setSelection(editText.getText().length());
         }
-        submit(suggestion.id, suggestion.name);
+        submit(suggestion.getId(), suggestion.getName());
     }
 
     @Override
@@ -207,12 +200,6 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         if (mListener != null) {
             mListener.onPredictionSelected(suggestionId, suggestionName);
         }
-    }
-    
-    private class Suggestion {
-    	String id;
-        String name;
-        int drawable;
     }
     
 }

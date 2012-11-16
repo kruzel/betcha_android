@@ -1,5 +1,8 @@
 package com.betcha.fragment;
 
+import java.util.Collection;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -18,26 +21,25 @@ import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.Category;
+import com.betcha.model.PredictionSuggestion;
+import com.betcha.model.Topic;
 import com.betcha.model.User;
 
 public class CreateSubjectFragment extends SherlockFragment implements OnEditorActionListener {
     
-    private static final String ARG_SUGGESTIONS = "suggestions";
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_CATEGORY = "categoryId";
     private static final String ARG_USER = "userId";
     
-    private String[] mSuggestions;
     private String mCategoryId;
     private String mUserId;
     
     private OnSubjectSelectedListener mListener; 
     
-    public static CreateSubjectFragment newInstance(String[] suggestions, String categorId, String userId) {
+    public static CreateSubjectFragment newInstance(String categorId, String userId) {
         CreateSubjectFragment f = new CreateSubjectFragment();
         
         Bundle args = new Bundle();
-        args.putStringArray(ARG_SUGGESTIONS, suggestions);
         args.putString(ARG_CATEGORY, categorId);
         args.putString(ARG_USER, userId);
         f.setArguments(args);
@@ -46,7 +48,7 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
     }
     
     public interface OnSubjectSelectedListener {
-        void onSubjectSelected(String subject);
+        void onSubjectSelected(String subjectId, String subject);
     }
     
     @Override
@@ -60,7 +62,6 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSuggestions = getArguments().getStringArray(ARG_SUGGESTIONS);
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
     }
@@ -75,23 +76,47 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
         categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
         
+        List<Topic> suggestions = Topic.getForCategory(getActivity(), mCategoryId);
+        
         ViewGroup suggestionsContainer = (ViewGroup) view.findViewById(R.id.ll_suggestions);
-        for (final String suggestion : mSuggestions) {
-            View suggestionView = inflater.inflate(R.layout.create_subject_suggestion, null);
+        for (Topic topic : suggestions) {
+        	View suggestionView = inflater.inflate(R.layout.create_subject_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
-            textView.setText(suggestion);
+            textView.setText(topic.getName());
+            textView.setTag(topic.getId());
             
-            suggestionView.setOnClickListener(new OnClickListener() {
+            ImageView[] logos = new ImageView[2];
+            logos[0] = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_1);
+            logos[1] = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_2);
+            
+            Collection<PredictionSuggestion> colPredictions = topic.getSuggestions();
+            int i = 0;
+            if(colPredictions!=null) {
+	            for (PredictionSuggestion prediction : topic.getSuggestions()) {
+					if(prediction!=null && prediction.getImage()!=null && !prediction.getName().equals("Tie")) {
+						logos[i].setImageBitmap(prediction.getImage());
+						i++;
+					}
+					if(i>1)
+						break;
+				}
+            }
+            
+            textView.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onSuggestionClicked(suggestion);
+                	TextView tv = (TextView) v;
+                	String id = "0";
+                	if(v.getTag()!=null)
+                		id = v.getTag().toString();
+                    onSuggestionClicked(id, tv.getText().toString());
                 }
             });
             
             suggestionsContainer.addView(suggestionView);
-        }
+		}
 
         EditText editText = (EditText) view.findViewById(R.id.et_bet_subject);
         FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED);
@@ -126,13 +151,13 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         return null;
     }
     
-    private void onSuggestionClicked(String suggestion) {
+    private void onSuggestionClicked(String suggestionId, String suggestion) {
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(suggestion);
             editText.setSelection(editText.getText().length());
         }
-        submit(suggestion);
+        submit(suggestionId, suggestion);
     }
 
     @Override
@@ -141,14 +166,18 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         if (TextUtils.isEmpty(subject)) {
             v.setError(getString(R.string.error_missing_bet_subject));
         } else {
-            submit(v.getText().toString());
+        	String id = "0";
+        	if(v.getTag()!=null)
+        		id = v.getTag().toString();
+        	
+            submit(id , v.getText().toString());
         }
         return true;
     }
     
-    private void submit(String subject) {
+    private void submit(String suggestionId, String subject) {
         if (mListener != null) {
-            mListener.onSubjectSelected(subject);
+            mListener.onSubjectSelected(suggestionId, subject);
         }
     }
     
