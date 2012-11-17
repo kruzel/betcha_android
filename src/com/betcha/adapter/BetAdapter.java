@@ -173,7 +173,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		if(spacePos==-1)
 			spacePos=name.length();
 		holder.tvBetOwner.setText(name.substring(0, spacePos));		
-		holder.tvBetSubject.setText(bet.getSubject());
+		holder.tvBetSubject.setText(bet.getTopic());
 		
 		Reward r = bet.getReward();
 		if(!r.getId().equals("0")) //not a customer reward

@@ -137,15 +137,15 @@ public class ActivityFeedItem {
 			case BET_CREATE:
 				bet = (Bet) obj;
 				if(bet.getOwner().getId().equals(curUser.getId()))
-					return "You have created a bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return "You have created a bet \"" + bet.getTopic() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 				else
-					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getTopic() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case BET_UPDATE:
 				bet = (Bet) obj;
 				if(bet.getOwner().getId().equals(curUser.getId()))
-					return "You have updated the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return "You have updated the bet to \"" + bet.getTopic() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 				else
-					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getSubject() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getTopic() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case PREDICTION_CREATE:
 				prediction = (Prediction) obj;
 				if(prediction.getBet().getOwner().getId().equals(curUser.getId()))

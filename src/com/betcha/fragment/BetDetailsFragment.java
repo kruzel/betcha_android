@@ -128,7 +128,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			tvBetDate.setText("Due");
 		}
 		
-		tvBetSubject.setText(app.getCurBet().getSubject());
+		tvBetSubject.setText(app.getCurBet().getTopic());
 		tvBetReward.setText(app.getCurBet().getReward().getName());
 		Reward r = Reward.get(app.getCurBet().getReward().getName());
 		if(r!=null)
@@ -161,8 +161,8 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 					suggestionId = prediction.getPredictionSuggestion().getId();
 			
 			String topicId = "0";
-			if(prediction.getBet().getTopic()!=null)
-				topicId = prediction.getBet().getTopic().getId();
+			if(prediction.getBet().getTopicId()!=null)
+				topicId = prediction.getBet().getTopicId().getId();
 			
 			List<PredictionSuggestion> suggestionList = PredictionSuggestion.getForTopic(getActivity(), topicId);
 			String[] suggestionsarray = new String[suggestionList.size()];	

@@ -36,7 +36,9 @@ public class Bet extends ModelCache<Bet, String> {
 	@DatabaseField
 	private String categoryId;
 	@DatabaseField
-	private String subject;
+	private String topic;
+	@DatabaseField(defaultValue = "0")
+	private String topicId;
 	@DatabaseField
 	private String reward; // benefit
 	@DatabaseField
@@ -52,15 +54,6 @@ public class Bet extends ModelCache<Bet, String> {
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<ChatMessage>  chatMessages;
 	
-	private Topic topic;
- 
-	public Topic getTopic() {
-		return topic;
-	}
-	public void setTopic(Topic topic) {
-		this.topic = topic;
-	}
-
 	private Prediction ownerPrediction;
 	private List<User> participants;
 	
@@ -87,7 +80,8 @@ public class Bet extends ModelCache<Bet, String> {
 	public void setBet(Bet bet) {
 		this.id = bet.getId();
 		this.user = bet.getOwner();
-		this.subject = bet.getSubject();
+		this.topic = bet.getTopic();
+		this.topicId = bet.topicId;
 		this.reward = bet.getReward().getName(); //TODO replace with Reward object
 		this.reward_id = bet.getReward_id();
 		this.date = bet.getDate();
@@ -126,16 +120,23 @@ public class Bet extends ModelCache<Bet, String> {
 		this.user = owner;
 	}
 
-	public String getSubject() {
-		return subject;
+	public String getTopic() {
+		return topic;
 	}
 
-	public void setSubject(String betSubject) {
-		this.subject = betSubject;
+	public void setTopic(String betTopic) {
+		this.topic = betTopic;
+	}
+	
+	public Topic getTopicId() {
+		return Topic.get(topicId);
+	}
+	public void setTopicId(Topic topic) {
+		this.topicId = topic.getId();
 	}
 
 	public Reward getReward() {
-		Reward r = Reward.get(reward); //TODO replace with Reward object as memeber, currently the reard name is the id;
+		Reward r = Reward.get(reward); //TODO replace with Reward object as member, currently the reward name is the id;
 		
 		if(r==null) {
 			r = new Reward();
@@ -621,7 +622,7 @@ public class Bet extends ModelCache<Bet, String> {
 		}
 
 		try {
-			setSubject(jsonBet.getString("subject"));
+			setTopic(jsonBet.getString("subject"));
 		} catch (JSONException e1) {
 		}
 
@@ -783,7 +784,7 @@ public class Bet extends ModelCache<Bet, String> {
 		try {
 			jsonBetContent.put("id", getId());
 			jsonBetContent.put("user_id", getOwner().getId());
-			jsonBetContent.put("subject", getSubject());
+			jsonBetContent.put("subject", getTopic());
 			jsonBetContent.put("reward", getReward().getName());
 			if (getDueDate() != null)
 				jsonBetContent.put("due_date", getDueDate().toString());
