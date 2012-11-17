@@ -37,6 +37,7 @@ public class CreateDuedateFragment extends SherlockFragment {
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
     private static final String ARG_STAKE_ID = "stake_id";
+    private static final String ARG_STAKE_AMOUNT = "stake_amount";
     private static final String ARG_DUEDATE = "duedate";
     private static final String ARG_CATEGORY = "categoryId";
     private static final String ARG_USER = "userId";
@@ -45,6 +46,7 @@ public class CreateDuedateFragment extends SherlockFragment {
     private String mSubject;
     private String mStake;
     private String mStakeId;
+    private Integer mStakeAmount;
     private String mCategoryId;
     private String mUserId;
     private String mPrediction;
@@ -59,7 +61,7 @@ public class CreateDuedateFragment extends SherlockFragment {
     
     private OnDuedateSelectedListener mListener;
     
-    public static CreateDuedateFragment newInstance(String categorId, String userId, String subject, String stake, String stake_id, String prediction) {
+    public static CreateDuedateFragment newInstance(String categorId, String userId, String subject, String stake, String stake_id, Integer stakeAmount, String prediction) {
         CreateDuedateFragment f = new CreateDuedateFragment();
         
         Bundle args = new Bundle();
@@ -68,6 +70,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         args.putString(ARG_SUBJECT, subject);
         args.putString(ARG_STAKE, stake);
         args.putString(ARG_STAKE_ID, stake_id);
+        args.putInt(ARG_STAKE_AMOUNT, stakeAmount);
         args.putString(ARG_PREDICTION, prediction);
         f.setArguments(args);
         
@@ -94,6 +97,7 @@ public class CreateDuedateFragment extends SherlockFragment {
         mSubject = getArguments().getString(ARG_SUBJECT);
         mStake = getArguments().getString(ARG_STAKE);
         mStakeId = getArguments().getString(ARG_STAKE_ID);
+        mStakeAmount = getArguments().getInt(ARG_STAKE_AMOUNT);
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
         mPrediction = getArguments().getString(ARG_PREDICTION);
@@ -115,7 +119,10 @@ public class CreateDuedateFragment extends SherlockFragment {
         
         TextView stakeView = (TextView) view.findViewById(R.id.tv_bet_reward);
         FontUtils.setTextViewTypeface(stakeView, CustomFont.HELVETICA_CONDENSED);
-        stakeView.setText(mStake);
+        if(mStake.equals("Coins"))
+        	stakeView.setText("" + mStakeAmount + " " + mStake);
+        else
+        	stakeView.setText(mStake);
         
         ImageView stakeImageView = (ImageView) view.findViewById(R.id.iv_bet_reward);
         Reward r = Reward.get(mStakeId);

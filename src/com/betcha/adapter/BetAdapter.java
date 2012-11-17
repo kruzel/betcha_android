@@ -180,7 +180,11 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			holder.ivBetRewardImage.setImageResource(r.getDrawable_id());
 		else
 			holder.ivBetRewardImage.setImageResource(android.R.color.transparent);
-		holder.tvBetReward.setText(r.getName());
+		
+		if(r.getName().equals("Coins"))
+			holder.tvBetReward.setText("" + bet.getRewardAmount() + " " + r.getName());
+        else
+        	holder.tvBetReward.setText(r.getName());
 		
 		for(int i = 0; i<predictionSize ; i++ ) {
 			Prediction prediction = predictions.get(i);

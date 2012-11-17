@@ -1,9 +1,8 @@
 package com.betcha.fragment;
 
 import android.app.Activity;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -16,14 +15,14 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.betcha.BetchaApp;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
+import com.betcha.R;
+import com.betcha.fragment.SetCoinsDialogFragment.OnCoinsSelectedListener;
 import com.betcha.model.Category;
 import com.betcha.model.User;
-import com.betcha.R;
 
-public class CreateStakeFragment extends SherlockFragment implements OnEditorActionListener {
+public class CreateStakeFragment extends SherlockFragment implements OnEditorActionListener, OnCoinsSelectedListener {
     
 	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
     private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
@@ -39,7 +38,11 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     private String mCategoryId;
     private String mUserId;
     
+    private Suggestion mSuggestion;
+    
     private OnStakeSelectedListener mListener;
+    
+    SetCoinsDialogFragment predictionDialog;
     
     public static CreateStakeFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String categorId, String userId, String subject) {
         CreateStakeFragment f = new CreateStakeFragment();
@@ -57,7 +60,7 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     }
     
     public interface OnStakeSelectedListener {
-        void onStakeSelected(String stakeId, String stake);
+        void onStakeSelected(String stakeId, String stake, int amount);
     }
     
     @Override
@@ -169,6 +172,8 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     }
     
     private void onSuggestionClicked(Suggestion suggestion) {
+    	mSuggestion = suggestion;
+    	
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(suggestion.name);
@@ -177,9 +182,13 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         }
         
         //if coins let user set #
-        
-        
-        submit(suggestion.id, suggestion.name);
+        if(suggestion.name.equals("Coins")) {
+	        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+			predictionDialog = SetCoinsDialogFragment.newInstance(100);
+			predictionDialog.setListener(this);
+			predictionDialog.show(ft, "dialog");
+        } else 
+        	submit(suggestion.id, suggestion.name, 1);
     }
 
     @Override
@@ -188,21 +197,33 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         if (TextUtils.isEmpty(stake)) {
             v.setError(getString(R.string.error_missing_bet_reward));
         } else {
-            submit("0", stake); //custome stake
+            submit("0", stake, 1); //custome stake
         }
         return true;
     }
     
-    private void submit(String suggestionId, String suggestionName) {
+    private void submit(String suggestionId, String suggestionName, int amount) {
         if (mListener != null) {
-            mListener.onStakeSelected(suggestionId, suggestionName);
+            mListener.onStakeSelected(suggestionId, suggestionName, amount);
         }
     }
-    
-    private class Suggestion {
+
+	@Override
+	public void onCoinsSelected(Integer numCoins) {
+		if(predictionDialog!=null) {
+			predictionDialog.dismiss();
+			predictionDialog = null;
+		}
+		
+		mSuggestion.amount = numCoins;
+		submit(mSuggestion.id, mSuggestion.name, mSuggestion.amount);
+	}
+	
+	private class Suggestion {
     	String id;
         String name;
         int drawable;
+        int amount;
     }
     
 }

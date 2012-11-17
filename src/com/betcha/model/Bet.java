@@ -43,6 +43,8 @@ public class Bet extends ModelCache<Bet, String> {
 	private String reward; // benefit
 	@DatabaseField
 	private String reward_id; // benefit
+	@DatabaseField(defaultValue = "1")
+	private Integer reward_amount; 
 	@DatabaseField
 	private DateTime date;
 	@DatabaseField
@@ -128,8 +130,10 @@ public class Bet extends ModelCache<Bet, String> {
 		this.topic = betTopic;
 	}
 	
-	public Topic getTopicId() {
-		return Topic.get(topicId);
+	public String getTopicId() {
+		if(topicId==null)
+			return "0";
+		return topicId;
 	}
 	public void setTopicId(Topic topic) {
 		this.topicId = topic.getId();
@@ -191,6 +195,14 @@ public class Bet extends ModelCache<Bet, String> {
 
 	public void setReward_id(String reward_id) {
 		this.reward_id = reward_id; //TODO replace with Reward object
+	}
+	
+	public Integer getRewardAmount() {
+		return reward_amount;
+	}
+
+	public void setRewardAmount(Integer reward_amount) {
+		this.reward_amount = reward_amount;
 	}
 
 	// non persistent

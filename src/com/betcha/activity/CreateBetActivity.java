@@ -147,11 +147,12 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	}
 	
 	@Override
-	public void onStakeSelected(String stakeId, String stake) {
+	public void onStakeSelected(String stakeId, String stake, int amount) {
 		app.getCurBet().setReward(stake);
 		app.getCurBet().setReward_id(stakeId);
+		app.getCurBet().setRewardAmount(amount);
 				
-		createPredictionFragment = CreatePredictionFragment.newInstance(app.getCurBet().getTopicId().getId(), app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId(), app.getCurBet().getTopic(), stake, stakeId);
+		createPredictionFragment = CreatePredictionFragment.newInstance(app.getCurBet().getTopicId(), app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId(), app.getCurBet().getTopic(), stake, stakeId);
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createPredictionFragment);
@@ -165,7 +166,7 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		app.getCurBet().getOwnerPrediction().setPrediction(prediction);
 		app.getCurBet().getOwnerPrediction().setPredictionSuggestion(PredictionSuggestion.get(suggestionId));
 		
-		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId() , app.getCurBet().getTopic(), app.getCurBet().getReward().getId(),app.getCurBet().getReward_id(), app.getCurBet().getOwnerPrediction().getPrediction());
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getCategoryId(), app.getCurBet().getOwner().getId() , app.getCurBet().getTopic(), app.getCurBet().getReward().getId(),app.getCurBet().getReward_id(), app.getCurBet().getRewardAmount(), app.getCurBet().getOwnerPrediction().getPrediction());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);

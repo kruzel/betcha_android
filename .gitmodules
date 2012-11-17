@@ -10,3 +10,6 @@
 	path = vendor/PullToRefresh
 	url = git://github.com/erikwt/PullToRefresh-ListView.git
 	ignore = dirty
+[submodule "vendor/NumPicker"]
+	path = vendor/NumPicker
+	url = https://github.com/novak/numpicker-demo.git

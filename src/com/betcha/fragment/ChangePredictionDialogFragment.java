@@ -1,5 +1,7 @@
 package com.betcha.fragment;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -23,25 +26,21 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
     
 	private static final String ARG_SUGGESTION_ID = "suggestionId";
     private static final String ARG_PREDICTION = "prediction";
-	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
-	private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
-    private static final String ARG_SUGGESTION_DRAWABLES = "suggestionDrawables";
+    private static final String ARG_TOPIC_ID = "topicId";
     
     private String mSuggestionId;
     private String mPrediction;
-    private Suggestion[] mSuggestions;
+    private String mTopicId;
     
     private OnPredictionSelectedListener mListener; 
     
-    public static ChangePredictionDialogFragment newInstance(String suggestionId, String current, String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables) {
+    public static ChangePredictionDialogFragment newInstance(String topicId, String suggestionId, String currPrediction) {
         ChangePredictionDialogFragment f = new ChangePredictionDialogFragment();
         
         Bundle args = new Bundle();
-        args.putString(ARG_PREDICTION, current);
+        args.putString(ARG_PREDICTION, currPrediction);
         args.putString(ARG_SUGGESTION_ID, suggestionId);
-        args.putStringArray(ARG_SUGGESTION_IDS, suggestionIds);
-        args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
-        args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
+        args.putString(ARG_TOPIC_ID, topicId);
         f.setArguments(args);
         
         return f;
@@ -71,22 +70,7 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         
         mPrediction = getArguments().getString(ARG_PREDICTION);
         mSuggestionId = getArguments().getString(ARG_SUGGESTION_ID);
-    
-        String[] suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
-        String[] suggestionNames = getArguments().getStringArray(ARG_SUGGESTION_NAMES);
-        int[] suggestionDrawables = getArguments().getIntArray(ARG_SUGGESTION_DRAWABLES);
-        if (suggestionNames.length != suggestionDrawables.length) {
-            throw new IllegalArgumentException();
-        }
-        
-        mSuggestions = new Suggestion[suggestionNames.length];
-        for (int i = 0; i < suggestionNames.length; i++) {
-            Suggestion suggestion = new Suggestion();
-            suggestion.id = suggestionIds[i];
-            suggestion.name = suggestionNames[i];
-            suggestion.drawable = suggestionDrawables[i];
-            mSuggestions[i] = suggestion;
-        }
+        mTopicId = getArguments().getString(ARG_TOPIC_ID);
     }
     
     @Override
@@ -99,14 +83,20 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         
         ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions1);
         ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
-        for (int i = 0; i < mSuggestions.length; ++i) {
-            final Suggestion suggestion = mSuggestions[i];
-            View suggestionView = inflater.inflate(R.layout.create_dialog_prediction_suggestion, null);
+        
+        int i = 0;
+        List<PredictionSuggestion> suggestions = PredictionSuggestion.getForTopic(getActivity(), mTopicId);
+        for (PredictionSuggestion predictionSuggestion : suggestions) {
+        	View suggestionView = inflater.inflate(R.layout.create_dialog_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
             FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_CONDENSED_BOLD);
-            textView.setText(suggestion.name);
-            textView.setTag(suggestion.id);
+            textView.setText(predictionSuggestion.getName());
+            textView.setTag(predictionSuggestion.getId());
+            
+            ImageView ivTeamLogo = (ImageView) suggestionView.findViewById(R.id.iv_team_logo);
+            if(predictionSuggestion.getImage()!=null)
+            	ivTeamLogo.setImageBitmap(predictionSuggestion.getImage());
             
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -118,8 +108,9 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
             });
             
             ViewGroup suggestionsContainer = (i % 2 == 0 ? suggestionsContainer1 : suggestionsContainer2);
+            i++;
             suggestionsContainer.addView(suggestionView);
-        }
+		}
 
         EditText editText = (EditText) view.findViewById(R.id.et_prediction);
         FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED_BOLD);
@@ -192,12 +183,6 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         if (mListener != null) {
             mListener.onPredictionSelected(suggestionId, prediction);
         }
-    }
-    
-    private class Suggestion {
-    	String id;
-        String name;
-        int drawable;
     }
     
 }

@@ -129,7 +129,11 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		}
 		
 		tvBetSubject.setText(app.getCurBet().getTopic());
-		tvBetReward.setText(app.getCurBet().getReward().getName());
+		if(app.getCurBet().getReward().getName().equals("Coins"))
+			tvBetReward.setText("" + app.getCurBet().getRewardAmount() + " " + app.getCurBet().getReward().getName());
+		else
+			tvBetReward.setText(app.getCurBet().getReward().getName());
+		
 		Reward r = Reward.get(app.getCurBet().getReward().getName());
 		if(r!=null)
 			ivBetRewardImage.setImageResource(r.getDrawable_id());
@@ -160,24 +164,8 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			if(prediction.getPredictionSuggestion()!=null)
 					suggestionId = prediction.getPredictionSuggestion().getId();
 			
-			String topicId = "0";
-			if(prediction.getBet().getTopicId()!=null)
-				topicId = prediction.getBet().getTopicId().getId();
-			
-			List<PredictionSuggestion> suggestionList = PredictionSuggestion.getForTopic(getActivity(), topicId);
-			String[] suggestionsarray = new String[suggestionList.size()];	
-			String[] suggestionsIdsarray = new String[suggestionList.size()];
-			int[] suggestionsDrawablessarray = new int[suggestionList.size()];
-			int i = 0;
-			for (PredictionSuggestion suggestion : suggestionList) {
-				suggestionsarray[i] = suggestion.getName();
-				suggestionsIdsarray[i] = suggestion.getId();
-				suggestionsDrawablessarray[i] = 0; //TODO
-				i++;
-			}
-			
 			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			predictionDialog = ChangePredictionDialogFragment.newInstance(suggestionId, prediction.getPrediction(), suggestionsIdsarray, suggestionsarray,suggestionsDrawablessarray);
+			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getBet().getTopicId() , suggestionId, prediction.getPrediction());
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
 		}
