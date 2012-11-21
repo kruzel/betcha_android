@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
+import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
 import com.betcha.model.cache.DatabaseHelper;
@@ -85,10 +86,7 @@ public class BetchaApp extends Application implements IModelListener {
 				initUserParams();
 			}
 		}
-		
-		//init friends list
-		loadFriends();
-		
+				
 		super.onCreate();
 	}
 
@@ -154,6 +152,13 @@ public class BetchaApp extends Application implements IModelListener {
 				}
 				
 				registerToPushNotifications();
+				
+				Friend friend = new Friend(me);
+				friend.setListener(this);
+				friend.getAllForCurUser(); //check for new friends
+				
+				//init friends list
+				loadFriends();
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -336,7 +341,7 @@ public class BetchaApp extends Application implements IModelListener {
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		if (clazz.getSimpleName().contentEquals("Friend") && errorCode==HttpStatus.OK) {
 			// new friedns found
-			friends = null;
+			loadFriends();
 		}
 	}
 
