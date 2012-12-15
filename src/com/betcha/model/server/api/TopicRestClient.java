@@ -19,7 +19,7 @@ public class TopicRestClient extends RestClient {
 		
 		String res;
 		try {
-			res = restTemplate.getForObject(url + ".json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class, category_id);
+			res = restTemplate.getForObject(url + "/show_for_category.json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class, category_id);
 		} catch (HttpClientErrorException e) {
 	    	setLastRestErrorCode(e.getStatusCode());
 	    	return null;
