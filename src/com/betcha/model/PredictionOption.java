@@ -39,7 +39,7 @@ public class PredictionOption extends ModelCache<PredictionOption, String> {
 		List<PredictionOption> newSuggestionsList = null;
 		
 		try {
-			newSuggestionsList = PredictionOption.getModelDao().queryForAll();
+			newSuggestionsList = PredictionOption.getModelDao().queryForEq("topic_id", topicId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
