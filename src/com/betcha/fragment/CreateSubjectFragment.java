@@ -20,10 +20,13 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.Category;
-import com.betcha.model.PredictionSuggestion;
+import com.betcha.model.TopicCategory;
+import com.betcha.model.PredictionOption;
 import com.betcha.model.Topic;
 import com.betcha.model.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CreateSubjectFragment extends SherlockFragment implements OnEditorActionListener {
     
@@ -35,6 +38,10 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
     private String mUserId;
     
     private OnSubjectSelectedListener mListener; 
+    
+    private static ImageLoader categoryImageLoader;
+    private static ImageLoader[] logoImageLoader;
+	private static DisplayImageOptions defaultOptions;
     
     public static CreateSubjectFragment newInstance(String categorId, String userId) {
         CreateSubjectFragment f = new CreateSubjectFragment();
@@ -64,7 +71,22 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         super.onCreate(savedInstanceState);
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
-    }
+        
+        defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
+        
+        if(categoryImageLoader==null) {
+			categoryImageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			categoryImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));	
+		}
+        
+        if(logoImageLoader==null) {
+        	logoImageLoader = new ImageLoader[2];
+		}
+     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,7 +96,12 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
         User.get(mUserId).setProfilePhoto(profileView);
         
         ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
-        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
+        if(TopicCategory.get(mCategoryId).getImageUrl()!=null) {
+        	categoryImageLoader.displayImage(TopicCategory.get(mCategoryId).getImageUrl() , categoryView,defaultOptions);
+        } else {
+        	categoryImageLoader.cancelDisplayTask(categoryView);
+        	categoryView.setImageResource(android.R.color.transparent);
+        }
         
         List<Topic> suggestions = Topic.getForCategory(getActivity(), mCategoryId);
         
@@ -91,12 +118,27 @@ public class CreateSubjectFragment extends SherlockFragment implements OnEditorA
             logos[0] = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_1);
             logos[1] = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_2);
             
-            Collection<PredictionSuggestion> colPredictions = topic.getSuggestions();
+            if(logoImageLoader[0]==null) {
+            	logoImageLoader[0] = ImageLoader.getInstance();
+            	logoImageLoader[0].init(ImageLoaderConfiguration.createDefault(getActivity()));
+    		}
+            
+            if(logoImageLoader[1]==null) {
+            	logoImageLoader[1] = ImageLoader.getInstance();
+            	logoImageLoader[1].init(ImageLoaderConfiguration.createDefault(getActivity()));
+    		}
+            
+            Collection<PredictionOption> colPredictions = topic.getOptions();
             int i = 0;
             if(colPredictions!=null) {
-	            for (PredictionSuggestion prediction : topic.getSuggestions()) {
-					if(prediction!=null && prediction.getImage()!=null && !prediction.getName().equals("Tie")) {
-						logos[i].setImageBitmap(prediction.getImage());
+	            for (PredictionOption prediction : topic.getOptions()) {
+					if(prediction!=null && prediction.getImageUrl()!=null && !prediction.getName().equals("Tie")) {
+						if(prediction.getImageUrl()!=null) {
+			            	logoImageLoader[i].displayImage(prediction.getImageUrl() , logos[i],defaultOptions);
+			            } else {
+			            	logoImageLoader[i].cancelDisplayTask(logos[i]);
+			            	logos[i].setImageResource(android.R.color.transparent);
+			            }
 						i++;
 					}
 					if(i>1)

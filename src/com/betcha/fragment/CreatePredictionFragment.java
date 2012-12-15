@@ -1,8 +1,10 @@
 package com.betcha.fragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -19,10 +21,13 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.Category;
-import com.betcha.model.PredictionSuggestion;
-import com.betcha.model.Reward;
+import com.betcha.model.TopicCategory;
+import com.betcha.model.PredictionOption;
+import com.betcha.model.Stake;
 import com.betcha.model.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CreatePredictionFragment extends SherlockFragment implements OnEditorActionListener {
     
@@ -46,6 +51,11 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
     private String mTopicId;
     
     private OnPredictionSelectedListener mListener;
+    
+    private static ImageLoader categoryImageLoader;
+    private static ImageLoader stakeImageLoader;
+    private static List<ImageLoader> logoImageLoaders;
+	private static DisplayImageOptions defaultOptions;
     
     public static CreatePredictionFragment newInstance(String topicIds, String categorId, String userId, String subject, String stake, String stakeId) {
         CreatePredictionFragment f = new CreatePredictionFragment();
@@ -86,6 +96,22 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         mStake = getArguments().getString(ARG_STAKE);
         mPrediction = getArguments().getString(ARG_PREDICTION);
         mSuggestionId = getArguments().getString(ARG_PREDICTION_ID);
+        
+        defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
+        
+        if(categoryImageLoader==null) {
+			categoryImageLoader = ImageLoader.getInstance();
+			categoryImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));	
+		}
+        
+        if(stakeImageLoader==null) {
+        	stakeImageLoader = ImageLoader.getInstance();
+        	stakeImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		}
+        
     }
     
     @Override
@@ -96,16 +122,23 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         User.get(mUserId).setProfilePhoto(profileView);
         
         ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
-        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
+        if(TopicCategory.get(mCategoryId).getImageUrl()!=null) {
+        	categoryImageLoader.displayImage(TopicCategory.get(mCategoryId).getImageUrl() , categoryView,defaultOptions);
+        } else {
+        	categoryImageLoader.cancelDisplayTask(categoryView);
+        	categoryView.setImageResource(android.R.color.transparent);
+        }
         
         TextView subjectView = (TextView) view.findViewById(R.id.tv_bet_topic);
         FontUtils.setTextViewTypeface(subjectView, CustomFont.HELVETICA_CONDENSED_BOLD);
         subjectView.setText(mSubject);
         
         ViewGroup suggestionsContainer = (ViewGroup) view.findViewById(R.id.ll_suggestions);
-        List<PredictionSuggestion> suggestions = PredictionSuggestion.getForTopic(getActivity(), mTopicId);
+        List<PredictionOption> suggestions = PredictionOption.getForTopic(getActivity(), mTopicId);
+                
+    	logoImageLoaders = new ArrayList<ImageLoader>();
         
-        for (final PredictionSuggestion suggestion : suggestions) {
+        for (final PredictionOption suggestion : suggestions) {
             View suggestionView = inflater.inflate(R.layout.create_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
@@ -115,8 +148,16 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
             
             ImageView logo1 = (ImageView) suggestionView.findViewById(R.id.iv_team_logo_1);
             
-            if(suggestion.getImage()!=null)
-            	logo1.setImageBitmap(suggestion.getImage());
+            ImageLoader tmpImageLoader = ImageLoader.getInstance();
+        	tmpImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+            
+            if(suggestion.getImageUrl()!=null) {
+            	tmpImageLoader.displayImage(suggestion.getImageUrl() , logo1,defaultOptions);
+            } else {
+            	tmpImageLoader.cancelDisplayTask(logo1);
+            	logo1.setImageResource(android.R.color.transparent);
+            }
+            logoImageLoaders.add(tmpImageLoader);
             
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -133,11 +174,13 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         stakeView.setText(mStake);
         
         ImageView stakeImageView = (ImageView) view.findViewById(R.id.iv_bet_reward);
-        Reward r = Reward.get(mStakeId);
-        if(r!=null)
-        	stakeImageView.setImageResource(r.getDrawable_id());
-        else 
+        Stake r = Stake.get(mStakeId);
+        if(r!=null) {
+        	stakeImageLoader.displayImage(r.getImage_url(), stakeImageView, defaultOptions);
+        } else {
+        	stakeImageLoader.cancelDisplayTask(stakeImageView);
         	stakeImageView.setImageResource(android.R.color.transparent);
+        }
         
         EditText editText = (EditText) view.findViewById(R.id.et_bet_prediction);
         FontUtils.setTextViewTypeface(editText, CustomFont.HELVETICA_CONDENSED);
@@ -175,7 +218,7 @@ public class CreatePredictionFragment extends SherlockFragment implements OnEdit
         return null;
     }
     
-    private void onSuggestionClicked(PredictionSuggestion suggestion) {
+    private void onSuggestionClicked(PredictionOption suggestion) {
         EditText editText = getEditText();
         if (editText != null) {
             editText.setText(suggestion.getName());

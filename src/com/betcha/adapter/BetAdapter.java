@@ -1,5 +1,6 @@
 package com.betcha.adapter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,17 +28,30 @@ import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.Bet;
-import com.betcha.model.Category;
+import com.betcha.model.TopicCategory;
 import com.betcha.model.Prediction;
-import com.betcha.model.Reward;
+import com.betcha.model.Stake;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class BetAdapter extends ArrayAdapter<Bet> {
 	
 	private List<Bet> items;
+	private List<ImageLoader> categoryImageLoaders;
+	private List<ImageLoader> stakeImageLoaders;
+	private DisplayImageOptions defaultOptions;
 	
 	public BetAdapter(Context context, int textViewResourceId, List<Bet> bets) {
 		super(context, textViewResourceId, bets);
 		this.items = bets;
+		this.categoryImageLoaders = new ArrayList<ImageLoader>();
+		this.stakeImageLoaders = new ArrayList<ImageLoader>();
+		
+		defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
 	}
 
 	@Override
@@ -145,11 +159,26 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		//holder.buttonHide.setTag(bet);
 		
 		bet.getOwner().setProfilePhoto(holder.ivProfPic);
+		        
+		ImageLoader categoryImageLaoder = null;
+		try {
+			categoryImageLaoder = categoryImageLoaders.get(position);
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
 		
-		if(bet.getCategoryId()!=null)
-			holder.ivBetCategory.setImageBitmap(Category.get(bet.getCategoryId()).getImage());
-		else
-			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		if(categoryImageLaoder==null) {
+	        categoryImageLaoder = ImageLoader.getInstance();
+	        categoryImageLaoder.init(ImageLoaderConfiguration.createDefault(getContext()));
+	        categoryImageLoaders.add(categoryImageLaoder);
+		} 
+		
+		if(bet.getCategory()!=null && TopicCategory.get(bet.getCategory().getId()).getImageUrl()!=null) {
+			categoryImageLaoder.displayImage(TopicCategory.get(bet.getCategory().getId()).getImageUrl() , holder.ivBetCategory,defaultOptions);
+        } else {
+        	categoryImageLaoder.cancelDisplayTask(holder.ivBetCategory);
+        	holder.ivBetCategory.setImageResource(android.R.color.transparent);
+        }
 		
 		if(bet.getDueDate().isAfterNow()) {
 			if(bet.getDueDate().minusHours(24).isBeforeNow()) {
@@ -173,13 +202,29 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 		if(spacePos==-1)
 			spacePos=name.length();
 		holder.tvBetOwner.setText(name.substring(0, spacePos));		
-		holder.tvBetSubject.setText(bet.getTopic());
+		holder.tvBetSubject.setText(bet.getTopicCustom());
 		
-		Reward r = bet.getReward();
-		if(!r.getId().equals("0")) //not a customer reward
-			holder.ivBetRewardImage.setImageResource(r.getDrawable_id());
-		else
-			holder.ivBetRewardImage.setImageResource(android.R.color.transparent);
+		ImageLoader stakeImageLaoder = null;
+		
+		try {
+			stakeImageLaoder = stakeImageLoaders.get(position);
+		} catch (Exception e) {
+			// e.printStackTrace();
+		}
+		
+		if(stakeImageLaoder==null) {
+			stakeImageLaoder = ImageLoader.getInstance();
+			stakeImageLaoder.init(ImageLoaderConfiguration.createDefault(getContext()));
+			stakeImageLoaders.add(categoryImageLaoder);
+		} 
+		
+		Stake r = bet.getReward();		
+		if(!r.getId().equals("0") && r.getImage_url()!=null) { //not a custom reward
+			stakeImageLaoder.displayImage(r.getImage_url() , holder.ivBetRewardImage,defaultOptions);
+        } else {
+        	stakeImageLaoder.cancelDisplayTask(holder.ivBetRewardImage);
+        	holder.ivBetRewardImage.setImageResource(android.R.color.transparent);
+        }
 		
 		if(r.getName().equals("Coins"))
 			holder.tvBetReward.setText("" + bet.getRewardAmount() + " " + r.getName());

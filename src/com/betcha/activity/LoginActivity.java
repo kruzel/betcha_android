@@ -20,6 +20,7 @@ import com.betcha.BetchaApp;
 import com.betcha.R;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.SyncTask;
 import com.facebook.android.DialogError;
 import com.facebook.android.Facebook;
 import com.facebook.android.Facebook.DialogListener;
@@ -182,7 +183,8 @@ public class LoginActivity extends SherlockFragmentActivity implements
 			case CREATED:
 				app.setMe(tmpMe);
 				app.registerToPushNotifications();
-				app.loadFriends();
+				app.loadFriends(); //TODO move into SyncTask
+				SyncTask.run(this);
 
 				msg = getString(R.string.error_registration_succeeded);
 				break;
@@ -210,31 +212,30 @@ public class LoginActivity extends SherlockFragmentActivity implements
 
 			lastErrorCode = errorCode;
 			
-			if (dialog != null && dialog.isShowing())
-				dialog.dismiss();
-
-			dialog = ProgressDialog.show(this,
-					getResources().getString(R.string.register), msg, true);
-			Thread t = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
+			if (lastErrorCode != HttpStatus.OK && lastErrorCode != HttpStatus.CREATED) {
+				if (dialog != null && dialog.isShowing())
+					dialog.dismiss();
+	
+				dialog = ProgressDialog.show(this,
+						getResources().getString(R.string.register), msg, true);
+				
+				Thread t = new Thread(new Runnable() {
+	
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+	
+						if (dialog != null && dialog.isShowing())
+							dialog.dismiss();
 					}
-
-					if (dialog != null && dialog.isShowing())
-						dialog.dismiss();
-
-					if (lastErrorCode == HttpStatus.OK || lastErrorCode == HttpStatus.CREATED)
-						finish();
-				}
-			});
-			t.start();
-
-		}
+				});
+				t.start();
+			}
+		}  
 	}
 
 	@Override
@@ -260,8 +261,29 @@ public class LoginActivity extends SherlockFragmentActivity implements
 
 	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
+		if(clazz.getSimpleName().contentEquals("SyncTask")) {
+			
+			Thread t = new Thread(new Runnable() {
 
-		if (dialog != null && dialog.isShowing())
-			dialog.dismiss();
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+
+					if (dialog != null && dialog.isShowing())
+						dialog.dismiss();
+
+					if (lastErrorCode == HttpStatus.OK || lastErrorCode == HttpStatus.CREATED)
+						finish();
+				}
+			});
+			t.start();
+		} else {
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
+		}
 	}
 }

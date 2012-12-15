@@ -29,10 +29,13 @@ import com.betcha.R;
 import com.betcha.adapter.PredictionAdapter;
 import com.betcha.adapter.PredictionAdapter.OnPredictionEditListener;
 import com.betcha.fragment.ChangePredictionDialogFragment.OnPredictionSelectedListener;
-import com.betcha.model.Category;
+import com.betcha.model.TopicCategory;
 import com.betcha.model.Prediction;
-import com.betcha.model.PredictionSuggestion;
-import com.betcha.model.Reward;
+import com.betcha.model.PredictionOption;
+import com.betcha.model.Stake;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class BetDetailsFragment extends SherlockFragment implements OnPredictionEditListener, OnPredictionSelectedListener {
 	private BetchaApp app;
@@ -44,6 +47,9 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 	private ListView lvPredictions;
 	private FrameLayout frmPredictionContainer;
 	private PredictionAdapter predictionAdapter;
+	
+	private static ImageLoader imageLoader;
+	private static DisplayImageOptions defaultOptions;
 	
 	private ImageView ivProfPic;
 	private TextView tvBetDate;
@@ -91,6 +97,16 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		FontUtils.setTextViewTypeface(tvBetDate, CustomFont.HELVETICA_CONDENSED);
 		FontUtils.setTextViewTypeface(tvBetOwner, CustomFont.HELVETICA_CONDENSED);
         FontUtils.setTextViewTypeface(tvBetSubject, CustomFont.HELVETICA_CONDENSED_BOLD);
+        
+        if(imageLoader==null) {
+			imageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+			defaultOptions = new DisplayImageOptions.Builder()
+	        .cacheInMemory()
+	        .cacheOnDisc()
+	        .build();
+		}
 				        
 		return view;
 	}
@@ -128,20 +144,23 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 			tvBetDate.setText("Due");
 		}
 		
-		tvBetSubject.setText(app.getCurBet().getTopic());
+		tvBetSubject.setText(app.getCurBet().getTopicCustom());
 		if(app.getCurBet().getReward().getName().equals("Coins"))
 			tvBetReward.setText("" + app.getCurBet().getRewardAmount() + " " + app.getCurBet().getReward().getName());
 		else
 			tvBetReward.setText(app.getCurBet().getReward().getName());
 		
-		Reward r = Reward.get(app.getCurBet().getReward().getName());
-		if(r!=null)
-			ivBetRewardImage.setImageResource(r.getDrawable_id());
+		Stake r = Stake.get(app.getCurBet().getReward().getName());
+		if(r!=null) {
+			imageLoader.displayImage(app.getCurBet().getReward().getImage_url() , ivBetRewardImage,defaultOptions);
+		}
 		
-		if(app.getCurBet().getCategoryId()!=null)
-			ivBetCategory.setImageBitmap(Category.get(app.getCurBet().getCategoryId()).getImage());
-		else
+		if(app.getCurBet().getCategory()!=null) {
+			imageLoader.displayImage(app.getCurBet().getCategory().getImageUrl() , ivBetCategory,defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(ivBetCategory);
 			ivBetCategory.setImageResource(android.R.color.transparent);
+		}
 		
 		LayoutParams layoutParams = frmPredictionContainer.getLayoutParams();
 		layoutParams.height = app.getCurBet().getPredictionsCount() > 2 ? 88 * app.getCurBet().getPredictionsCount() : 88*2;
@@ -165,7 +184,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 					suggestionId = prediction.getPredictionSuggestion().getId();
 			
 			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getBet().getTopicId() , suggestionId, prediction.getPrediction());
+			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getBet().getTopicCustom() , suggestionId, prediction.getPrediction());
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
 		}
@@ -181,7 +200,7 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 //				e.printStackTrace();
 //			}
 			predictionEdit.setPrediction(prediction);
-			predictionEdit.setPredictionSuggestion(PredictionSuggestion.get(suggestionId));
+			predictionEdit.setPredictionSuggestion(PredictionOption.get(suggestionId));
 			predictionEditView.setText(prediction);
 			if(predictionDialog!=null) {
 				predictionDialog.dismiss();

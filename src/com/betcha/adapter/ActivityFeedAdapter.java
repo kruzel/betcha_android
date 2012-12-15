@@ -21,20 +21,36 @@ import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
-import com.betcha.model.Category;
+import com.betcha.model.TopicCategory;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ActivityFeedAdapter extends BaseAdapter {
 	
 	private List<ActivityFeedItem> activities;
 	private Context context;
 	
+	private static ImageLoader imageLoader;
+	private static DisplayImageOptions defaultOptions;
+	
 	public ActivityFeedAdapter(Context context, int textViewResourceId, List<ActivityFeedItem> activities) {
 		super();
 		this.activities = activities;
 		this.context = context;
+		
+		if(imageLoader==null) {
+			imageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+			defaultOptions = new DisplayImageOptions.Builder()
+	        .cacheInMemory()
+	        .cacheOnDisc()
+	        .build();
+		}
 	}
 	
 	public void clear() {
@@ -124,10 +140,12 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		
 		user.setProfilePhoto(holder.ivProfPic);
 		
-		if(bet.getCategoryId()!=null)
-			holder.ivBetCategory.setImageBitmap(Category.get(bet.getCategoryId()).getImage());
-		else
+		if(bet.getCategory()!=null) {
+			imageLoader.displayImage(bet.getCategory().getImageUrl(), holder.ivBetCategory, defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(holder.ivBetCategory);
 			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		}
 		
 		if(datetime.plusHours(24).isAfterNow()) {
 			if(datetime.plusMinutes(60).isAfterNow()) {

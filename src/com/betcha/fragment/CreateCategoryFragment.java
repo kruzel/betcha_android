@@ -14,7 +14,7 @@ import android.widget.ListView;
 import com.actionbarsherlock.app.SherlockListFragment;
 import com.betcha.R;
 import com.betcha.adapter.CategoryAdapter;
-import com.betcha.model.Category;
+import com.betcha.model.TopicCategory;
 
 public class CreateCategoryFragment extends SherlockListFragment {
     
@@ -35,7 +35,7 @@ public class CreateCategoryFragment extends SherlockListFragment {
     }
     
     public interface OnCategorySelectedListener {
-        void onCategorySelected(Category category);
+        void onCategorySelected(TopicCategory category);
     }
     
     @Override
@@ -64,7 +64,7 @@ public class CreateCategoryFragment extends SherlockListFragment {
             if (!items.isEmpty()) {
                 items.add(CategoryAdapter.sSpace);
             }
-            items.addAll(Category.getCategories(context, section));
+            items.addAll(TopicCategory.getCategories(context, section));
         }
 
         CategoryAdapter adapter = new CategoryAdapter(context);
@@ -77,13 +77,13 @@ public class CreateCategoryFragment extends SherlockListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Object o = l.getAdapter().getItem(position);
-        if (o instanceof Category) {
-            Category category = (Category) o;
+        if (o instanceof TopicCategory) {
+            TopicCategory category = (TopicCategory) o;
             submit(category);
         }
     }
     
-    private void submit(Category category) {
+    private void submit(TopicCategory category) {
         if (mListener != null) {
             mListener.onCategorySelected(category);
         }

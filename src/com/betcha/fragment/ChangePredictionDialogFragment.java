@@ -20,10 +20,16 @@ import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.PredictionSuggestion;
+import com.betcha.model.PredictionOption;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ChangePredictionDialogFragment extends SherlockDialogFragment implements OnEditorActionListener {
     
+	private static ImageLoader imageLoader;
+	private static DisplayImageOptions defaultOptions;
+	
 	private static final String ARG_SUGGESTION_ID = "suggestionId";
     private static final String ARG_PREDICTION = "prediction";
     private static final String ARG_TOPIC_ID = "topicId";
@@ -42,7 +48,7 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         args.putString(ARG_SUGGESTION_ID, suggestionId);
         args.putString(ARG_TOPIC_ID, topicId);
         f.setArguments(args);
-        
+                
         return f;
     }
     
@@ -71,6 +77,16 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         mPrediction = getArguments().getString(ARG_PREDICTION);
         mSuggestionId = getArguments().getString(ARG_SUGGESTION_ID);
         mTopicId = getArguments().getString(ARG_TOPIC_ID);
+        
+        if(imageLoader==null) {
+			imageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+			defaultOptions = new DisplayImageOptions.Builder()
+	        .cacheInMemory()
+	        .cacheOnDisc()
+	        .build();
+		}
     }
     
     @Override
@@ -85,8 +101,8 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
         ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
         
         int i = 0;
-        List<PredictionSuggestion> suggestions = PredictionSuggestion.getForTopic(getActivity(), mTopicId);
-        for (PredictionSuggestion predictionSuggestion : suggestions) {
+        List<PredictionOption> suggestions = PredictionOption.getForTopic(getActivity(), mTopicId);
+        for (PredictionOption predictionSuggestion : suggestions) {
         	View suggestionView = inflater.inflate(R.layout.create_dialog_prediction_suggestion, null);
             
             TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
@@ -95,8 +111,11 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
             textView.setTag(predictionSuggestion.getId());
             
             ImageView ivTeamLogo = (ImageView) suggestionView.findViewById(R.id.iv_team_logo);
-            if(predictionSuggestion.getImage()!=null)
-            	ivTeamLogo.setImageBitmap(predictionSuggestion.getImage());
+            if(predictionSuggestion.getImageUrl()!=null) {
+            	imageLoader.displayImage(predictionSuggestion.getImageUrl() , ivTeamLogo,defaultOptions);
+            } else {
+            	imageLoader.cancelDisplayTask(ivTeamLogo);
+            }
             
             suggestionView.setOnClickListener(new OnClickListener() {
                 @Override
@@ -121,7 +140,7 @@ public class ChangePredictionDialogFragment extends SherlockDialogFragment imple
             mSuggestionId = savedInstanceState.getString(ARG_SUGGESTION_ID);
         }
         if(mSuggestionId!=null && !mSuggestionId.equals("0"))
-        	mPrediction = PredictionSuggestion.get(mSuggestionId).getName();
+        	mPrediction = PredictionOption.get(mSuggestionId).getName();
         
         if (mPrediction == null) {
             mPrediction = "";

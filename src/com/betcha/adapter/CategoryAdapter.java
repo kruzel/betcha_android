@@ -17,7 +17,10 @@ import android.widget.TextView;
 import com.betcha.FontUtils;
 import com.betcha.R;
 import com.betcha.FontUtils.CustomFont;
-import com.betcha.model.Category;
+import com.betcha.model.TopicCategory;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CategoryAdapter extends BaseAdapter {
     
@@ -33,11 +36,21 @@ public class CategoryAdapter extends BaseAdapter {
     private final Context mContext;
     
     private final List<Object> mObjects; 
+    
+    private List<ImageLoader> categoryImageLoaders;
+	private DisplayImageOptions defaultOptions;
 	
 	public CategoryAdapter(Context context) {
 	    mContext = context;
 	    mObjects = new ArrayList<Object>();
 	    mObjects.add(sSpace);
+	    	    
+	    defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
+	    
+	    categoryImageLoaders = new ArrayList<ImageLoader>();
 	}
 	
 	public void setObjects(List<Object> objects) {
@@ -45,10 +58,17 @@ public class CategoryAdapter extends BaseAdapter {
         mObjects.add(sSpace);
         mObjects.addAll(objects);
         mObjects.add(sSpace);
+                        
+        for (Object object : mObjects) {
+        	ImageLoader imageLoader = ImageLoader.getInstance();
+        	imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+        	categoryImageLoaders.add(imageLoader);
+		}
+        
         notifyDataSetChanged();
 	}
 	
-    @Override
+    
     public boolean areAllItemsEnabled() {
         return false;
     }
@@ -129,23 +149,34 @@ public class CategoryAdapter extends BaseAdapter {
 		    return convertView;
 		}
 		
-		Category category = (Category) getItem(position);
+		TopicCategory category = (TopicCategory) getItem(position);
 		
 		// content
 		ImageView ivCategoryImage = (ImageView) convertView.findViewById(R.id.iv_category_image);
         ImageView ivMarker = (ImageView) convertView.findViewById(R.id.iv_marker);
 		TextView tvCategory = (TextView) convertView.findViewById(R.id.tv_bet_category);
         TextView tvDescription = (TextView) convertView.findViewById(R.id.tv_bet_category_description);
+        
+        ImageLoader categoryImageLaoder = null;
+		if(categoryImageLoaders.get(position)==null) {
+	        categoryImageLaoder = ImageLoader.getInstance();
+	        categoryImageLaoder.init(ImageLoaderConfiguration.createDefault(mContext));
+	        categoryImageLoaders.add(categoryImageLaoder);
+		} else {
+			categoryImageLaoder = categoryImageLoaders.get(position);
+		}
 		
-        if(category!=null)
-        	ivCategoryImage.setImageBitmap(category.getImage());
-        else
+		if(category!=null && category.getImageUrl()!=null) {
+			categoryImageLaoder.displayImage(category.getImageUrl() ,ivCategoryImage ,defaultOptions);
+        } else {
+        	categoryImageLaoder.cancelDisplayTask(ivCategoryImage);
         	ivCategoryImage.setImageResource(android.R.color.transparent);
+        }
 		
 		ivMarker.setColorFilter(getItemMarkerColor(position), PorterDuff.Mode.MULTIPLY);
 		tvCategory.setText(category.getName());
-		if (!TextUtils.isEmpty(category.getDescription())) {
-	        tvDescription.setText(category.getDescription());
+		if (!TextUtils.isEmpty(category.getName())) {
+	        tvDescription.setText(category.getName());
 	        tvDescription.setVisibility(View.VISIBLE);
 		} else {
             tvDescription.setVisibility(View.GONE);

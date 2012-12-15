@@ -3,7 +3,6 @@ package com.betcha.activity;
 import java.sql.SQLException;
 import java.util.List;
 
-import utils.Filter;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -17,6 +16,7 @@ import com.betcha.fragment.ActivityFeedFragment;
 import com.betcha.fragment.BetsListFragment;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.SyncTask;
+import com.betcha.utils.Filter;
 
 
 /**

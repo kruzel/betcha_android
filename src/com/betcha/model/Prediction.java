@@ -122,11 +122,11 @@ public class Prediction extends ModelCache<Prediction, String> {
 		this.result = result;
 	}
 	
-	public PredictionSuggestion getPredictionSuggestion() {
-		return PredictionSuggestion.get(predictionSuggestionId);
+	public PredictionOption getPredictionSuggestion() {
+		return PredictionOption.get(predictionSuggestionId);
 	}
 
-	public void setPredictionSuggestion(PredictionSuggestion predictionSuggestion) {
+	public void setPredictionSuggestion(PredictionOption predictionSuggestion) {
 		this.predictionSuggestionId = predictionSuggestion.getId();
 	}
 

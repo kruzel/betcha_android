@@ -22,6 +22,7 @@ import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.SyncTask;
 
 public class LoginEmailActivity extends SherlockActivity implements
 		IModelListener {
@@ -218,8 +219,6 @@ public class LoginEmailActivity extends SherlockActivity implements
 		
 		if (clazz.getSimpleName().contentEquals("User")) {
 			String msg = "";
-			if (dialog != null && dialog.isShowing())
-				dialog.dismiss();
 
 			switch (errorCode) {
 			case OK:
@@ -231,7 +230,8 @@ public class LoginEmailActivity extends SherlockActivity implements
 					etName.setText(tmpMe.getName());
 				
 				app.registerToPushNotifications();
-				app.loadFriends();
+				app.loadFriends(); //TODO move into SyncTask
+				SyncTask.run(this);
 
 				msg = getString(R.string.error_registration_succeeded);
 				break;
@@ -259,32 +259,26 @@ public class LoginEmailActivity extends SherlockActivity implements
 
 			lastErrorCode = errorCode;
 
-			dialog = ProgressDialog.show(this,
-					getResources().getString(R.string.register), msg, true);
-			Thread t = new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
+			if (lastErrorCode != HttpStatus.OK && lastErrorCode != HttpStatus.CREATED) {
+				dialog = ProgressDialog.show(this,
+						getResources().getString(R.string.register), msg, true);
+				Thread t = new Thread(new Runnable() {
+	
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(5000);
+						} catch (InterruptedException e1) {
+							e1.printStackTrace();
+						}
+	
+						if (dialog != null && dialog.isShowing())
+							dialog.dismiss();
 					}
-
-					if (dialog != null && dialog.isShowing())
-						dialog.dismiss();
-
-					if (lastErrorCode == HttpStatus.CREATED) {
-						Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
-						//finish();
-					}
-				}
-			});
-			t.start();
-
-		}
+				});
+				t.start();
+			}
+		} 
 	}
 
 	@Override
@@ -315,8 +309,32 @@ public class LoginEmailActivity extends SherlockActivity implements
 
 	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
+		if(clazz.getSimpleName().contentEquals("SyncTask")) {
+			
+			Thread t = new Thread(new Runnable() {
 
-		if (dialog != null && dialog.isShowing())
-			dialog.dismiss();
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
+
+					if (dialog != null && dialog.isShowing())
+						dialog.dismiss();
+
+					if (lastErrorCode == HttpStatus.OK || lastErrorCode == HttpStatus.CREATED) {
+							Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
+							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							startActivity(intent);
+					}
+				}
+			});
+			t.start();
+		} else {
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
+		}
 	}
 }

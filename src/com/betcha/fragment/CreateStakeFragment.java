@@ -1,5 +1,8 @@
 package com.betcha.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -19,38 +22,44 @@ import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
 import com.betcha.fragment.SetCoinsDialogFragment.OnCoinsSelectedListener;
-import com.betcha.model.Category;
+import com.betcha.model.Stake;
+import com.betcha.model.TopicCategory;
 import com.betcha.model.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CreateStakeFragment extends SherlockFragment implements OnEditorActionListener, OnCoinsSelectedListener {
     
 	private static final String ARG_SUGGESTION_IDS = "suggestionIds";
-    private static final String ARG_SUGGESTION_NAMES = "suggestionNames";
-    private static final String ARG_SUGGESTION_DRAWABLES = "suggestionDrawables";
     private static final String ARG_SUBJECT = "subject";
     private static final String ARG_STAKE = "stake";
     private static final String ARG_STAKE_ID = "stake_id";
     private static final String ARG_CATEGORY = "categoryId";
     private static final String ARG_USER = "userId";
     
-    private Suggestion[] mSuggestions;
+    private String[] suggestionIds;
     private String mSubject;
     private String mCategoryId;
     private String mUserId;
     
-    private Suggestion mSuggestion;
+    private Stake mSelectedStake;
+    int amount;
     
     private OnStakeSelectedListener mListener;
     
     SetCoinsDialogFragment predictionDialog;
     
-    public static CreateStakeFragment newInstance(String[] suggestionIds, String[] suggestionNames, int[] suggestionDrawables, String categorId, String userId, String subject) {
+    private List<ImageLoader> stakeImageLoaders;
+    
+    private static ImageLoader categoryImageLoader;
+	private static DisplayImageOptions defaultOptions;
+    
+    public static CreateStakeFragment newInstance(String[] suggestionIds, String categorId, String userId, String subject) {
         CreateStakeFragment f = new CreateStakeFragment();
         
         Bundle args = new Bundle();
         args.putStringArray(ARG_SUGGESTION_IDS, suggestionIds);
-        args.putStringArray(ARG_SUGGESTION_NAMES, suggestionNames);
-        args.putIntArray(ARG_SUGGESTION_DRAWABLES, suggestionDrawables);
         args.putString(ARG_SUBJECT, subject);
         args.putString(ARG_CATEGORY, categorId);
         args.putString(ARG_USER, userId);
@@ -75,25 +84,29 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        String[] suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
-        String[] suggestionNames = getArguments().getStringArray(ARG_SUGGESTION_NAMES);
-        int[] suggestionDrawables = getArguments().getIntArray(ARG_SUGGESTION_DRAWABLES);
-        if (suggestionNames.length != suggestionDrawables.length) {
-            throw new IllegalArgumentException();
-        }
-        
-        mSuggestions = new Suggestion[suggestionNames.length];
-        for (int i = 0; i < suggestionNames.length; i++) {
-            Suggestion suggestion = new Suggestion();
-            suggestion.id = suggestionIds[i];
-            suggestion.name = suggestionNames[i];
-            suggestion.drawable = suggestionDrawables[i];
-            mSuggestions[i] = suggestion;
-        }
+        suggestionIds = getArguments().getStringArray(ARG_SUGGESTION_IDS);
+       
+    	stakeImageLoaders = new ArrayList<ImageLoader>();
+    	for (String sugestion : suggestionIds) {
+    		ImageLoader imageLoader = ImageLoader.getInstance();
+    		imageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+    		stakeImageLoaders.add(imageLoader);
+		}
 
         mSubject = getArguments().getString(ARG_SUBJECT);
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
+        
+        defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
+        
+        if(categoryImageLoader==null) {
+			categoryImageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			categoryImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));	
+		}
     }
     
     @Override
@@ -104,35 +117,47 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         User.get(mUserId).setProfilePhoto(profileView);
         
         ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
-        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
+        if(TopicCategory.get(mCategoryId).getImageUrl()!=null) {
+        	categoryImageLoader.displayImage(TopicCategory.get(mCategoryId).getImageUrl() , categoryView,defaultOptions);
+        } else {
+        	categoryImageLoader.cancelDisplayTask(categoryView);
+        	categoryView.setImageResource(android.R.color.transparent);
+        }
         
         TextView subjectView = (TextView) view.findViewById(R.id.tv_bet_topic);
         FontUtils.setTextViewTypeface(subjectView, CustomFont.HELVETICA_CONDENSED_BOLD);
         subjectView.setText(mSubject);
         
-        ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions);
-        ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
-        for (int i = 0; i < mSuggestions.length; i++) {
-            final Suggestion suggestion = mSuggestions[i];
-            
-            View suggestionView = inflater.inflate(R.layout.create_stake_suggestion, null);
-            
-            TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
-            FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
-            textView.setText(suggestion.name);
-            
-            ImageView imageView = (ImageView) suggestionView.findViewById(R.id.iv_suggestion_image);
-            imageView.setImageResource(suggestion.drawable);
-            
-            suggestionView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onSuggestionClicked(suggestion);
-                }
-            });
-            
-            ViewGroup suggestionsContainer = (i % 2 == 0 ? suggestionsContainer1 : suggestionsContainer2);
-            suggestionsContainer.addView(suggestionView);
+        if(suggestionIds.length>0) {
+	        ViewGroup suggestionsContainer1 = (ViewGroup) view.findViewById(R.id.ll_suggestions);
+	        ViewGroup suggestionsContainer2 = (ViewGroup) view.findViewById(R.id.ll_suggestions2);
+	        for (int i = 0; i < suggestionIds.length; i++) {
+	            final Stake suggestion = Stake.get(suggestionIds[i]);
+	            
+	            View suggestionView = inflater.inflate(R.layout.create_stake_suggestion, null);
+	            
+	            TextView textView = (TextView) suggestionView.findViewById(R.id.tv_suggestion_text);
+	            FontUtils.setTextViewTypeface(textView, CustomFont.HELVETICA_NORMAL);
+	            textView.setText(suggestion.getName());
+	            
+	            ImageView imageView = (ImageView) suggestionView.findViewById(R.id.iv_suggestion_image);
+	            if(suggestion.getImage_url()!=null) {
+	            	stakeImageLoaders.get(i).displayImage(suggestion.getImage_url() , imageView,defaultOptions);
+	            } else {
+	            	stakeImageLoaders.get(i).cancelDisplayTask(imageView);
+	            	imageView.setImageResource(android.R.color.transparent);
+	            }
+	           
+	            suggestionView.setOnClickListener(new OnClickListener() {
+	                @Override
+	                public void onClick(View v) {
+	                    onSuggestionClicked(suggestion);
+	                }
+	            });
+	            
+	            ViewGroup suggestionsContainer = (i % 2 == 0 ? suggestionsContainer1 : suggestionsContainer2);
+	            suggestionsContainer.addView(suggestionView);
+	        }
         }
 
         EditText editText = (EditText) view.findViewById(R.id.et_bet_stake);
@@ -171,24 +196,24 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
         return null;
     }
     
-    private void onSuggestionClicked(Suggestion suggestion) {
-    	mSuggestion = suggestion;
+    private void onSuggestionClicked(Stake suggestion) {
+    	mSelectedStake = suggestion;
     	
         EditText editText = getEditText();
         if (editText != null) {
-            editText.setText(suggestion.name);
-            editText.setTag(suggestion.id);
+            editText.setText(suggestion.getName());
+            editText.setTag(suggestion.getId());
             editText.setSelection(editText.getText().length());
         }
         
         //if coins let user set #
-        if(suggestion.name.equals("Coins")) {
+        if(suggestion.getName().equals("Coins")) {
 	        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 			predictionDialog = SetCoinsDialogFragment.newInstance(100);
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
         } else 
-        	submit(suggestion.id, suggestion.name, 1);
+        	submit(suggestion.getId(), suggestion.getName(), 1);
     }
 
     @Override
@@ -215,15 +240,8 @@ public class CreateStakeFragment extends SherlockFragment implements OnEditorAct
 			predictionDialog = null;
 		}
 		
-		mSuggestion.amount = numCoins;
-		submit(mSuggestion.id, mSuggestion.name, mSuggestion.amount);
+		amount = numCoins;
+		submit(mSelectedStake.getId(), mSelectedStake.getName(), numCoins);
 	}
-	
-	private class Suggestion {
-    	String id;
-        String name;
-        int drawable;
-        int amount;
-    }
     
 }

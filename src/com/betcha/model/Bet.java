@@ -33,12 +33,12 @@ public class Bet extends ModelCache<Bet, String> {
 
 	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
 	private User user; // owner
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	private TopicCategory category;
 	@DatabaseField
-	private String categoryId;
-	@DatabaseField
-	private String topic;
-	@DatabaseField(defaultValue = "0")
-	private String topicId;
+	private String topicCustom;
+	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	private Topic topic;
 	@DatabaseField
 	private String reward; // benefit
 	@DatabaseField
@@ -82,14 +82,14 @@ public class Bet extends ModelCache<Bet, String> {
 	public void setBet(Bet bet) {
 		this.id = bet.getId();
 		this.user = bet.getOwner();
+		this.topicCustom = bet.getTopicCustom();
 		this.topic = bet.getTopic();
-		this.topicId = bet.topicId;
 		this.reward = bet.getReward().getName(); //TODO replace with Reward object
 		this.reward_id = bet.getReward_id();
 		this.date = bet.getDate();
 		this.dueDate = bet.getDueDate();
 		this.state = bet.getState();
-		this.categoryId = bet.getCategoryId();
+		this.category = bet.getCategory();
 	}
 
 	public BetRestClient getBetClient() {
@@ -122,28 +122,26 @@ public class Bet extends ModelCache<Bet, String> {
 		this.user = owner;
 	}
 
-	public String getTopic() {
-		return topic;
+	public String getTopicCustom() {
+		return topicCustom;
 	}
 
-	public void setTopic(String betTopic) {
-		this.topic = betTopic;
+	public void setTopicCustom(String betTopic) {
+		this.topicCustom = betTopic;
 	}
 	
-	public String getTopicId() {
-		if(topicId==null)
-			return "0";
-		return topicId;
+	public Topic getTopic() {
+		return topic;
 	}
-	public void setTopicId(Topic topic) {
-		this.topicId = topic.getId();
+	public void setTopic(Topic topic) {
+		this.topic = topic;
 	}
 
-	public Reward getReward() {
-		Reward r = Reward.get(reward); //TODO replace with Reward object as member, currently the reward name is the id;
+	public Stake getReward() {
+		Stake r = Stake.get(reward); //TODO replace with Reward object as member, currently the reward name is the id;
 		
 		if(r==null) {
-			r = new Reward();
+			r = new Stake();
 			r.setId("0");
 			r.setName(reward);
 		}
@@ -179,15 +177,13 @@ public class Bet extends ModelCache<Bet, String> {
 		this.state = state;
 	}
 
-	public String getCategoryId() {
-		return categoryId;
+	public TopicCategory getCategory() {
+		return category;
 	}
 
-	public void setCategoryId(String categoryId) {
-		this.categoryId = categoryId;
+	public void setCategory(TopicCategory category) {
+		this.category = category;
 	}
-	
-	
 
 	public String getReward_id() {
 		return reward_id;  //TODO replace with Reward object
@@ -231,6 +227,9 @@ public class Bet extends ModelCache<Bet, String> {
 	}
 	
 	public int getPredictionsCount() {
+		if(predictions==null)
+			return 0;
+		
 		return predictions.size();
 	}
 	
@@ -634,7 +633,7 @@ public class Bet extends ModelCache<Bet, String> {
 		}
 
 		try {
-			setTopic(jsonBet.getString("subject"));
+			setTopicCustom(jsonBet.getString("subject"));
 		} catch (JSONException e1) {
 		}
 
@@ -796,7 +795,7 @@ public class Bet extends ModelCache<Bet, String> {
 		try {
 			jsonBetContent.put("id", getId());
 			jsonBetContent.put("user_id", getOwner().getId());
-			jsonBetContent.put("subject", getTopic());
+			jsonBetContent.put("subject", getTopicCustom());
 			jsonBetContent.put("reward", getReward().getName());
 			if (getDueDate() != null)
 				jsonBetContent.put("due_date", getDueDate().toString());

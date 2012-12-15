@@ -11,8 +11,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.betcha.BetchaApp;
+import com.betcha.adapter.CategoryAdapter;
+import com.betcha.model.ActivityFeedItem;
 import com.betcha.model.Bet;
+import com.betcha.model.Location;
 import com.betcha.model.Prediction;
+import com.betcha.model.Stake;
+import com.betcha.model.TopicCategory;
 import com.betcha.model.server.api.RestClient;
 
 public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
@@ -28,7 +33,6 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		SyncTask.modelListener = modelListener;
 	}
 	
-	@TargetApi(11)
 	public static void run(IModelListener modelListener) {
 		Log.i("SyncTask.run()", "called");	
 		
@@ -77,6 +81,12 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 				return HttpStatus.UNAUTHORIZED;
 			}
 		}
+		
+		//on first run last sync time is null, so server will return everything
+		Stake.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		Location.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		TopicCategory.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime()); //get categories, nested topics, prediction options, topic results
 		
 		// get all updates from server (bets and their predictions and chat_messages
 		// TODO - use the show all update for current user

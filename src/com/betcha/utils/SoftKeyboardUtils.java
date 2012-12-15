@@ -1,4 +1,4 @@
-package utils;
+package com.betcha.utils;
 
 import android.content.Context;
 import android.view.View;

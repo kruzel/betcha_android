@@ -28,9 +28,12 @@ import com.actionbarsherlock.view.MenuItem;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.Category;
-import com.betcha.model.Reward;
+import com.betcha.model.TopicCategory;
+import com.betcha.model.Stake;
 import com.betcha.model.User;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CreateDuedateFragment extends SherlockFragment {
     
@@ -60,6 +63,10 @@ public class CreateDuedateFragment extends SherlockFragment {
     private TimePickerDialog timeDialog;
     
     private OnDuedateSelectedListener mListener;
+    
+    private static ImageLoader categoryImageLoader;
+    private static ImageLoader stakeImageLoader;
+	private static DisplayImageOptions defaultOptions;
     
     public static CreateDuedateFragment newInstance(String categorId, String userId, String subject, String stake, String stake_id, Integer stakeAmount, String prediction) {
         CreateDuedateFragment f = new CreateDuedateFragment();
@@ -101,6 +108,23 @@ public class CreateDuedateFragment extends SherlockFragment {
         mCategoryId = getArguments().getString(ARG_CATEGORY);
         mUserId = getArguments().getString(ARG_USER);
         mPrediction = getArguments().getString(ARG_PREDICTION);
+        
+        defaultOptions = new DisplayImageOptions.Builder()
+        .cacheInMemory()
+        .cacheOnDisc()
+        .build();
+        
+        if(categoryImageLoader==null) {
+			categoryImageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+			categoryImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));	
+		}
+        
+        if(stakeImageLoader==null) {
+        	stakeImageLoader = ImageLoader.getInstance();
+			// Initialize ImageLoader with configuration. Do it once.
+        	stakeImageLoader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		}
     }
     
     @Override
@@ -111,7 +135,13 @@ public class CreateDuedateFragment extends SherlockFragment {
         User.get(mUserId).setProfilePhoto(profileView);
         
         ImageView categoryView = (ImageView) view.findViewById(R.id.iv_bet_category);
-        categoryView.setImageBitmap(Category.get(mCategoryId).getImage());
+                
+        if(TopicCategory.get(mCategoryId).getImageUrl()!=null) {
+        	categoryImageLoader.displayImage(TopicCategory.get(mCategoryId).getImageUrl() , categoryView,defaultOptions);
+        } else {
+        	categoryImageLoader.cancelDisplayTask(categoryView);
+        	categoryView.setImageResource(android.R.color.transparent);
+        }
         
         TextView subjectView = (TextView) view.findViewById(R.id.tv_bet_topic);
         FontUtils.setTextViewTypeface(subjectView, CustomFont.HELVETICA_CONDENSED_BOLD);
@@ -125,11 +155,13 @@ public class CreateDuedateFragment extends SherlockFragment {
         	stakeView.setText(mStake);
         
         ImageView stakeImageView = (ImageView) view.findViewById(R.id.iv_bet_reward);
-        Reward r = Reward.get(mStakeId);
-        if(r!=null)
-        	stakeImageView.setImageResource(r.getDrawable_id());
-        else 
+        Stake r = Stake.get(mStakeId);
+        if(r!=null) {
+        	stakeImageLoader.displayImage(r.getImage_url(), stakeImageView, defaultOptions);
+        } else {
+        	stakeImageLoader.cancelDisplayTask(stakeImageView);
         	stakeImageView.setImageResource(android.R.color.transparent);
+        }
         
         TextView predictionView = (TextView) view.findViewById(R.id.tv_bet_prediction);
         FontUtils.setTextViewTypeface(predictionView, CustomFont.HELVETICA_CONDENSED);

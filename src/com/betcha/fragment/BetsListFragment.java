@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-import utils.Filter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,6 +32,7 @@ import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.SyncTask;
+import com.betcha.utils.Filter;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
