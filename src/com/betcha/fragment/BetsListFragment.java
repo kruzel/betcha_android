@@ -262,12 +262,6 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 		Intent i = new Intent(getActivity(), BetDetailsActivity.class);
         String betId = bets.get(position).getId();

@@ -201,12 +201,6 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 		if(activities==null)
 			return;

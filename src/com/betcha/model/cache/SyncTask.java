@@ -85,8 +85,9 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		//on first run last sync time is null, so server will return everything
 		Stake.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		Location.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
-		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		TopicCategory.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime()); //get categories, nested topics, prediction options, topic results
+
+		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		
 		// get all updates from server (bets and their predictions and chat_messages
 		// TODO - use the show all update for current user

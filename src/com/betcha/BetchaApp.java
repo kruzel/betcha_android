@@ -351,10 +351,4 @@ public class BetchaApp extends Application implements IModelListener {
 
 	}
 
-	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

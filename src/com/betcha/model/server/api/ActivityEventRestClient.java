@@ -19,7 +19,7 @@ public class ActivityEventRestClient extends RestClient {
 		
 		String res;
 		try {
-			res = restTemplate.getForObject(url + ".json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class);
+			res = restTemplate.getForObject(url + "/show_updates_for_user.json?"+ GetURLTokenParam() + "&updated_at=" + lastUpdate.toString() , String.class);
 		} catch (HttpClientErrorException e) {
 	    	setLastRestErrorCode(e.getStatusCode());
 	    	return null;
@@ -45,7 +45,7 @@ public class ActivityEventRestClient extends RestClient {
 		
 		String res;
 		try {
-			res = restTemplate.getForObject(url + ".json?"+ GetURLTokenParam() , String.class);
+			res = restTemplate.getForObject(url + "/show_for_user.json?"+ GetURLTokenParam() , String.class);
 		} catch (HttpClientErrorException e) {
 	    	setLastRestErrorCode(e.getStatusCode());
 	    	return null;

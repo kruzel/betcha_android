@@ -292,6 +292,9 @@ public class LoginEmailActivity extends SherlockActivity implements
 			Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(intent);
+		} else {
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
 		}
 	}
 
@@ -302,14 +305,38 @@ public class LoginEmailActivity extends SherlockActivity implements
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		if (dialog != null && dialog.isShowing())
-			dialog.dismiss();
-	}
-
-	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		if(clazz.getSimpleName().contentEquals("SyncTask")) {
+			String msg = null;
+			switch (errorCode) {
+			case OK:
+			case CREATED:
+				msg = getString(R.string.error_registration_succeeded);
+				break;
+			case SERVICE_UNAVAILABLE:
+				msg = getString(R.string.error_connectivity_error);
+				break;
+			case INTERNAL_SERVER_ERROR:
+				msg = getString(R.string.error_server_error);
+				break;
+			case UNAUTHORIZED:
+				msg = getString(R.string.error_authorization_error);
+				break;
+			case UNPROCESSABLE_ENTITY:
+				msg = getString(R.string.error_internal_error);
+				break;
+			default:
+				msg = getString(R.string.error_internal_error);
+				break;
+			}
+
+			lastErrorCode = errorCode;
+			
+			if (dialog != null && dialog.isShowing())
+				dialog.dismiss();
+			
+			dialog = ProgressDialog.show(this,
+					getResources().getString(R.string.register), msg, true);
 			
 			Thread t = new Thread(new Runnable() {
 
@@ -328,13 +355,10 @@ public class LoginEmailActivity extends SherlockActivity implements
 							Intent intent = new Intent(getApplicationContext(), BetsListActivity.class);
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 							startActivity(intent);
-					}
+					} 
 				}
 			});
 			t.start();
-		} else {
-			if (dialog != null && dialog.isShowing())
-				dialog.dismiss();
-		}
+		} 
 	}
 }

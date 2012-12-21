@@ -14,30 +14,69 @@ import org.springframework.web.client.RestClientException;
 import com.betcha.BetchaApp;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.ActivityEventRestClient;
-import com.betcha.model.server.api.LocationRestClient;
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.DatabaseField;
 
 public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 	public enum Type { BET_CREATE, BET_UPDATE, PREDICTION_CREATE, PREDICTION_UPDATE, CHAT_CREATE, OTHER };
 	
-	private Object obj;
-	private Type type;
+	@DatabaseField
+	private String object_id;
+	@DatabaseField
+	private int type;
+	@DatabaseField
 	private String description;
 				
 	public Object getObj() {
+		Object obj = null;
+		switch (getType()) {
+		case BET_CREATE:
+		case BET_UPDATE:
+			obj = Bet.get(object_id);
+			break;
+		case PREDICTION_CREATE:
+		case PREDICTION_UPDATE:
+			obj = Prediction.get(object_id);
+			break;
+		case CHAT_CREATE:
+			obj = ChatMessage.get(object_id);
+		default:
+			break;
+		}
+		
 		return obj;
 	}
 
-	public void setObj(Object obj) {
-		this.obj = obj;
+	public void setObj(String objId) {
+		this.object_id = objId;
 	}
 
 	public Type getType() {
-		return type;
+		return Type.values()[type];
 	}
 
 	public void setType(Type type) {
-		this.type = type;
+		switch(type) {
+		case BET_CREATE:
+			this.type = 0;
+			break;
+		case BET_UPDATE:
+			this.type = 1;
+			break;
+		case PREDICTION_CREATE:
+			this.type = 2;
+			break;
+		case PREDICTION_UPDATE:
+			this.type = 3;
+			break;
+		case CHAT_CREATE:
+			this.type = 4;
+			break;
+		case OTHER:
+			this.type = 5;
+			break;
+		}
+		
 	}
 
 	public String getDescription() {
@@ -51,6 +90,13 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 	public static List<ActivityFeedItem> getActivities() {
 		List<ActivityFeedItem> activities = null;
 		
+		try {
+			activities = ActivityFeedItem.getModelDao().queryBuilder()
+					.orderBy("updated_at", false).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 		return activities;
 	}
 	
@@ -60,33 +106,33 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		ChatMessage chatMessage = null;
 		User curUser = BetchaApp.getInstance().getCurUser();
 		
-		switch (type) {
+		switch (getType()) {
 			case BET_CREATE:
-				bet = (Bet) obj;
+				bet = Bet.get(object_id);
 				if(bet.getOwner().getId().equals(curUser.getId()))
 					return "You have created a bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 				else
 					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case BET_UPDATE:
-				bet = (Bet) obj;
+				bet = Bet.get(object_id);
 				if(bet.getOwner().getId().equals(curUser.getId()))
 					return "You have updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 				else
 					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
 			case PREDICTION_CREATE:
-				prediction = (Prediction) obj;
+				prediction = Prediction.get(object_id);
 				if(prediction.getBet().getOwner().getId().equals(curUser.getId()))
 					return "You have added " + prediction.getUser().getName() + " as a new participant";
 				else
 					return prediction.getBet().getOwner().getName() + " has added " + prediction.getUser().getName() + " as a new participant";
 			case PREDICTION_UPDATE:
-				prediction = (Prediction) obj;
+				prediction = Prediction.get(object_id);
 				if(prediction.getUser().getId().equals(curUser.getId()))
 					return "You have updated your bet to \"" + prediction.getPrediction() + "\"";
 				else
 					return prediction.getUser().getName() + " has updated his bet to \"" + prediction.getPrediction() + "\"";
 			case CHAT_CREATE:
-				chatMessage = (ChatMessage) obj;
+				chatMessage = ChatMessage.get(object_id);
 				if(chatMessage.getUser().getId().equals(curUser.getId()))
 					return "You have sent a chat message, \"" + chatMessage.getMessage() + "\"";
 				else
@@ -98,16 +144,16 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 	}
 	
 	public Bet getBet() {
-		switch (type) {
+		switch (getType()) {
 		case BET_CREATE:
 		case BET_UPDATE:
-			return (Bet) obj;
+			return Bet.get(object_id);
 		case PREDICTION_CREATE:
 		case PREDICTION_UPDATE:
-			Prediction prediction = (Prediction) obj;
+			Prediction prediction = Prediction.get(object_id);
 			return prediction.getBet();
 		case CHAT_CREATE:
-			ChatMessage chatMessage = (ChatMessage) obj;
+			ChatMessage chatMessage = ChatMessage.get(object_id);
 			return chatMessage.getBet();
 		case OTHER:
 		default:
@@ -279,21 +325,18 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		} catch (JSONException e1) {
 		}
 		
+		setObj(objectId);
+		
 		if (tmpType.equals("bet")) {
-			setType(Type.BET_CREATE);
-			setObj(Bet.get(objectId));
+			setType(Type.BET_CREATE);	
 		} else if(tmpType.equals("bet_update")) {
 			setType(Type.BET_UPDATE);
-			setObj(Bet.get(objectId));
 		} else if(tmpType.equals("prediction")) {
 			setType(Type.PREDICTION_CREATE);
-			setObj(Prediction.get(objectId));
 		} else if(tmpType.equals("prediction_update")) {
 			setType(Type.PREDICTION_UPDATE);
-			setObj(Prediction.get(objectId));
 		} else if(tmpType.equals("chat")) {
 			setType(Type.CHAT_CREATE);
-			setObj(ChatMessage.get(objectId));
 		}
 		
 		try {

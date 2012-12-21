@@ -11,7 +11,5 @@ public interface IModelListener {
 	public abstract void onGetComplete(Class clazz, HttpStatus errorCode);
 		
 	public abstract void onDeleteComplete(Class clazz, HttpStatus errorCode);
-	
-	public abstract void onSyncComplete(Class clazz, HttpStatus errorCode);
 
 }

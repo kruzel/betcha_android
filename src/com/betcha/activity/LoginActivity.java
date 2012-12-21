@@ -254,12 +254,6 @@ public class LoginActivity extends SherlockFragmentActivity implements
 	}
 
 	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		if (dialog != null && dialog.isShowing())
-			dialog.dismiss();
-	}
-
-	@Override
 	public void onGetComplete(Class clazz, HttpStatus errorCode) {
 		if(clazz.getSimpleName().contentEquals("SyncTask")) {
 			

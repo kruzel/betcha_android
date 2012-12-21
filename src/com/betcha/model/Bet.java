@@ -37,7 +37,7 @@ public class Bet extends ModelCache<Bet, String> {
 	private TopicCategory category;
 	@DatabaseField
 	private String topicCustom;
-	@DatabaseField(canBeNull = false, foreign = true, foreignAutoRefresh = true)
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Topic topic;
 	@DatabaseField
 	private String reward; // benefit
@@ -646,6 +646,16 @@ public class Bet extends ModelCache<Bet, String> {
 			setState(jsonBet.getString("state"));
 		} catch (JSONException e1) {
 		}
+		
+		try {
+			String topicId = jsonBet.getString("topic_id");
+			if(topicId!=null){
+				setTopic(Topic.get(topicId));
+				setCategory(getTopic().getCategory());
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
 		JSONArray jsonPredictions = null;
 		try {
@@ -797,6 +807,7 @@ public class Bet extends ModelCache<Bet, String> {
 			jsonBetContent.put("user_id", getOwner().getId());
 			jsonBetContent.put("subject", getTopicCustom());
 			jsonBetContent.put("reward", getReward().getName());
+			jsonBetContent.put("topic_id", getTopic().getId());
 			if (getDueDate() != null)
 				jsonBetContent.put("due_date", getDueDate().toString());
 			if (getState() != null)

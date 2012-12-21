@@ -234,12 +234,6 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 		
 	}
 
-	@Override
-	public void onSyncComplete(Class clazz, HttpStatus errorCode) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void inviteFriends() {
 		if(app.getFriends()==null) {
 			Toast.makeText(this, "No friends found", Toast.LENGTH_LONG);
