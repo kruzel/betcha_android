@@ -278,7 +278,9 @@ public class Bet extends ModelCache<Bet, String> {
 			}
 		}
 		
-		if (getBetClient().create(this) != null) {
+		JSONObject jsonRes = null;
+		jsonRes = getBetClient().create(this);
+		if (jsonRes != null) {
 			res = 1;
 			
 			if(getPredictions()!=null) {
@@ -288,6 +290,34 @@ public class Bet extends ModelCache<Bet, String> {
 					prediction.onLocalUpdate();
 				}
 			}
+			
+			JSONArray jsonActivityEvents = null;
+			try {
+				jsonActivityEvents = jsonRes.getJSONArray("activity_events");
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+			
+			if(jsonActivityEvents!=null) {
+				for (int j = 0; j < jsonActivityEvents.length(); j++) {
+					JSONObject jsonEvent;
+
+					try {
+						jsonEvent = jsonActivityEvents.getJSONObject(j);
+					} catch (JSONException e3) {
+						continue;
+					}
+					
+					if(jsonEvent!=null) {
+						ActivityFeedItem item = new ActivityFeedItem();
+						item.setJson(jsonEvent);
+						item.setServerCreated(true);
+						item.setServerUpdated(true);
+						item.onLocalCreate();
+					}
+				}
+			}
+			
 		}
 
 		return res;

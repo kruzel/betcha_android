@@ -163,7 +163,8 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	public void onPredictionSelected(String suggestionId, String prediction) {
 		//TODO add prediction to bet
 		app.getCurBet().getOwnerPrediction().setPrediction(prediction);
-		app.getCurBet().getOwnerPrediction().setPredictionSuggestion(PredictionOption.get(suggestionId));
+		if(PredictionOption.get(suggestionId)!=null)
+			app.getCurBet().getOwnerPrediction().setPredictionSuggestion(PredictionOption.get(suggestionId));
 		
 		Stake stake = app.getCurBet().getStake();
 		String stakeId = null;

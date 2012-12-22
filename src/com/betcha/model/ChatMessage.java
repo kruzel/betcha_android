@@ -100,7 +100,37 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 	public int onRestCreate() {
 		int res = 0;
 		
-		getChatMessageRestClient().create(this);
+		JSONObject json = getChatMessageRestClient().create(this);
+		
+		if(json==null)
+			return 0;
+		
+		JSONArray jsonActivityEvents = null;
+		try {
+			jsonActivityEvents = json.getJSONArray("activity_events");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		if(jsonActivityEvents!=null) {
+			for (int j = 0; j < jsonActivityEvents.length(); j++) {
+				JSONObject jsonEvent;
+
+				try {
+					jsonEvent = jsonActivityEvents.getJSONObject(j);
+				} catch (JSONException e3) {
+					continue;
+				}
+				
+				if(jsonEvent!=null) {
+					ActivityFeedItem item = new ActivityFeedItem();
+					item.setJson(jsonEvent);
+					item.setServerCreated(true);
+					item.setServerUpdated(true);
+					item.onLocalCreate();
+				}
+			}
+		}
 		
 		return res;
 	}

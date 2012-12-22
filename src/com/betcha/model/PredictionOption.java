@@ -148,7 +148,7 @@ public class PredictionOption extends ModelCache<PredictionOption, String> {
 		}
 		
 		try {
-			setImageUrl(json.getString("image_url "));
+			setImageUrl(json.getString("image_url"));
 		} catch (JSONException e1) {
 		}
 		
