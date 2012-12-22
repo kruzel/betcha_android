@@ -177,6 +177,9 @@ public class Friend extends ModelCache<Friend, String> {
 						Friend.this.onRestGetAllForCurUser();
 						return;
 					}	
+					else {
+						return;
+					}
 				} 
 				
 				JSONArray friends = null;

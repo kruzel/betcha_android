@@ -176,15 +176,18 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		if(predictionDialog==null) {
 			predictionEdit = prediction;
 			predictionEditView = predictionView;
-			
-			//String suggestions[] = { "Macabi", "Hapoel", "Me" };
-			
+						
 			String suggestionId = null;
 			if(prediction.getPredictionSuggestion()!=null)
 					suggestionId = prediction.getPredictionSuggestion().getId();
 			
+			String topicId = null;
+			if(prediction.getBet().getTopic()!=null) {
+				topicId = prediction.getBet().getTopic().getId();
+			}
+			
 			FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-			predictionDialog = ChangePredictionDialogFragment.newInstance(prediction.getBet().getTopicCustom() , suggestionId, prediction.getPrediction());
+			predictionDialog = ChangePredictionDialogFragment.newInstance(topicId , suggestionId, prediction.getPrediction());
 			predictionDialog.setListener(this);
 			predictionDialog.show(ft, "dialog");
 		}
