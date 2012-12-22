@@ -291,32 +291,32 @@ public class Bet extends ModelCache<Bet, String> {
 				}
 			}
 			
-			JSONArray jsonActivityEvents = null;
-			try {
-				jsonActivityEvents = jsonRes.getJSONArray("activity_events");
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			
-			if(jsonActivityEvents!=null) {
-				for (int j = 0; j < jsonActivityEvents.length(); j++) {
-					JSONObject jsonEvent;
-
-					try {
-						jsonEvent = jsonActivityEvents.getJSONObject(j);
-					} catch (JSONException e3) {
-						continue;
-					}
-					
-					if(jsonEvent!=null) {
-						ActivityFeedItem item = new ActivityFeedItem();
-						item.setJson(jsonEvent);
-						item.setServerCreated(true);
-						item.setServerUpdated(true);
-						item.onLocalCreate();
-					}
-				}
-			}
+//			JSONArray jsonActivityEvents = null;
+//			try {
+//				jsonActivityEvents = jsonRes.getJSONArray("activity_events");
+//			} catch (JSONException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			if(jsonActivityEvents!=null) {
+//				for (int j = 0; j < jsonActivityEvents.length(); j++) {
+//					JSONObject jsonEvent;
+//
+//					try {
+//						jsonEvent = jsonActivityEvents.getJSONObject(j);
+//					} catch (JSONException e3) {
+//						continue;
+//					}
+//					
+//					if(jsonEvent!=null) {
+//						ActivityFeedItem item = new ActivityFeedItem();
+//						item.setJson(jsonEvent);
+//						item.setServerCreated(true);
+//						item.setServerUpdated(true);
+//						item.onLocalCreate();
+//					}
+//				}
+//			}
 			
 		}
 
@@ -870,15 +870,6 @@ public class Bet extends ModelCache<Bet, String> {
 
 		try {
 			JSONArray jsonPredictions = new JSONArray();
-			
-			JSONObject jsonOwnerPrediction = new JSONObject();
-			jsonOwnerPrediction.put("id", getOwnerPrediction().getId());
-			jsonOwnerPrediction.put("bet_id", getOwnerPrediction().getBet().getId());
-			jsonOwnerPrediction.put("user_id", getOwnerPrediction().getUser().getId());
-			jsonOwnerPrediction.put("prediction", getOwnerPrediction().getPrediction());
-			if (getOwnerPrediction().getResult()!=null)
-				jsonOwnerPrediction.put("result", getOwnerPrediction().getResult());
-			jsonPredictions.put(jsonOwnerPrediction);
 			
 			// for each prediction of bet, create it and its user if missing
 			if(getPredictions()!=null) {				

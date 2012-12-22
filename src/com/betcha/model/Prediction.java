@@ -179,32 +179,32 @@ public class Prediction extends ModelCache<Prediction, String> {
 		if (json == null)
 			return 0;
 		
-		JSONArray jsonActivityEvents = null;
-		try {
-			jsonActivityEvents = json.getJSONArray("activity_events");
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		
-		if(jsonActivityEvents!=null) {
-			for (int j = 0; j < jsonActivityEvents.length(); j++) {
-				JSONObject jsonEvent;
-
-				try {
-					jsonEvent = jsonActivityEvents.getJSONObject(j);
-				} catch (JSONException e3) {
-					continue;
-				}
-				
-				if(jsonEvent!=null) {
-					ActivityFeedItem item = new ActivityFeedItem();
-					item.setJson(jsonEvent);
-					item.setServerCreated(true);
-					item.setServerUpdated(true);
-					item.onLocalCreate();
-				}
-			}
-		}
+//		JSONArray jsonActivityEvents = null;
+//		try {
+//			jsonActivityEvents = json.getJSONArray("activity_events");
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		if(jsonActivityEvents!=null) {
+//			for (int j = 0; j < jsonActivityEvents.length(); j++) {
+//				JSONObject jsonEvent;
+//
+//				try {
+//					jsonEvent = jsonActivityEvents.getJSONObject(j);
+//				} catch (JSONException e3) {
+//					continue;
+//				}
+//				
+//				if(jsonEvent!=null) {
+//					ActivityFeedItem item = new ActivityFeedItem();
+//					item.setJson(jsonEvent);
+//					item.setServerCreated(true);
+//					item.setServerUpdated(true);
+//					item.onLocalCreate();
+//				}
+//			}
+//		}
 
 		return 1;
 	}
