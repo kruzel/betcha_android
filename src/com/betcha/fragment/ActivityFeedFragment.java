@@ -91,9 +91,9 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 			populate();
 			SyncTask.setListener(this);
-//			ActivityFeedItem activityFeed = new ActivityFeedItem();
-//			activityFeed.setListener(this);
-//			activityFeed.getAllForCurUser();
+			ActivityFeedItem activityFeed = new ActivityFeedItem();
+			activityFeed.setListener(this);
+			activityFeed.getAllForCurUser();
         } 
 		
 		final String BET_LIST_ACTION = "com.betcha.BetsListFragmentReceiver";

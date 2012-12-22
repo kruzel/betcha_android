@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 
 import android.content.Context;
 
+import com.betcha.adapter.CategoryAdapter;
 import com.betcha.model.cache.ModelCache;
 import com.betcha.model.server.api.TopicRestClient;
 import com.j256.ormlite.dao.Dao;
@@ -44,7 +45,7 @@ public class Topic  extends ModelCache<Topic, String> {
 		List<Topic> newTopicsList = null;
 				
 		try {
-			newTopicsList = Topic.getModelDao().queryForAll();
+			newTopicsList = Topic.getModelDao().queryForEq("category_id", catpgoryId);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
