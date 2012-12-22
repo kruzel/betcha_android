@@ -110,15 +110,15 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 			case BET_CREATE:
 				bet = Bet.get(object_id);
 				if(bet.getOwner().getId().equals(curUser.getId()))
-					return "You have created a bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return "You have created a bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getStake().getName() + "\"";
 				else
-					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return bet.getOwner().getName() + " has invited you to bet \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getStake().getName() + "\"";
 			case BET_UPDATE:
 				bet = Bet.get(object_id);
 				if(bet.getOwner().getId().equals(curUser.getId()))
-					return "You have updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return "You have updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getStake().getName() + "\"";
 				else
-					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getReward().getName() + "\"";
+					return bet.getOwner().getName() + " has updated the bet to \"" + bet.getTopicCustom() + "\" winner wins a \"" + bet.getStake().getName() + "\"";
 			case PREDICTION_CREATE:
 				prediction = Prediction.get(object_id);
 				if(prediction.getBet().getOwner().getId().equals(curUser.getId()))
@@ -226,7 +226,7 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		
 	@Override
 	public int onRestGetAllForCurUser() {
-		return ActivityFeedItem.getAllUpdatesForCurUser(null);
+		return ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 	}
 
 	public static int getAllUpdatesForCurUser(DateTime lastUpdate) {

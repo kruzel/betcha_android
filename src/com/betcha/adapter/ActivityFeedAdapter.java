@@ -138,6 +138,9 @@ public class ActivityFeedAdapter extends BaseAdapter {
 			break;
 		}
 		
+		if(bet==null)
+			return v;
+		
 		user.setProfilePhoto(holder.ivProfPic);
 		
 		if(bet.getCategory()!=null) {

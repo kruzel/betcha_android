@@ -87,11 +87,12 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		Location.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		TopicCategory.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime()); //get categories, nested topics, prediction options, topic results
 
-		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		
 		
 		// get all updates from server (bets and their predictions and chat_messages
 		// TODO - use the show all update for current user
 		Bet.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		
 		Log.i("SyncTask.doInBackground()", "done getAllUpdatesForCurUser");	
 

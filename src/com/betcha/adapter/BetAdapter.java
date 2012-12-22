@@ -218,7 +218,7 @@ public class BetAdapter extends ArrayAdapter<Bet> {
 			stakeImageLoaders.add(categoryImageLaoder);
 		} 
 		
-		Stake r = bet.getReward();		
+		Stake r = bet.getStake();		
 		if(!r.getId().equals("0") && r.getImage_url()!=null) { //not a custom reward
 			stakeImageLaoder.displayImage(r.getImage_url() , holder.ivBetRewardImage,defaultOptions);
         } else {

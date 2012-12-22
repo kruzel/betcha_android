@@ -40,9 +40,9 @@ public class Bet extends ModelCache<Bet, String> {
 	@DatabaseField(foreign = true, foreignAutoRefresh = true)
 	private Topic topic;
 	@DatabaseField
-	private String reward; // benefit
-	@DatabaseField
-	private String reward_id; // benefit
+	private String stakeCustom; // benefit
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private Stake stake; // benefit
 	@DatabaseField(defaultValue = "1")
 	private Integer reward_amount; 
 	@DatabaseField
@@ -84,8 +84,8 @@ public class Bet extends ModelCache<Bet, String> {
 		this.user = bet.getOwner();
 		this.topicCustom = bet.getTopicCustom();
 		this.topic = bet.getTopic();
-		this.reward = bet.getReward().getName(); //TODO replace with Reward object
-		this.reward_id = bet.getReward_id();
+		this.stakeCustom = bet.stakeCustom;
+		this.stake = bet.stake;
 		this.date = bet.getDate();
 		this.dueDate = bet.getDueDate();
 		this.state = bet.getState();
@@ -137,20 +137,26 @@ public class Bet extends ModelCache<Bet, String> {
 		this.topic = topic;
 	}
 
-	public Stake getReward() {
-		Stake r = Stake.get(reward); //TODO replace with Reward object as member, currently the reward name is the id;
-		
-		if(r==null) {
-			r = new Stake();
-			r.setId("0");
-			r.setName(reward);
+	public Stake getStake() {
+		if(stake==null) {
+			stake = new Stake();
+			stake.setId("0");
+			stake.setName(stakeCustom);
 		}
 		
-		return r;
+		return stake;
 	}
 
-	public void setReward(String betReward) {
-		this.reward = betReward; //TODO replace with Reward object as memeber, currently the reard name is the id
+	public void setStake(Stake stake) {
+		this.stake = stake;
+	}
+
+	public void setStakeCustom(String betReward) {
+		this.stakeCustom = betReward; //TODO replace with Reward object as memeber, currently the reard name is the id
+	}
+	
+	public String getStakeCustom() {
+		return stakeCustom;
 	}
 
 	public DateTime getDate() {
@@ -183,14 +189,6 @@ public class Bet extends ModelCache<Bet, String> {
 
 	public void setCategory(TopicCategory category) {
 		this.category = category;
-	}
-
-	public String getReward_id() {
-		return reward_id;  //TODO replace with Reward object
-	}
-
-	public void setReward_id(String reward_id) {
-		this.reward_id = reward_id; //TODO replace with Reward object
 	}
 	
 	public Integer getRewardAmount() {
@@ -628,7 +626,7 @@ public class Bet extends ModelCache<Bet, String> {
 		setOwner(owner);
 
 		try {
-			setReward(jsonBet.getString("reward"));
+			setStakeCustom(jsonBet.getString("reward"));
 		} catch (JSONException e1) {
 		}
 
@@ -649,9 +647,26 @@ public class Bet extends ModelCache<Bet, String> {
 		
 		try {
 			String topicId = jsonBet.getString("topic_id");
-			if(topicId!=null){
+			if(topicId!=null && Topic.get(topicId)!=null){
 				setTopic(Topic.get(topicId));
-				setCategory(getTopic().getCategory());
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			String categoryId = jsonBet.getString("topic_category_id");
+			if(categoryId!=null && TopicCategory.get(categoryId)!=null){
+				setCategory(TopicCategory.get(categoryId));
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			String stakeId = jsonBet.getString("stake_id");
+			if(stakeId!=null && Stake.get(stakeId)!=null){
+				setStake(Stake.get(stakeId));
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -806,8 +821,12 @@ public class Bet extends ModelCache<Bet, String> {
 			jsonBetContent.put("id", getId());
 			jsonBetContent.put("user_id", getOwner().getId());
 			jsonBetContent.put("subject", getTopicCustom());
-			jsonBetContent.put("reward", getReward().getName());
-			jsonBetContent.put("topic_id", getTopic().getId());
+			jsonBetContent.put("reward", getStakeCustom());
+			if(getStake()!=null)
+				jsonBetContent.put("stake_id", getStake().getId());
+			if(getTopic()!=null)
+				jsonBetContent.put("topic_id", getTopic().getId());
+			jsonBetContent.put("topic_category_id", getCategory().getId());		
 			if (getDueDate() != null)
 				jsonBetContent.put("due_date", getDueDate().toString());
 			if (getState() != null)
@@ -820,9 +839,19 @@ public class Bet extends ModelCache<Bet, String> {
 		}
 
 		try {
+			JSONArray jsonPredictions = new JSONArray();
+			
+			JSONObject jsonOwnerPrediction = new JSONObject();
+			jsonOwnerPrediction.put("id", getOwnerPrediction().getId());
+			jsonOwnerPrediction.put("bet_id", getOwnerPrediction().getBet().getId());
+			jsonOwnerPrediction.put("user_id", getOwnerPrediction().getUser().getId());
+			jsonOwnerPrediction.put("prediction", getOwnerPrediction().getPrediction());
+			if (getOwnerPrediction().getResult()!=null)
+				jsonOwnerPrediction.put("result", getOwnerPrediction().getResult());
+			jsonPredictions.put(jsonOwnerPrediction);
+			
 			// for each prediction of bet, create it and its user if missing
-			if(getPredictions()!=null) {
-				JSONArray jsonPredictions = new JSONArray();
+			if(getPredictions()!=null) {				
 				for (Prediction prediction : getPredictions()) {
 					JSONObject jsonPrediction = new JSONObject();
 	
@@ -834,9 +863,9 @@ public class Bet extends ModelCache<Bet, String> {
 						jsonPrediction.put("result", prediction.getResult());
 					jsonPredictions.put(jsonPrediction);
 				}
-	
-				jsonRoot.put("predictions", jsonPredictions);
 			}
+			
+			jsonRoot.put("predictions", jsonPredictions);
 
 		} catch (JSONException e) {
 			e.printStackTrace();

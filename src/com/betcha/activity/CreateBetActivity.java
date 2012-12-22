@@ -147,8 +147,8 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 	
 	@Override
 	public void onStakeSelected(String stakeId, String stake, int amount) {
-		app.getCurBet().setReward(stake);
-		app.getCurBet().setReward_id(stakeId);
+		app.getCurBet().setStake(Stake.get(stakeId));
+		app.getCurBet().setStakeCustom(stake);
 		app.getCurBet().setRewardAmount(amount);
 				
 		createPredictionFragment = CreatePredictionFragment.newInstance(app.getCurBet().getTopic().getId(), app.getCurBet().getCategory().getId(), app.getCurBet().getOwner().getId(), app.getCurBet().getTopicCustom(), stake, stakeId);
@@ -165,7 +165,12 @@ public class CreateBetActivity extends SherlockFragmentActivity implements OnCat
 		app.getCurBet().getOwnerPrediction().setPrediction(prediction);
 		app.getCurBet().getOwnerPrediction().setPredictionSuggestion(PredictionOption.get(suggestionId));
 		
-		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getCategory().getId(), app.getCurBet().getOwner().getId() , app.getCurBet().getTopicCustom(), app.getCurBet().getReward().getId(),app.getCurBet().getReward_id(), app.getCurBet().getRewardAmount(), app.getCurBet().getOwnerPrediction().getPrediction());
+		Stake stake = app.getCurBet().getStake();
+		String stakeId = null;
+		if(stake!=null)
+			stakeId = stake.getId();
+		
+		createDuedateFragment = CreateDuedateFragment.newInstance(app.getCurBet().getCategory().getId(), app.getCurBet().getOwner().getId() , app.getCurBet().getTopicCustom(), app.getCurBet().getStakeCustom(),stakeId, app.getCurBet().getRewardAmount(), app.getCurBet().getOwnerPrediction().getPrediction());
 		
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.create_bet_fragment_container, createDuedateFragment);

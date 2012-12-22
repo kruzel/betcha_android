@@ -145,14 +145,14 @@ public class BetDetailsFragment extends SherlockFragment implements OnPrediction
 		}
 		
 		tvBetSubject.setText(app.getCurBet().getTopicCustom());
-		if(app.getCurBet().getReward().getName().equals("Coins"))
-			tvBetReward.setText("" + app.getCurBet().getRewardAmount() + " " + app.getCurBet().getReward().getName());
+		if(app.getCurBet().getStake().getName().equals("Coins"))
+			tvBetReward.setText("" + app.getCurBet().getRewardAmount() + " " + app.getCurBet().getStake().getName());
 		else
-			tvBetReward.setText(app.getCurBet().getReward().getName());
+			tvBetReward.setText(app.getCurBet().getStake().getName());
 		
-		Stake r = Stake.get(app.getCurBet().getReward().getName());
+		Stake r = Stake.get(app.getCurBet().getStake().getName());
 		if(r!=null) {
-			imageLoader.displayImage(app.getCurBet().getReward().getImage_url() , ivBetRewardImage,defaultOptions);
+			imageLoader.displayImage(app.getCurBet().getStake().getImage_url() , ivBetRewardImage,defaultOptions);
 		}
 		
 		if(app.getCurBet().getCategory()!=null) {
