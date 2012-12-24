@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.adapter.CategoryAdapter;
-import com.betcha.model.ActivityFeedItem;
+import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
 import com.betcha.model.Location;
 import com.betcha.model.Prediction;
@@ -87,12 +87,11 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 		Location.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		TopicCategory.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime()); //get categories, nested topics, prediction options, topic results
 
-		
-		
 		// get all updates from server (bets and their predictions and chat_messages
 		// TODO - use the show all update for current user
 		Bet.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
-		ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		//ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime()); //TODO move all datetime to UTC
+		ActivityEvent.getAllUpdatesForCurUser(null);
 		
 		Log.i("SyncTask.doInBackground()", "done getAllUpdatesForCurUser");	
 

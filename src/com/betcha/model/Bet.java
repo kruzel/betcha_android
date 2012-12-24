@@ -16,7 +16,9 @@ import org.springframework.web.client.RestClientException;
 import android.util.Log;
 
 import com.betcha.BetchaApp;
+import com.betcha.model.ActivityEvent.Type;
 import com.betcha.model.cache.ModelCache;
+import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.BetRestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
@@ -58,6 +60,8 @@ public class Bet extends ModelCache<Bet, String> {
 	
 	private Prediction ownerPrediction;
 	private List<User> participants;
+	
+	private ActivityEvent activityEvent;
 	
 	// non persistent
 	public static final String STATE_OPEN = "open";
@@ -291,33 +295,13 @@ public class Bet extends ModelCache<Bet, String> {
 				}
 			}
 			
-//			JSONArray jsonActivityEvents = null;
-//			try {
-//				jsonActivityEvents = jsonRes.getJSONArray("activity_events");
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//			}
-//			
-//			if(jsonActivityEvents!=null) {
-//				for (int j = 0; j < jsonActivityEvents.length(); j++) {
-//					JSONObject jsonEvent;
-//
-//					try {
-//						jsonEvent = jsonActivityEvents.getJSONObject(j);
-//					} catch (JSONException e3) {
-//						continue;
-//					}
-//					
-//					if(jsonEvent!=null) {
-//						ActivityFeedItem item = new ActivityFeedItem();
-//						item.setJson(jsonEvent);
-//						item.setServerCreated(true);
-//						item.setServerUpdated(true);
-//						item.onLocalCreate();
-//					}
-//				}
-//			}
-			
+		}
+		
+		if(activityEvent!=null) {
+			activityEvent.setServerCreated(true);
+			activityEvent.setServerUpdated(true);
+			activityEvent.onLocalUpdate();
+			activityEvent = null; //reset it after sending
 		}
 
 		return res;
@@ -331,6 +315,13 @@ public class Bet extends ModelCache<Bet, String> {
 				prediction.setServerUpdated(true);
 				prediction.onLocalUpdate();
 			}
+		}
+		
+		if(activityEvent!=null) {
+			activityEvent.setServerCreated(true);
+			activityEvent.setServerUpdated(true);
+			activityEvent.onLocalUpdate();
+			activityEvent = null; //reset it after sending
 		}
 		
 		return 1;
@@ -551,6 +542,20 @@ public class Bet extends ModelCache<Bet, String> {
 		
 		return res;
 	}
+	
+	@Override
+	public void onCreateActivityEvent() {
+		activityEvent = new ActivityEvent();
+		activityEvent.setDescription(getTopicCustom());
+		activityEvent.setObj(getId()); //of this bet
+		if(last_rest_call==RestMethod.CREATE) {
+			activityEvent.setType(Type.BET_CREATE); 
+		} else if(last_rest_call==RestMethod.UPDATE) {
+			activityEvent.setType(Type.BET_UPDATE); 
+		} else 
+			return;
+		activityEvent.onLocalCreate();
+	}
 
 	// nested object creation
 	@Override
@@ -578,7 +583,7 @@ public class Bet extends ModelCache<Bet, String> {
 				BetchaApp.getInstance().loadFriends();
 			}
 		}
-		
+				
 		return res;
 	}
 
@@ -605,7 +610,7 @@ public class Bet extends ModelCache<Bet, String> {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
 		return res;
 	}
 
@@ -893,7 +898,14 @@ public class Bet extends ModelCache<Bet, String> {
 			return null;
 		}
 
-		// no need to send add chat messages here, they are sent one by one
+		if(activityEvent!=null){
+			try {
+				jsonRoot.put("activity_event", activityEvent.getJsonContent());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
 
 		return jsonRoot;
 	}

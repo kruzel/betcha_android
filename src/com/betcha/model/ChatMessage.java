@@ -2,13 +2,16 @@ package com.betcha.model;
 
 import java.sql.SQLException;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 
+import com.betcha.model.ActivityEvent.Type;
 import com.betcha.model.cache.ModelCache;
+import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.ChatMessageRestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -26,6 +29,8 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 	
 	private static Dao<ChatMessage,String> dao;
 	private static ChatMessageRestClient chatMessagesRestClient;
+	
+	private ActivityEvent activityEvent;
 	
 	public ChatMessageRestClient getChatMessageRestClient() {
 		if(chatMessagesRestClient==null)
@@ -95,6 +100,35 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 		}
 		return dao;
 	}
+	
+	@Override
+	public void onCreateActivityEvent() {
+		activityEvent = new ActivityEvent();
+		activityEvent.setDescription(getMessage());
+		activityEvent.setObj(getId()); //of this chat
+		if(last_rest_call==RestMethod.CREATE) {
+			activityEvent.setType(Type.CHAT_CREATE); 
+		} else 
+			return;
+		activityEvent.onLocalCreate();
+	}
+
+	@Override
+	public int onLocalCreate() {
+		genId();
+		setCreated_at(new DateTime());
+		setUpdated_at(new DateTime());
+
+		int res = 0;
+		try {
+			res = getDao().create(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+		
+		return res;
+	}
 		
 	@Override
 	public int onRestCreate() {
@@ -105,32 +139,12 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 		if(json==null)
 			return 0;
 		
-//		JSONArray jsonActivityEvents = null;
-//		try {
-//			jsonActivityEvents = json.getJSONArray("activity_events");
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		if(jsonActivityEvents!=null) {
-//			for (int j = 0; j < jsonActivityEvents.length(); j++) {
-//				JSONObject jsonEvent;
-//
-//				try {
-//					jsonEvent = jsonActivityEvents.getJSONObject(j);
-//				} catch (JSONException e3) {
-//					continue;
-//				}
-//				
-//				if(jsonEvent!=null) {
-//					ActivityFeedItem item = new ActivityFeedItem();
-//					item.setJson(jsonEvent);
-//					item.setServerCreated(true);
-//					item.setServerUpdated(true);
-//					item.onLocalCreate();
-//				}
-//			}
-//		}
+		if(activityEvent!=null) {
+			activityEvent.setServerCreated(true);
+			activityEvent.setServerUpdated(true);
+			activityEvent.onLocalUpdate();
+			activityEvent = null; //reset it after sending
+		}
 		
 		return res;
 	}
@@ -220,6 +234,14 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 			return null;
+		}
+		
+		if(activityEvent!=null){
+			try {
+				jsonParent.put("activity_event", activityEvent.getJsonContent());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return jsonParent;

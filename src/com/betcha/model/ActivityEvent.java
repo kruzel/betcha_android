@@ -17,7 +17,7 @@ import com.betcha.model.server.api.ActivityEventRestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
 
-public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
+public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 	public enum Type { BET_CREATE, BET_UPDATE, PREDICTION_CREATE, PREDICTION_UPDATE, CHAT_CREATE, OTHER };
 	
 	@DatabaseField
@@ -87,11 +87,11 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		this.description = description;
 	}
 
-	public static List<ActivityFeedItem> getActivities() {
-		List<ActivityFeedItem> activities = null;
+	public static List<ActivityEvent> getActivities() {
+		List<ActivityEvent> activities = null;
 		
 		try {
-			activities = ActivityFeedItem.getModelDao().queryBuilder()
+			activities = ActivityEvent.getModelDao().queryBuilder()
 					.orderBy("updated_at", false).query();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -168,21 +168,21 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 	 * @throws SQLException
 	 */
 	
-	private static Dao<ActivityFeedItem, String> dao;
+	private static Dao<ActivityEvent, String> dao;
 	private ActivityEventRestClient restClient;
 	
-	public static Dao<ActivityFeedItem, String> getModelDao() throws SQLException {
+	public static Dao<ActivityEvent, String> getModelDao() throws SQLException {
 		if (dao == null) {
-			dao = getDbHelper().getDao(ActivityFeedItem.class);
+			dao = getDbHelper().getDao(ActivityEvent.class);
 			dao.setObjectCache(true);
 		}
 		return dao;
 	}
 
 	@Override
-	protected Dao<ActivityFeedItem, String> getDao() throws SQLException {
+	protected Dao<ActivityEvent, String> getDao() throws SQLException {
 		if (dao == null) {
-			dao = getDbHelper().getDao(ActivityFeedItem.class);
+			dao = getDbHelper().getDao(ActivityEvent.class);
 			dao.setObjectCache(true);
 		}
 		return dao;
@@ -226,12 +226,12 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		
 	@Override
 	public int onRestGetAllForCurUser() {
-		return ActivityFeedItem.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
+		return ActivityEvent.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 	}
 
 	public static int getAllUpdatesForCurUser(DateTime lastUpdate) {
 		
-		List<ActivityFeedItem> events = new ArrayList<ActivityFeedItem>();
+		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
 
 		ActivityEventRestClient restClient = new ActivityEventRestClient();
 		JSONObject jsonEvents = null;
@@ -270,9 +270,9 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 				continue;
 			}
 
-			ActivityFeedItem tmpEvent = null;
+			ActivityEvent tmpEvent = null;
 			try {
-				List<ActivityFeedItem> tmpEvents = ActivityFeedItem.getModelDao().queryForEq("id",jsonEvent.getString("id"));
+				List<ActivityEvent> tmpEvents = ActivityEvent.getModelDao().queryForEq("id",jsonEvent.getString("id"));
 				if (tmpEvents != null && tmpEvents.size() > 0) {
 					tmpEvent = tmpEvents.get(0);
 				}
@@ -283,7 +283,7 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 			}
 
 			if (tmpEvent == null) {
-				tmpEvent = new ActivityFeedItem();
+				tmpEvent = new ActivityEvent();
 			}
 
 			if (!tmpEvent.setJson(jsonEvent))
@@ -345,5 +345,53 @@ public class ActivityFeedItem  extends ModelCache<ActivityFeedItem, String> {
 		}
 		
 		return true;
+	}
+	
+	public JSONObject toJson() {
+		JSONObject jsonRoot = new JSONObject();
+		
+		try {			
+			jsonRoot.put("activity_event", getJsonContent());
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		
+		return jsonRoot;
+	}
+	
+	public JSONObject getJsonContent() {
+		JSONObject jsonEventContent = new JSONObject();
+
+		try {
+			jsonEventContent.put("id", getId());
+			jsonEventContent.put("object_id", getObj());
+			jsonEventContent.put("description", getDescription());
+			switch (getType()) {
+			case BET_CREATE:
+				jsonEventContent.put("event_type", "bet");
+				break;
+			case BET_UPDATE:
+				jsonEventContent.put("event_type", "bet_update");
+				break;
+			case PREDICTION_CREATE:
+				jsonEventContent.put("event_type", "prediction");
+				break;
+			case PREDICTION_UPDATE:
+				jsonEventContent.put("event_type", "prediction_update");
+				break;
+			case CHAT_CREATE:
+				jsonEventContent.put("event_type", "chat");
+				break;
+			default:
+				break;
+			}
+			
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+			return null;
+		}
+		
+		return jsonEventContent;
 	}
 }

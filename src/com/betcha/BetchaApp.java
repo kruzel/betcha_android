@@ -21,7 +21,7 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.util.Log;
 
-import com.betcha.model.ActivityFeedItem;
+import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
 import com.betcha.model.Friend;
 import com.betcha.model.Prediction;

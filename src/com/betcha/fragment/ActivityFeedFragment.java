@@ -26,7 +26,7 @@ import com.betcha.activity.BetDetailsActivity;
 import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.LoginActivity;
 import com.betcha.adapter.ActivityFeedAdapter;
-import com.betcha.model.ActivityFeedItem;
+import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.SyncTask;
@@ -40,7 +40,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	
 	private BetchaApp app;
 	private ActivityFeedAdapter activityAdapter;
-	private List<ActivityFeedItem> activities;
+	private List<ActivityEvent> activities;
 	private Bet newBet = null;
 	
 	private PullToRefreshListView lvActivities;		
@@ -91,9 +91,9 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 		if(app.getCurUser()!=null && app.getCurUser().getId()!=null) {
 			populate();
 			SyncTask.setListener(this);
-			ActivityFeedItem activityFeed = new ActivityFeedItem();
-			activityFeed.setListener(this);
-			activityFeed.getAllForCurUser();
+//			ActivityFeedItem activityFeed = new ActivityFeedItem();
+//			activityFeed.setListener(this);
+//			activityFeed.getAllForCurUser();
         } 
 		
 		final String BET_LIST_ACTION = "com.betcha.BetsListFragmentReceiver";
@@ -153,7 +153,7 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	}
 
 	public void populate() {
-		activities = ActivityFeedItem.getActivities();
+		activities = ActivityEvent.getActivities();
 		
  		if(activities!=null && activities.size()>0) {
  			activityAdapter = new ActivityFeedAdapter(getActivity(), R.layout.activity_feed_fragment, activities);

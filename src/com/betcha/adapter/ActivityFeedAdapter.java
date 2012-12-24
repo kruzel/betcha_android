@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.betcha.FontUtils;
 import com.betcha.FontUtils.CustomFont;
 import com.betcha.R;
-import com.betcha.model.ActivityFeedItem;
+import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
 import com.betcha.model.TopicCategory;
 import com.betcha.model.ChatMessage;
@@ -31,13 +31,13 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ActivityFeedAdapter extends BaseAdapter {
 	
-	private List<ActivityFeedItem> activities;
+	private List<ActivityEvent> activities;
 	private Context context;
 	
 	private static ImageLoader imageLoader;
 	private static DisplayImageOptions defaultOptions;
 	
-	public ActivityFeedAdapter(Context context, int textViewResourceId, List<ActivityFeedItem> activities) {
+	public ActivityFeedAdapter(Context context, int textViewResourceId, List<ActivityEvent> activities) {
 		super();
 		this.activities = activities;
 		this.context = context;
@@ -57,7 +57,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		activities.clear();
 	}
 	
-	public void addAll(List<ActivityFeedItem> activities) {
+	public void addAll(List<ActivityEvent> activities) {
 		this.activities.addAll(activities);
 	}
 	
@@ -81,7 +81,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		View v = convertView;
         ViewHolder holder = null; // to reference the child views for later actions
         
-        ActivityFeedItem activityItem = activities.get(position);
+        ActivityEvent activityItem = activities.get(position);
 				
 		if (v == null) {
 			LayoutInflater inflater = ((Activity)context).getLayoutInflater();

@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +13,10 @@ import org.springframework.web.client.RestClientException;
 
 import android.os.AsyncTask;
 
+import com.betcha.BetchaApp;
+import com.betcha.model.ActivityEvent.Type;
 import com.betcha.model.cache.ModelCache;
+import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.PredictionRestClient;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.field.DatabaseField;
@@ -38,6 +42,8 @@ public class Prediction extends ModelCache<Prediction, String> {
 	private static Dao<Prediction, String> dao;
 
 	private Boolean sendInvite = false;
+	
+	private ActivityEvent activityEvent;
 
 	public Prediction() {
 		super();
@@ -164,6 +170,60 @@ public class Prediction extends ModelCache<Prediction, String> {
 	public void setSendInvite(Boolean sendInvite) {
 		this.sendInvite = sendInvite;
 	}
+		
+	@Override
+	public void onCreateActivityEvent() {
+		if(!getBet().getOwner().getId().equals(getUser().getId())) {
+			activityEvent = new ActivityEvent();
+			activityEvent.setDescription(getPrediction());
+			activityEvent.setObj(getId()); //of this prediction
+			if(last_rest_call==RestMethod.CREATE) {
+				activityEvent.setType(Type.PREDICTION_CREATE); 
+			} else if(last_rest_call==RestMethod.UPDATE) {
+				activityEvent.setType(Type.PREDICTION_UPDATE); 
+			} else 
+				return;
+			activityEvent.onLocalCreate();
+		}
+	}
+
+	@Override
+	public int onLocalCreate() {
+		genId();
+		setCreated_at(new DateTime());
+		setUpdated_at(new DateTime());
+
+		int res = 0;
+		try {
+			res = getDao().create(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+				
+		return res;
+	}
+
+	@Override
+	public int onLocalUpdate() {
+		setUpdated_at(new DateTime());
+
+		int res = 0;
+		try {
+			res = getDao().update(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+					
+		try {
+			getDao().refresh(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return res;
+	}
 
 	/** inherited ModelCache methods */
 
@@ -179,38 +239,26 @@ public class Prediction extends ModelCache<Prediction, String> {
 		if (json == null)
 			return 0;
 		
-//		JSONArray jsonActivityEvents = null;
-//		try {
-//			jsonActivityEvents = json.getJSONArray("activity_events");
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		if(jsonActivityEvents!=null) {
-//			for (int j = 0; j < jsonActivityEvents.length(); j++) {
-//				JSONObject jsonEvent;
-//
-//				try {
-//					jsonEvent = jsonActivityEvents.getJSONObject(j);
-//				} catch (JSONException e3) {
-//					continue;
-//				}
-//				
-//				if(jsonEvent!=null) {
-//					ActivityFeedItem item = new ActivityFeedItem();
-//					item.setJson(jsonEvent);
-//					item.setServerCreated(true);
-//					item.setServerUpdated(true);
-//					item.onLocalCreate();
-//				}
-//			}
-//		}
+		if(activityEvent!=null) {
+			activityEvent.setServerCreated(true);
+			activityEvent.setServerUpdated(true);
+			activityEvent.onLocalUpdate();
+			activityEvent = null; //reset it after sending
+		}
 
 		return 1;
 	}
 
 	public int onRestUpdate() {
 		getPredictionRestClient().update(this, getId());
+		
+		if(activityEvent!=null) {
+			activityEvent.setServerCreated(true);
+			activityEvent.setServerUpdated(true);
+			activityEvent.onLocalUpdate();
+			activityEvent = null; //reset it after sending
+		}
+		
 		return 1;
 	}
 
@@ -336,6 +384,14 @@ public class Prediction extends ModelCache<Prediction, String> {
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 			return null;
+		}
+		
+		if(activityEvent!=null){
+			try {
+				jsonParent.put("activity_event", activityEvent.getJsonContent());
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return jsonParent;

@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.betcha.BetchaApp;
 import com.betcha.ConnectivityReceiver;
+import com.betcha.model.ActivityEvent.Type;
 import com.betcha.model.cache.ModelCache.RestTask.RestMethod;
 import com.betcha.model.server.api.RestClient;
 import com.j256.ormlite.dao.Dao;
@@ -124,7 +125,7 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	
 	public int create() {
 		int res = onLocalCreate();
-		
+				
 		setServerUpdated(false);
 		if(authenticateCreate() && RestClient.GetToken()==null)
 			return res;
@@ -134,6 +135,9 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		
 		// run task to update server
 		last_rest_call = RestMethod.CREATE;
+		
+		onCreateActivityEvent();
+		
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
@@ -147,13 +151,16 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 	public int update() {		
 		// update local model
 		int res =  onLocalUpdate();
-		
+				
 		setServerUpdated(false);
 		if(authenticateUpdate() && RestClient.GetToken()==null)
 			return res;
 		
 		// run task to update server
 		last_rest_call = RestMethod.UPDATE;
+		
+		onCreateActivityEvent();
+		
 		restTask = new RestTask();
 		restTask.setModel(this);
 		restTask.setModelListener(listener);
@@ -406,6 +413,10 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		}
 
 		return t;
+	}
+	
+	public void onCreateActivityEvent() {
+		
 	}
 	
 	/**

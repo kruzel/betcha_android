@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.betcha.R;
-import com.betcha.model.ActivityFeedItem;
+import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Friend;
@@ -67,7 +67,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, ChatMessage.class);
 			
 			TableUtils.createTable(connectionSource, Location.class);
-			TableUtils.createTable(connectionSource, ActivityFeedItem.class);
+			TableUtils.createTable(connectionSource, ActivityEvent.class);
 			TableUtils.createTable(connectionSource, Stake.class);
 			TableUtils.createTable(connectionSource, TopicCategory.class);
 			TableUtils.createTable(connectionSource, Topic.class);
@@ -94,7 +94,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, ChatMessage.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
-			TableUtils.dropTable(connectionSource, ActivityFeedItem.class, true);
+			TableUtils.dropTable(connectionSource, ActivityEvent.class, true);
 			TableUtils.dropTable(connectionSource, Stake.class, true);
 			TableUtils.dropTable(connectionSource, TopicCategory.class, true);
 			TableUtils.dropTable(connectionSource, Topic.class, true);
