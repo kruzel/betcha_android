@@ -54,6 +54,10 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 	public Type getType() {
 		return Type.values()[type];
 	}
+	
+	public int getTypeInt() {
+		return type;
+	}
 
 	public void setType(Type type) {
 		switch(type) {

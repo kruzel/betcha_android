@@ -75,34 +75,25 @@ public class ActivityFeedAdapter extends BaseAdapter {
 	public long getItemId(int location) {
 		return location;
 	}
+	
+	@Override
+	public int getItemViewType(int position) {
+		ActivityEvent item = (ActivityEvent) getItem(position);
+		
+		return item.getTypeInt();
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 5;
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
         ViewHolder holder = null; // to reference the child views for later actions
         
-        ActivityEvent activityItem = activities.get(position);
-				
-		if (v == null) {
-			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-		    		    
-		    holder = new ViewHolder();
-		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
-		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
-		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
-		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
-		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
-		    
-		 	// associate the holder with the view for later lookup
-            v.setTag(holder);
-            
-            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
-		    
-		} else {
-            // view already exists, get the holder instance from the view
-            holder = (ViewHolder)v.getTag();
-        }
+        ActivityEvent activityItem = activities.get(position);        
 		
 		Bet bet = null;
 		Prediction prediction = null;
@@ -112,24 +103,73 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		
 		switch (activityItem.getType()) {
 		case BET_CREATE:
+			if (v == null) {
+				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+			    holder = createHolder(v);
+	            v.setTag(holder);			    
+			} else {
+	            // view already exists, get the holder instance from the view
+	            holder = (ViewHolder)v.getTag();
+	        }
+			bet = (Bet) activityItem.getObj();
+			user = bet.getOwner();
+			datetime = bet.getUpdated_at();
+			break;
 		case BET_UPDATE:
+			if (v == null) {
+				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+			    holder = createHolder(v);
+	            v.setTag(holder);			    
+			} else {
+	            // view already exists, get the holder instance from the view
+	            holder = (ViewHolder)v.getTag();
+	        }
 			bet = (Bet) activityItem.getObj();
 			user = bet.getOwner();
 			datetime = bet.getUpdated_at();
 			break;
 		case PREDICTION_CREATE:
+			if (v == null) {
+				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+			    holder = createHolder(v);
+	            v.setTag(holder);			    
+			} else {
+	            // view already exists, get the holder instance from the view
+	            holder = (ViewHolder)v.getTag();
+	        }
 			prediction = (Prediction) activityItem.getObj();
 			bet = prediction.getBet();
 			user = bet.getOwner();
 			datetime = prediction.getUpdated_at();
 			break;
 		case PREDICTION_UPDATE:
+			if (v == null) {
+				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+			    holder = createHolder(v);
+	            v.setTag(holder);			    
+			} else {
+	            // view already exists, get the holder instance from the view
+	            holder = (ViewHolder)v.getTag();
+	        }
 			prediction = (Prediction) activityItem.getObj();
 			bet = prediction.getBet();
 			user = prediction.getUser();
 			datetime = prediction.getUpdated_at();
 			break;
 		case CHAT_CREATE:
+			if (v == null) {
+				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+			    holder = createHolder(v);
+	            v.setTag(holder);			    
+			} else {
+	            // view already exists, get the holder instance from the view
+	            holder = (ViewHolder)v.getTag();
+	        }
 			chatMessage = (ChatMessage) activityItem.getObj();
 			bet = chatMessage.getBet();
 			user = chatMessage.getUser();
@@ -170,6 +210,21 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
 		
 		return v;
+	}
+	
+	private ViewHolder createHolder(View v) {
+		ViewHolder holder;
+		
+		holder = new ViewHolder();
+	    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+	    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+	    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+	    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+	    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+	    
+	    FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		
+		return holder;
 	}
 	
 	private class ViewHolder {
