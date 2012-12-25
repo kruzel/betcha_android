@@ -78,9 +78,8 @@ public class ActivityFeedAdapter extends BaseAdapter {
 	
 	@Override
 	public int getItemViewType(int position) {
-		ActivityEvent item = (ActivityEvent) getItem(position);
-		
-		return item.getTypeInt();
+		ActivityEvent event = (ActivityEvent) getItem(position);
+		return event.getTypeInt();
 	}
 
 	@Override
@@ -91,92 +90,60 @@ public class ActivityFeedAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
-        ViewHolder holder = null; // to reference the child views for later actions
+        ActivityEvent activityItem = activities.get(position);
+					
+		switch (activityItem.getType()) {
+		case BET_CREATE:
+		case BET_UPDATE:
+			v = getCreateBetView(position,v,parent);
+			break;
+		case PREDICTION_CREATE:
+			v = getCreatePredictionView(position,v,parent);
+			break;
+		case PREDICTION_UPDATE:
+			v = getUpdatePredictionView(position,v,parent);
+			break;
+		case CHAT_CREATE:
+			v = getCreateChatView(position,v,parent);
+		}
+		
+		return v;
+	}
+	
+	public View getCreateBetView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+        BetCreateViewHolder holder = null; // to reference the child views for later actions
         
-        ActivityEvent activityItem = activities.get(position);        
+        ActivityEvent activityItem = activities.get(position);
+				
+		if (v == null) {
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+		    		    
+		    holder = new BetCreateViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+		    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (BetCreateViewHolder)v.getTag();
+        }
 		
 		Bet bet = null;
-		Prediction prediction = null;
-		ChatMessage chatMessage = null;
 		User user = null;
 		DateTime datetime = null;
 		
-		switch (activityItem.getType()) {
-		case BET_CREATE:
-			if (v == null) {
-				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-			    holder = createHolder(v);
-	            v.setTag(holder);			    
-			} else {
-	            // view already exists, get the holder instance from the view
-	            holder = (ViewHolder)v.getTag();
-	        }
-			bet = (Bet) activityItem.getObj();
-			user = bet.getOwner();
-			datetime = bet.getUpdated_at();
-			break;
-		case BET_UPDATE:
-			if (v == null) {
-				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-			    holder = createHolder(v);
-	            v.setTag(holder);			    
-			} else {
-	            // view already exists, get the holder instance from the view
-	            holder = (ViewHolder)v.getTag();
-	        }
-			bet = (Bet) activityItem.getObj();
-			user = bet.getOwner();
-			datetime = bet.getUpdated_at();
-			break;
-		case PREDICTION_CREATE:
-			if (v == null) {
-				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-			    holder = createHolder(v);
-	            v.setTag(holder);			    
-			} else {
-	            // view already exists, get the holder instance from the view
-	            holder = (ViewHolder)v.getTag();
-	        }
-			prediction = (Prediction) activityItem.getObj();
-			bet = prediction.getBet();
-			user = bet.getOwner();
-			datetime = prediction.getUpdated_at();
-			break;
-		case PREDICTION_UPDATE:
-			if (v == null) {
-				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-			    holder = createHolder(v);
-	            v.setTag(holder);			    
-			} else {
-	            // view already exists, get the holder instance from the view
-	            holder = (ViewHolder)v.getTag();
-	        }
-			prediction = (Prediction) activityItem.getObj();
-			bet = prediction.getBet();
-			user = prediction.getUser();
-			datetime = prediction.getUpdated_at();
-			break;
-		case CHAT_CREATE:
-			if (v == null) {
-				LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-		        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
-			    holder = createHolder(v);
-	            v.setTag(holder);			    
-			} else {
-	            // view already exists, get the holder instance from the view
-	            holder = (ViewHolder)v.getTag();
-	        }
-			chatMessage = (ChatMessage) activityItem.getObj();
-			bet = chatMessage.getBet();
-			user = chatMessage.getUser();
-			datetime = chatMessage.getUpdated_at();
-		default:
-			break;
-		}
+		bet = (Bet) activityItem.getObj();
+		user = bet.getOwner();
+		datetime = bet.getUpdated_at();
 		
 		if(bet==null)
 			return v;
@@ -212,22 +179,7 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		return v;
 	}
 	
-	private ViewHolder createHolder(View v) {
-		ViewHolder holder;
-		
-		holder = new ViewHolder();
-	    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
-	    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
-	    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
-	    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
-	    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
-	    
-	    FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
-		
-		return holder;
-	}
-	
-	private class ViewHolder {
+	private class BetCreateViewHolder {
 				
 		ImageView ivProfPic;
 		TextView betDate;
@@ -236,4 +188,284 @@ public class ActivityFeedAdapter extends BaseAdapter {
 		ImageView ivBetCategory;
 	}
 
+	public View getUpdateBetView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+        BetCreateViewHolder holder = null; // to reference the child views for later actions
+        
+        ActivityEvent activityItem = activities.get(position);
+				
+		if (v == null) {
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+		    		    
+		    holder = new BetCreateViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+		    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (BetCreateViewHolder)v.getTag();
+        }
+		
+		Bet bet = null;
+		User user = null;
+		DateTime datetime = null;
+		
+		bet = (Bet) activityItem.getObj();
+		user = bet.getOwner();
+		datetime = bet.getUpdated_at();
+		
+		if(bet==null)
+			return v;
+		
+		user.setProfilePhoto(holder.ivProfPic);
+		
+		if(bet.getCategory()!=null) {
+			imageLoader.displayImage(bet.getCategory().getImageUrl(), holder.ivBetCategory, defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(holder.ivBetCategory);
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		}
+		
+		if(datetime.plusHours(24).isAfterNow()) {
+			if(datetime.plusMinutes(60).isAfterNow()) {
+				//less then 1 hr
+				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(datetime,DateTime.now()).getMinutes()) + " m");
+			} else {
+				//less then 24 hours 
+				holder.betDate.setText(Integer.toString(Hours.hoursBetween(datetime, DateTime.now()).getHours()) + " hr");
+			}
+		} else {
+			//more then 24 hours 
+			holder.betDate.setText(Integer.toString(Days.daysBetween(datetime, DateTime.now()).getDays()) + " d");
+ 		}
+				
+		holder.tvUser.setText(bet.getOwner().getName());		
+		
+		//TODO fill in tvBetUpdate with latest bet updates, chat, prediction changes, etc...
+		holder.tvActivityDescription.setText(activityItem.getText());
+		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
+		
+		return v;
+	}
+	
+	public View getCreatePredictionView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+        BetCreateViewHolder holder = null; // to reference the child views for later actions
+        
+        ActivityEvent activityItem = activities.get(position);
+				
+		if (v == null) {
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+		    		    
+		    holder = new BetCreateViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+		    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (BetCreateViewHolder)v.getTag();
+        }
+		
+		Bet bet = null;
+		User user = null;
+		DateTime datetime = null;
+		
+		Prediction prediction = (Prediction) activityItem.getObj();
+		bet = prediction.getBet();
+		user = bet.getOwner();
+		datetime = prediction.getUpdated_at();
+		
+		if(bet==null)
+			return v;
+		
+		user.setProfilePhoto(holder.ivProfPic);
+		
+		if(bet.getCategory()!=null) {
+			imageLoader.displayImage(bet.getCategory().getImageUrl(), holder.ivBetCategory, defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(holder.ivBetCategory);
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		}
+		
+		if(datetime.plusHours(24).isAfterNow()) {
+			if(datetime.plusMinutes(60).isAfterNow()) {
+				//less then 1 hr
+				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(datetime,DateTime.now()).getMinutes()) + " m");
+			} else {
+				//less then 24 hours 
+				holder.betDate.setText(Integer.toString(Hours.hoursBetween(datetime, DateTime.now()).getHours()) + " hr");
+			}
+		} else {
+			//more then 24 hours 
+			holder.betDate.setText(Integer.toString(Days.daysBetween(datetime, DateTime.now()).getDays()) + " d");
+ 		}
+				
+		holder.tvUser.setText(bet.getOwner().getName());		
+		
+		//TODO fill in tvBetUpdate with latest bet updates, chat, prediction changes, etc...
+		holder.tvActivityDescription.setText(activityItem.getText());
+		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
+		
+		return v;
+	}
+	
+	public View getUpdatePredictionView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+        BetCreateViewHolder holder = null; // to reference the child views for later actions
+        
+        ActivityEvent activityItem = activities.get(position);
+				
+		if (v == null) {
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+		    		    
+		    holder = new BetCreateViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+		    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (BetCreateViewHolder)v.getTag();
+        }
+		
+		Bet bet = null;
+		User user = null;
+		DateTime datetime = null;
+		
+		Prediction prediction = (Prediction) activityItem.getObj();
+		bet = prediction.getBet();
+		user = prediction.getUser();
+		datetime = prediction.getUpdated_at();
+		
+		if(bet==null)
+			return v;
+		
+		user.setProfilePhoto(holder.ivProfPic);
+		
+		if(bet.getCategory()!=null) {
+			imageLoader.displayImage(bet.getCategory().getImageUrl(), holder.ivBetCategory, defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(holder.ivBetCategory);
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		}
+		
+		if(datetime.plusHours(24).isAfterNow()) {
+			if(datetime.plusMinutes(60).isAfterNow()) {
+				//less then 1 hr
+				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(datetime,DateTime.now()).getMinutes()) + " m");
+			} else {
+				//less then 24 hours 
+				holder.betDate.setText(Integer.toString(Hours.hoursBetween(datetime, DateTime.now()).getHours()) + " hr");
+			}
+		} else {
+			//more then 24 hours 
+			holder.betDate.setText(Integer.toString(Days.daysBetween(datetime, DateTime.now()).getDays()) + " d");
+ 		}
+				
+		holder.tvUser.setText(bet.getOwner().getName());		
+		
+		//TODO fill in tvBetUpdate with latest bet updates, chat, prediction changes, etc...
+		holder.tvActivityDescription.setText(activityItem.getText());
+		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
+		
+		return v;
+	}
+	
+	
+	public View getCreateChatView(int position, View convertView, ViewGroup parent) {
+		View v = convertView;
+        BetCreateViewHolder holder = null; // to reference the child views for later actions
+        
+        ActivityEvent activityItem = activities.get(position);
+				
+		if (v == null) {
+			LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+	        v = inflater.inflate(R.layout.activity_feed_item, parent, false);
+		    		    
+		    holder = new BetCreateViewHolder();
+		    holder.ivProfPic = (ImageView) v.findViewById(R.id.iv_bet_owner_profile_pic);
+		    holder.betDate = (TextView) v.findViewById(R.id.tv_bet_date);
+		    holder.tvUser = (TextView) v.findViewById(R.id.tv_bet_owner);
+		    holder.tvActivityDescription = (TextView) v.findViewById(R.id.tv_activity_description);
+		    holder.ivBetCategory = (ImageView) v.findViewById(R.id.iv_bet_category);
+		    
+		 	// associate the holder with the view for later lookup
+            v.setTag(holder);
+            
+            FontUtils.setTextViewTypeface(holder.betDate, CustomFont.HELVETICA_CONDENSED);
+		    
+		} else {
+            // view already exists, get the holder instance from the view
+            holder = (BetCreateViewHolder)v.getTag();
+        }
+		
+		Bet bet = null;
+		User user = null;
+		DateTime datetime = null;
+		
+		ChatMessage chatMessage = (ChatMessage) activityItem.getObj();
+		bet = chatMessage.getBet();
+		user = chatMessage.getUser();
+		datetime = chatMessage.getUpdated_at();
+		
+		if(bet==null)
+			return v;
+		
+		user.setProfilePhoto(holder.ivProfPic);
+		
+		if(bet.getCategory()!=null) {
+			imageLoader.displayImage(bet.getCategory().getImageUrl(), holder.ivBetCategory, defaultOptions);
+		} else {
+			imageLoader.cancelDisplayTask(holder.ivBetCategory);
+			holder.ivBetCategory.setImageResource(android.R.color.transparent);
+		}
+		
+		if(datetime.plusHours(24).isAfterNow()) {
+			if(datetime.plusMinutes(60).isAfterNow()) {
+				//less then 1 hr
+				holder.betDate.setText(Integer.toString(Minutes.minutesBetween(datetime,DateTime.now()).getMinutes()) + " m");
+			} else {
+				//less then 24 hours 
+				holder.betDate.setText(Integer.toString(Hours.hoursBetween(datetime, DateTime.now()).getHours()) + " hr");
+			}
+		} else {
+			//more then 24 hours 
+			holder.betDate.setText(Integer.toString(Days.daysBetween(datetime, DateTime.now()).getDays()) + " d");
+ 		}
+				
+		holder.tvUser.setText(bet.getOwner().getName());		
+		
+		//TODO fill in tvBetUpdate with latest bet updates, chat, prediction changes, etc...
+		holder.tvActivityDescription.setText(activityItem.getText());
+		FontUtils.setTextViewTypeface(holder.tvActivityDescription, CustomFont.HELVETICA_CONDENSED_BOLD);
+		
+		return v;
+	}
+	
 }
