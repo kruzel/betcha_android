@@ -119,7 +119,9 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 //						e.printStackTrace();
 //					}
 //				} 
-				//TODO handle create of existing bet properly
+				if(bet.isTaskInProgress())
+					continue;
+				
 				bet.onRestCreate();
 				bet.setServerCreated(true);
 				bet.setServerUpdated(true);
@@ -155,7 +157,7 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 
 			for (Prediction prediction : predictions) {
 				if (!prediction.isServerUpdated()) {
-					if(!prediction.isServerCreated()) {
+					if(!prediction.isTaskInProgress() && !prediction.isServerCreated()) {
 						prediction.onRestCreate();
 						prediction.setServerCreated(true);
 						prediction.setServerUpdated(true);

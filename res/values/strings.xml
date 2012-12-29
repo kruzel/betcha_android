@@ -25,6 +25,12 @@
 	<string name="publishing_bet">Publishing bet...</string>
 	<string name="please_wait">Please wait</string>
 	<string name="send">Send</string>
+	<string name="betting_on">Betting on </string>
+	<string name="and">And</string>
+	<string name="others">others</string>
+	<string name="invited">Invited</string>
+	<string name="won">Won a</string>
+	<string name="no_one_won">No one won a </string>
 
 	<string name="create_subject_hint">What do you want to bet about?</string>
 	<string name="create_stake_hint">What\'s the stake?</string>

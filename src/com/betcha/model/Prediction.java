@@ -173,7 +173,7 @@ public class Prediction extends ModelCache<Prediction, String> {
 		
 	@Override
 	public void onCreateActivityEvent() {
-		if(!getBet().getOwner().getId().equals(getUser().getId())) {
+//		if(!getBet().getOwner().getId().equals(getUser().getId())) {
 			activityEvent = new ActivityEvent();
 			activityEvent.setDescription(getPrediction());
 			activityEvent.setObj(getId()); //of this prediction
@@ -184,7 +184,7 @@ public class Prediction extends ModelCache<Prediction, String> {
 			} else 
 				return;
 			activityEvent.onLocalCreate();
-		}
+//		}
 	}
 
 	@Override
@@ -228,6 +228,9 @@ public class Prediction extends ModelCache<Prediction, String> {
 	/** inherited ModelCache methods */
 
 	public int onRestCreate() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		JSONObject json = null;
 
 		if (getSendInvite()) {
@@ -250,6 +253,9 @@ public class Prediction extends ModelCache<Prediction, String> {
 	}
 
 	public int onRestUpdate() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		getPredictionRestClient().update(this, getId());
 		
 		if(activityEvent!=null) {
@@ -263,12 +269,18 @@ public class Prediction extends ModelCache<Prediction, String> {
 	}
 
 	public int onRestDelete() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		getPredictionRestClient().delete(getId());
 		return 1;
 	}
 
 	@Override
 	public int onRestGet() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		PredictionRestClient predictionRestClient = new PredictionRestClient(id);
 		JSONObject jsonPredictions = predictionRestClient.show(id);
 		if(jsonPredictions==null)

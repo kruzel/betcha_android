@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/BetContainer"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:id="@+id/rl_bet_item_container"
+        style="@style/BetFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:padding="2dp" >
+        
+	    <ImageView
+		    android:id="@+id/iv_bet_owner_profile_pic"
+		    android:layout_width="40dp"
+		    android:layout_height="40dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="8dp"
+		    android:src="@drawable/default_avatar"
+		    android:scaleType="centerCrop" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_owner_profile_frame"
+	        android:layout_width="48dp"
+	        android:layout_height="48dp"
+		    android:layout_alignParentTop="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_margin="4dp" 
+		    android:src="@drawable/bet_avatar_frame" />
+	    
+	    <ImageView
+	        android:id="@+id/iv_bet_category"
+	        android:layout_width="42dp"
+	        android:layout_height="42dp"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_owner_profile_frame"
+		    android:layout_marginTop="7dp" 
+		    android:layout_marginLeft="7dp"
+		    android:layout_marginBottom="7dp"
+		    android:src="@drawable/bet_category" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_owner"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+			android:visibility="gone" />
+
+	    <ImageView
+	        android:id="@+id/iv_bet_date_icon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+		    android:layout_alignParentLeft="true"
+		    android:layout_below="@id/iv_bet_category"
+		    android:layout_marginLeft="7dp"
+		    android:paddingBottom="6dp"
+		    android:src="@drawable/bet_time" />
+
+	    <TextView
+	        android:id="@+id/tv_bet_date"
+	        style="@style/BetDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_toRightOf="@id/iv_bet_date_icon"
+	        android:layout_marginLeft="1dp"
+		    android:paddingBottom="3dp" />
+
+	    <LinearLayout
+	        style="@style/BetContent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_marginLeft="2dp"
+	        android:layout_toRightOf="@id/iv_bet_owner_profile_frame"
+	        android:minHeight="130dp"
+	        android:orientation="vertical" >
+
+	        <TextView
+	            android:id="@+id/tv_activity_description"
+	            style="@style/ActivityFeedMessage"
+	            android:layout_width="fill_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_margin="5dp"
+	            android:gravity="top|left"
+	            android:text="Droped a bet &quot;Macabi Vs.Hapoel&quot;" />
+	        
+	        <LinearLayout 
+	            	android:layout_width="fill_parent"
+		            android:layout_height="32dp"
+		            android:layout_alignParentLeft="true"
+		            android:layout_alignParentRight="true"
+		            android:layout_centerVertical="true"
+		            android:layout_marginLeft="5dp"
+		            android:layout_marginRight="5dp"
+		            >
+
+		        <ImageView
+		            android:id="@+id/imageViewUser1"
+		            android:layout_width="32dp"
+		            android:layout_height="32dp"
+		            android:layout_alignLeft="@+id/tv_activity_description"
+		            android:layout_centerVertical="true"
+		            android:scaleType="centerCrop"
+		            android:src="@drawable/default_avatar" />
+	
+		        <ImageView
+		            android:id="@+id/imageViewUser2"
+		            android:layout_width="32dp"
+		            android:layout_height="32dp"
+		            android:layout_centerVertical="true"
+		            android:layout_marginLeft="5dp"
+		            android:layout_toRightOf="@+id/imageViewUser1"
+		            android:scaleType="centerCrop"
+		            android:src="@drawable/default_avatar" />
+	
+		        <ImageView
+		            android:id="@+id/imageViewUser3"
+		            android:layout_width="32dp"
+		            android:layout_height="32dp"
+		            android:layout_alignTop="@+id/imageViewUser2"
+		            android:layout_centerVertical="true"
+		            android:layout_marginLeft="5dp"
+		            android:layout_toRightOf="@+id/imageViewUser2"
+		            android:scaleType="centerCrop"
+		            android:src="@drawable/default_avatar" />
+	
+		        <TextView
+		            android:id="@+id/tv_activity_others"
+		            style="@style/ActivityFeedMessage"
+		            android:layout_width="fill_parent"
+		            android:layout_height="wrap_content"
+		            android:layout_centerVertical="true"
+		            android:layout_marginLeft="5dp"
+		            android:layout_toRightOf="@+id/imageViewUser3"
+		            android:gravity="top|left"
+		            android:text="And 2 others" />
+
+			</LinearLayout>
+			
+			<TextView
+			    android:id="@+id/tv_activity_stake"
+			    style="@style/ActivityFeedMessage"
+			    android:layout_width="fill_parent"
+			    android:layout_height="wrap_content"
+			    android:layout_margin="5dp"
+			    android:gravity="top|left"
+			    android:text="Betting on Beer" />
+	        
+	    </LinearLayout>
+	    	    
+    </RelativeLayout>
+
+
+</RelativeLayout>

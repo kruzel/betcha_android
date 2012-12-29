@@ -167,16 +167,17 @@ public class BetDetailsActivity extends SherlockFragmentActivity implements OnCl
 	    inflater.inflate(R.menu.bet_details_activity, menu);
 	    
 	    if(app.getCurBet()!=null && app.getCurUser().getId().equals(app.getCurBet().getOwner().getId())) {
-		    menu.add("Delete")
-	        .setIcon(R.drawable.ic_menu_delete)
-	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-			
+	    				
 			menu.add("Invite")
 	        .setIcon(R.drawable.ic_menu_invite)
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 			
-			menu.add("Close")
-	        .setIcon(R.drawable.ic_menu_share)
+		    menu.add("Delete")
+	        .setIcon(R.drawable.ic_menu_delete)
+	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+			
+		    menu.add("Close")
+	        .setIcon(R.drawable.stake_coins)
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 	    }
 	    

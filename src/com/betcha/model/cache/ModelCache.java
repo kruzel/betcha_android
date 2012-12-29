@@ -123,6 +123,13 @@ public abstract class ModelCache<T,ID> { //extends BaseDaoEnabled<T,ID>
 		return listener;
 	}
 	
+	public Boolean isTaskInProgress() {
+		if(last_rest_call == RestMethod.CREATE && restTask!=null && (restTask.getStatus()== Status.RUNNING || restTask.getStatus()== Status.PENDING))
+			return true;
+		else
+			return false;
+	}
+	
 	public int create() {
 		int res = onLocalCreate();
 				

@@ -319,7 +319,7 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 		
 		String objectId = null;
 		try {
-			objectId = json.getString("object_id");
+			objectId = json.getString("obj_id");
 		} catch (JSONException e1) {
 		}
 		
@@ -369,7 +369,7 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 
 		try {
 			jsonEventContent.put("id", getId());
-			jsonEventContent.put("object_id", getObj());
+			jsonEventContent.put("obj_id", getObj());
 			jsonEventContent.put("description", getDescription());
 			switch (getType()) {
 			case BET_CREATE:

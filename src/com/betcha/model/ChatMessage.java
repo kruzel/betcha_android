@@ -132,6 +132,9 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 		
 	@Override
 	public int onRestCreate() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		int res = 0;
 		
 		JSONObject json = getChatMessageRestClient().create(this);
@@ -151,12 +154,18 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 
 	@Override
 	public int onRestUpdate() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		getChatMessageRestClient().update(this, getId());
 		return 1;
 	}
 
 	@Override
 	public int onRestGet() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		JSONObject jsonChatMessage = null;
 		try {
 			jsonChatMessage = getChatMessageRestClient().show(getId());
@@ -201,6 +210,9 @@ public class ChatMessage extends ModelCache<ChatMessage, String> {
 
 	@Override
 	public int onRestDelete() {
+		if(getBet().isTaskInProgress())
+			return 0;
+		
 		getChatMessageRestClient().delete(getId());
 		return 1;
 	}

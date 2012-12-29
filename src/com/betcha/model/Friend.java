@@ -152,97 +152,84 @@ public class Friend extends ModelCache<Friend, String> {
 	}
 	
 	public int onRestGetAllForCurUser() {
-		//try again in 10 sec
-		Thread thread = new Thread(new Runnable() {
+			int res = 0;
 			
-			@Override
-			public void run() {
-					
-				// this may take some time till we fetch all contacts from FB, so keep trying till it succeed
-				int res = 0;
-				
-				FriendRestClient restClient = getFriendRestClient();
-				JSONObject friendsObj = restClient.show_for_user();
-				
-				if(friendsObj==null || friendsObj.length()==0) {
-					if(retries<3) {
-						retries++;
-						try {
-							Thread.sleep(10000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-						
-						Log.i("Friend.onRestGetAllForCurUser()", "retrying to get friends");
-						Friend.this.onRestGetAllForCurUser();
-						return;
-					}	
-					else {
-						return;
-					}
-				} 
-				
-				JSONArray friends = null;
-				try {
-					friends = friendsObj.getJSONArray("friends");
-				} catch (JSONException e3) {
-					e3.printStackTrace();
-				}
-				
-				if(friends==null)
-					return;
-				
-				JSONObject jsonFriend = null;
-				for (int i = 0; i < friends.length(); i++) {
+			FriendRestClient restClient = getFriendRestClient();
+			JSONObject friendsObj = restClient.show_for_user();
+			
+			if(friendsObj==null || friendsObj.length()==0) {
+				if(retries<3) {
+					retries++;
 					try {
-						jsonFriend = friends.getJSONObject(i);
-					} catch (JSONException e1) {
-						e1.printStackTrace();
-						continue;
-					}
-					
-					User tmpNewUser = null;
-					try {
-						List<User> tmpNewUsers = User.getModelDao().queryForEq("id", jsonFriend.getString("id"));
-						if(tmpNewUsers!=null && tmpNewUsers.size()>0) { 
-							tmpNewUser = tmpNewUsers.get(0);
-						} 
-					} catch (SQLException e2) {
-						e2.printStackTrace();
-					} catch (JSONException e) {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 					
-					if(tmpNewUser==null) {
-						tmpNewUser = new User();
-										
-						if(!tmpNewUser.setJson(jsonFriend))
-							continue;
-						
-						try {
-							tmpNewUser.createOrUpdateLocal();
-						} catch (SQLException e) {
-							e.printStackTrace();
-							continue;
-						}
-					}
-					
-					if(user.getId().equals(tmpNewUser.getId()))
+					Log.i("Friend.onRestGetAllForCurUser()", "retrying to get friends");
+					Friend.this.onRestGetAllForCurUser();
+					return 0;
+				}	
+				else {
+					return 0;
+				}
+			} 
+			
+			JSONArray friends = null;
+			try {
+				friends = friendsObj.getJSONArray("friends");
+			} catch (JSONException e3) {
+				e3.printStackTrace();
+			}
+			
+			if(friends==null)
+				return 0;
+			
+			JSONObject jsonFriend = null;
+			for (int i = 0; i < friends.length(); i++) {
+				try {
+					jsonFriend = friends.getJSONObject(i);
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+					continue;
+				}
+				
+				User tmpNewUser = null;
+				try {
+					List<User> tmpNewUsers = User.getModelDao().queryForEq("id", jsonFriend.getString("id"));
+					if(tmpNewUsers!=null && tmpNewUsers.size()>0) { 
+						tmpNewUser = tmpNewUsers.get(0);
+					} 
+				} catch (SQLException e2) {
+					e2.printStackTrace();
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(tmpNewUser==null) {
+					tmpNewUser = new User();
+									
+					if(!tmpNewUser.setJson(jsonFriend))
 						continue;
 					
-					Friend friend = new Friend(user);
-					friend.setFriend(tmpNewUser);
-					
-					res += friend.onLocalCreate();
+					try {
+						tmpNewUser.createOrUpdateLocal();
+					} catch (SQLException e) {
+						e.printStackTrace();
+						continue;
+					}
 				}
-			
-				return;
+				
+				if(user.getId().equals(tmpNewUser.getId()))
+					continue;
+				
+				Friend friend = new Friend(user);
+				friend.setFriend(tmpNewUser);
+				
+				res += friend.onLocalCreate();
 			}
-		});
 		
-		thread.start();
-		
-		return 1;
+			return res;
 	}
 
 	@Override

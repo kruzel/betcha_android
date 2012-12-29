@@ -2,7 +2,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     
     <style name="Text">
-	    <item name="android:textSize">16sp</item>
+	    <item name="android:textSize">14sp</item>
 	    <item name="android:textColor">@color/text_deepocean</item>
 	    <item name="android:textStyle">normal</item>
     </style>
@@ -40,12 +40,12 @@
 	</style>
 	
 	<style name="BetDate" parent="@style/Text">
-	    <item name="android:textSize">16sp</item>
+	    <item name="android:textSize">14sp</item>
 	    <item name="android:textColor">@color/text_lightfabric</item>
 	</style>
 	
 	<style name="BetSubject" parent="@style/Text">
-	    <item name="android:textSize">22sp</item>
+	    <item name="android:textSize">18sp</item>
 	    <item name="android:textStyle">bold</item>
 	</style>
 	
@@ -58,7 +58,7 @@
 	</style>
   	
 	<style name="PredictionName" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@color/text_fabric</item>
 	</style>
 
@@ -67,7 +67,7 @@
 	</style>
   	
 	<style name="PredictionText" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@android:color/white</item>
 	    <item name="android:shadowColor">@android:color/black</item>
 	    <item name="android:shadowRadius">2</item>
@@ -80,22 +80,22 @@
 	</style>
 	
 	<style name="ChatName" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@color/text_fabric</item>
 	</style>
 	
 	<style name="ChatText" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColor">@color/text_fabric</item>
 	</style>
 	
 	<style name="loginText" parent="@style/Text">
-	    <item name="android:textSize">14sp</item>
+	    <item name="android:textSize">12sp</item>
 	    <item name="android:textColor">@color/text_lightfabric</item>
 	</style>
 	
 	<style name="ActivityFeedMessage" parent="@style/Text">
-	    <item name="android:textSize">22sp</item>
+	    <item name="android:textSize">18sp</item>
 	    <item name="android:textStyle">bold</item>
 	</style>
 	
@@ -173,12 +173,12 @@
 	</style>
 	
 	<style name="CreateDuedateHint" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColorHint">@color/text_darkhint</item>
 	</style>
 	
 	<style name="CreateDuedateText" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	</style>
 	
 	<!-- Create Prediction -->
@@ -187,12 +187,12 @@
 	</style>
 	
 	<style name="CreatePredictionHint" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	    <item name="android:textColorHint">@color/text_darkhint</item>
 	</style>
 	
 	<style name="CreatePredictionText" parent="@style/Text">
-	    <item name="android:textSize">20sp</item>
+	    <item name="android:textSize">16sp</item>
 	</style>
 	
 	<!-- Change Prediction Dialog -->
@@ -207,7 +207,7 @@
 
 	<style name="CreatePredictionLabel" parent="@style/Text">
 	    <item name="android:textColor">@color/create_prediction_suggestion</item>
-	    <item name="android:textSize">14sp</item>
+	    <item name="android:textSize">12sp</item>
 	</style>
 
 	<style name="CreatePredictionSuggestions">
@@ -216,7 +216,7 @@
 
 	<style name="CreatePredictionSuggestionText" parent="@style/Text">
 	    <item name="android:textColor">@color/create_prediction_suggestion</item>
-	    <item name="android:textSize">16sp</item>
+	    <item name="android:textSize">14sp</item>
 	</style>
 			
 </resources>
