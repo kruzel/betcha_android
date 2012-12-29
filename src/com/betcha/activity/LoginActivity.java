@@ -2,7 +2,9 @@ package com.betcha.activity;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.sql.SQLException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.betcha.BetchaApp;
 import com.betcha.R;
+import com.betcha.model.Contact;
 import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
 import com.betcha.model.cache.SyncTask;
@@ -98,7 +101,6 @@ public class LoginActivity extends SherlockFragmentActivity implements
 							
 							@Override
 							public void run() {
-								// TODO on registration - load contacts to friends list
 								String token = facebook.getAccessToken();
 								
 								String resp = null;
@@ -134,7 +136,54 @@ public class LoginActivity extends SherlockFragmentActivity implements
 								tmpMe.setUid(json.optString("id"));
 								tmpMe.setAccess_token(token);
 								tmpMe.setListener(LoginActivity.this);
-
+								
+								//get FB friends
+								resp = null;
+								try {
+									resp = facebook.request("me/friends");
+								} catch (MalformedURLException e) {
+									e.printStackTrace();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+								
+								if(resp==null)
+									onCreateComplete(app.getCurUser().getClass(),HttpStatus.UNAUTHORIZED);
+								
+								JSONObject jsonFriends = null;
+								try {
+									jsonFriends = new JSONObject(resp);											
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+								
+								if(jsonFriends==null)
+									onCreateComplete(app.getCurUser().getClass(), HttpStatus.UNAUTHORIZED);
+								
+								JSONArray jsonFriendsArray = null;
+								try {
+									jsonFriendsArray = jsonFriends.getJSONArray("data");
+								} catch (JSONException e) {
+									e.printStackTrace();
+								}
+								
+								if(jsonFriendsArray==null)
+									onCreateComplete(app.getCurUser().getClass(), HttpStatus.UNAUTHORIZED);
+								
+								for(int i=0; i<jsonFriendsArray.length();i++) {
+									Contact contact = new Contact();
+									try {
+										JSONObject obj = jsonFriendsArray.getJSONObject(i);
+										obj.put("provider", "facebook");
+										contact.setJson(obj);
+										Contact.getModelDao().create(contact);
+									} catch (JSONException e) {
+										e.printStackTrace();
+									} catch (SQLException e) {
+										e.printStackTrace();
+									}
+								}
+								
 								int res = 0;
 								if (tmpMe.getId() == null) {
 									tmpMe.setShouldCreateToken(true);

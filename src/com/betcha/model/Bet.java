@@ -24,6 +24,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.DatabaseTable;
 
 /**
@@ -497,11 +498,15 @@ public class Bet extends ModelCache<Bet, String> {
 				//verify contact not exist already via mail
 				List<User> foundUsers = null;
 				try {
-					foundUsers = participant.getDao().queryForEq("email", participant.getEmail());
+					if(participant.getProvider().equals("facebook")) {
+						foundUsers = User.getModelDao().queryForEq("uid", participant.getUid());
+					} else if(participant.getProvider().equals("email")) {
+						foundUsers = User.getModelDao().queryForEq("email", participant.getEmail());
+					}
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-				if(foundUsers.size()==0) {
+				if(foundUsers!=null && foundUsers.size()==0) {
 					if(isServerCreated()) { 
 						//bet already created on server, so need to add the specific usres individually
 						participant.create();

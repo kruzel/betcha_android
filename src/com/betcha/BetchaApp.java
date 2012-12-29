@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
+import com.betcha.model.Contact;
 import com.betcha.model.Friend;
 import com.betcha.model.Prediction;
 import com.betcha.model.User;
@@ -242,6 +243,25 @@ public class BetchaApp extends Application implements IModelListener {
 			
 					if (friends == null) {
 						friends = new ArrayList<User>();
+					}
+					
+					List<Contact> fbFriends = null;
+					try {
+						// TODO add distinct email
+						if (getCurUser() != null)
+							fbFriends = Contact.getModelDao().queryForAll();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+					
+					if(fbFriends!=null && fbFriends.size()>0) {
+						for (Contact contact : fbFriends) {
+							User user = new User();
+							user.setContact(contact);
+							friends.add(user);
+						}
 					}
 			
 					// invite users only from pre-loaded friend list should be

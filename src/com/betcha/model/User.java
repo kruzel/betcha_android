@@ -101,6 +101,18 @@ public class User extends ModelCache<User,String> {
 		
 		return user;
 	}
+	
+	public void setContact(Contact contact) {
+		this.name = contact.getName();
+		this.email = contact.getEmail();
+		this.password = contact.getPassword();
+		this.provider = contact.getProvider();
+		this.uid = contact.getUid();
+		this.access_token = contact.getAccess_token();
+		this.profile_pic_url = contact.getProfile_pic_url();
+		this.contact_id = contact.getContact_id();
+		this.contact_photo_id = contact.getContact_photo_id();
+	}
 
 	public UserRestClient getUserClient() {
 		if(userClient==null)
