@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +59,8 @@ public class User extends ModelCache<User,String> {
 	private ForeignCollection<Bet>  bets;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Friend>  friends;
+	@ForeignCollectionField(eager = false)
+	private ForeignCollection<Badge>  badges;
 	
 	//non persistent
 	private static UserRestClient userClient;
@@ -363,6 +364,26 @@ public class User extends ModelCache<User,String> {
 				chatMessage.onLocalUpdate();
 			}
 		}
+		
+		//badges
+		List<Badge> badges = null;
+		try {
+			badges = Badge.getModelDao().queryForEq("user_id", oldId);
+		} catch (SQLException e) {
+		}
+		
+		if(badges!=null && badges.size()>0) {
+			for (Badge badge : badges) {
+				badge.setUser(this);
+				badge.onLocalUpdate();
+			}
+		}
+		
+		try {
+			getDao().refresh(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public int restCreateToken() {
@@ -512,43 +533,6 @@ public class User extends ModelCache<User,String> {
 		return tmpOwner;
 	}
 	
-	public Boolean setJson(JSONObject json) {
-		super.setJson(json);
-		
-		try {
-			setProvider(json.getString("provider"));
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			setEmail(json.getString("email"));
-		} catch (JSONException e1) {
-		}
-		try {
-			setName(json.getString("full_name"));
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
-		try {
-			setUid(json.getString("uid"));
-		} catch (JSONException e) {
-		}
-		
-		try {
-			String pic = json.getString("profile_pic_url");
-			if(pic!=null && !pic.equals("null"))
-				setProfile_pic_url(pic);
-		} catch (JSONException e) {
-		}
-		
-		try {
-			setPush_notifications_device_id(json.getString("push_notifications_device_id"));
-		} catch (JSONException e) {
-		}
-		
-		return true;
-	}
-	
 	public void cancelProfilePhotoUpdate(ImageView image) 	{
 		if(imageLoader!=null) 
 			imageLoader.cancelDisplayTask(image);
@@ -633,4 +617,97 @@ public class User extends ModelCache<User,String> {
 		return 1;
 	}
 
+	public Boolean setJson(JSONObject json) {
+		super.setJson(json);
+		
+		try {
+			setProvider(json.getString("provider"));
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			setEmail(json.getString("email"));
+		} catch (JSONException e1) {
+		}
+		try {
+			setName(json.getString("full_name"));
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+		try {
+			setUid(json.getString("uid"));
+		} catch (JSONException e) {
+		}
+		
+		try {
+			String pic = json.getString("profile_pic_url");
+			if(pic!=null && !pic.equals("null"))
+				setProfile_pic_url(pic);
+		} catch (JSONException e) {
+		}
+		
+		try {
+			setPush_notifications_device_id(json.getString("push_notifications_device_id"));
+		} catch (JSONException e) {
+		}
+		
+		JSONArray badgesArray = null;
+		try {
+			badgesArray = json.getJSONArray("badges");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		if(badgesArray!=null && badgesArray.length()>0) {
+			for(int i=0; i<badgesArray.length(); i++) {
+				JSONObject jsonBadge = null;
+				try {
+					jsonBadge = badgesArray.getJSONObject(i);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				
+				if(jsonBadge==null)
+					continue;
+				
+				String badgeId;
+				try {
+					badgeId = jsonBadge.getString("id");
+				} catch (JSONException e) {
+					e.printStackTrace();
+					continue;
+				}
+				
+				Badge badge = null;
+				
+				if(badges!=null) {
+					for (Badge tmpBadge : badges) {
+						if(tmpBadge.getId().equals(badgeId)){
+							badge = tmpBadge;
+						}
+					}
+				}
+				
+				if(badge==null) {
+					badge = new Badge();
+				}
+				
+				badge.setUser(this);
+				badge.setJson(jsonBadge);
+				try {
+					badge.createOrUpdateLocal();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		try {
+			getDao().refresh(this);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
 }

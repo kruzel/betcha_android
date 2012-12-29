@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.betcha.R;
 import com.betcha.model.ActivityEvent;
+import com.betcha.model.Badge;
 import com.betcha.model.Bet;
 import com.betcha.model.ChatMessage;
 import com.betcha.model.Contact;
@@ -21,6 +22,7 @@ import com.betcha.model.TopicCategory;
 import com.betcha.model.TopicResults;
 import com.betcha.model.User;
 import com.betcha.model.server.api.ActivityEventRestClient;
+import com.betcha.model.server.api.BadgeRestClient;
 import com.betcha.model.server.api.BetRestClient;
 import com.betcha.model.server.api.ChatMessageRestClient;
 import com.betcha.model.server.api.FriendRestClient;
@@ -66,6 +68,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Prediction.class);
 			TableUtils.createTable(connectionSource, Friend.class);
 			TableUtils.createTable(connectionSource, ChatMessage.class);
+			TableUtils.createTable(connectionSource, Badge.class);
 			
 			TableUtils.createTable(connectionSource, Location.class);
 			TableUtils.createTable(connectionSource, ActivityEvent.class);
@@ -96,6 +99,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(connectionSource, Prediction.class, true);
 			TableUtils.dropTable(connectionSource, Friend.class, true);
 			TableUtils.dropTable(connectionSource, ChatMessage.class, true);
+			TableUtils.dropTable(connectionSource, Badge.class, true);
+			
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, Location.class, true);
 			TableUtils.dropTable(connectionSource, ActivityEvent.class, true);
@@ -146,6 +151,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				+ "/users/{user_id}/friends");
 		ChatMessageRestClient.setUrl(context.getString(R.string.betcha_api)
 				+ "/bets/{bet_id}/chat_messages");
+		BadgeRestClient.setUrl(context.getString(R.string.betcha_api) + "users/{user_id}/badges");
 		ActivityEventRestClient.setUrl(context.getString(R.string.betcha_api)+"/activity_events");
 		LocationRestClient.setUrl(context.getString(R.string.betcha_api)+"/locations");
 		StakeRestClient.setUrl(context.getString(R.string.betcha_api)+"/stakes");
@@ -154,10 +160,6 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		PredictionOptionRestClinet.setUrl(context.getString(R.string.betcha_api)+"/topic_categories/{ctegory_id}/topics/{topic_id}/prediction_options");
 		TopicResultRestClient.setUrl(context.getString(R.string.betcha_api)+"/topic_categories/{ctegory_id}/topics/{topic_id}/topic_results");
 		
-		//TODO for local tesing only.
-		//initCategories(context);
-		//initRewards(context);
-
 		return true;
 	}
 	

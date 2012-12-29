@@ -152,20 +152,6 @@ public class UserRestClient extends RestClient {
 			e1.printStackTrace();
 		}
 		
-		//TODO paperclip - profile picture support
-//		if(bm!=null) {
-//			ByteArrayOutputStream output = new ByteArrayOutputStream();  
-//			bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
-//			byte[] bytes = output.toByteArray();
-//			String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-//			try {
-//				jsonContent.put("avatar", base64Image);
-//			} catch (JSONException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//		}
-		
 		try {
 			jsonParent.put("user", jsonContent);
 		} catch (JSONException e1) {
@@ -286,23 +272,6 @@ public class UserRestClient extends RestClient {
 			jsonContent.put("device_type", "android");
 		} catch (JSONException e1) {
 		}
-		
-//		if(user.getProvider().equals("email") && user.getProfile_pic_url()!=null) {
-//			Bitmap bm = BitmapFactory.decodeFile(user.getProfile_pic_url());
-//			if(bm==null) {
-//				Log.e("UserRestClient.update()", "profile picture not found in path: " + user.getProfile_pic_url());
-//			} else {
-//				ByteArrayOutputStream output = new ByteArrayOutputStream();  
-//				bm.compress(Bitmap.CompressFormat.JPEG, 100, output); //bm is the bitmap object   
-//				byte[] bytes = output.toByteArray();
-//				String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
-//				try {
-//					jsonContent.put("avatar", base64Image);
-//				} catch (JSONException e1) {
-//					e1.printStackTrace();
-//				}
-//			}
-//		}
 		
 		try {
 			jsonParent.put("user", jsonContent);

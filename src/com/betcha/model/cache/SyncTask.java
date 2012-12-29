@@ -82,6 +82,9 @@ public class SyncTask extends AsyncTask<Void, Void, HttpStatus> {
 			}
 		}
 		
+		//get user badges updates
+		BetchaApp.getInstance().getCurUser().onRestGet(); 
+		
 		//on first run last sync time is null, so server will return everything
 		Stake.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
 		Location.getAllUpdatesForCurUser(BetchaApp.getInstance().getLastSyncTime());
