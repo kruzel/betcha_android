@@ -4,20 +4,20 @@
     <item android:id="@+id/menu_profile"
           android:icon="@drawable/ic_profile"
           android:title="@string/profile"
-          android:showAsAction="ifRoom|withText" />
+          android:showAsAction="always" />
     
     <item android:id="@+id/menu_create_bet"
           android:icon="@drawable/ic_menu_btn_add"
           android:title="@string/createbet"
-          android:showAsAction="ifRoom|withText" />
+          android:showAsAction="always" />
     
     <item android:id="@+id/menu_settings"
           android:icon="@drawable/ic_menu_preferences"
           android:title="@string/settings"
-          android:showAsAction="ifRoom|withText" />
+          android:showAsAction="always" />
 
     <item android:id="@+id/menu_refresh"
           android:icon="@drawable/ic_menu_refresh"
           android:title="@string/refresh"
-          android:showAsAction="ifRoom|withText" />
+          android:showAsAction="always" />
 </menu>

@@ -92,8 +92,23 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
+		Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+		drop();
+		// after we drop the old databases, we create the new ones
+		onCreate(db, connectionSource);
+	}
+	
+	/**
+	 * Close the database connections and clear any cached DAOs.
+	 */
+	@Override
+	public void close() {
+		super.close();
+	}
+	
+	public void drop() {
 		try {
-			Log.i(DatabaseHelper.class.getName(), "onUpgrade");
+			Log.i(DatabaseHelper.class.getName(), "drop");
 			TableUtils.dropTable(connectionSource, Bet.class, true);
 			TableUtils.dropTable(connectionSource, User.class, true);
 			TableUtils.dropTable(connectionSource, Prediction.class, true);
@@ -112,21 +127,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			
 			//local only
 			TableUtils.dropTable(connectionSource, Contact.class, true);
-			
-			// after we drop the old databases, we create the new ones
-			onCreate(db, connectionSource);
 		} catch (SQLException e) {
 			Log.e(DatabaseHelper.class.getName(), "Can't drop databases", e);
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/**
-	 * Close the database connections and clear any cached DAOs.
-	 */
-	@Override
-	public void close() {
-		super.close();
 	}
 	
 	/**
