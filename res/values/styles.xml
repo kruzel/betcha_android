@@ -14,7 +14,12 @@
         <item name="android:shadowDx">0</item>
         <item name="android:shadowDy">-2</item>
     </style>
-    
+       
+    <!-- Profile   -->
+    <style name="ProfileDetailsContent">
+	    <item name="android:background">@drawable/offwhite_bg_selector_full</item>
+	</style>
+	
     <!-- Login Screen -->
     
     <style name="LoginContainer">

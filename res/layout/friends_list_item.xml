@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+	
+	<View
+	     android:layout_width="match_parent"
+	     android:layout_height="1dp"
+	     android:background="#ffd2d2d2" />
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal" >
+	    
+		<RelativeLayout
+	        android:layout_weight="1"
+			android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:padding="4dp" >
+	        
+		    <ImageView
+			    android:id="@+id/iv_profile_pic"
+			    android:layout_width="40dp"
+			    android:layout_height="40dp"
+			    android:layout_alignParentTop="true"
+			    android:layout_alignParentLeft="true"
+			    android:layout_margin="8dp"
+			    android:src="@drawable/default_avatar"
+			    android:scaleType="centerCrop" />
+	
+		    <ImageView
+		        android:id="@+id/iv_profile_frame"
+		        android:layout_width="48dp"
+		        android:layout_height="48dp"
+			    android:layout_alignParentTop="true"
+			    android:layout_alignParentLeft="true"
+			    android:layout_margin="4dp" 
+			    android:src="@drawable/bet_avatar_frame" />
+	
+		    <TextView
+		        android:id="@+id/tv_profile_name"
+		        style="@style/Text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_centerVertical="true"
+		        android:layout_toRightOf="@+id/iv_profile_pic"
+		        android:padding="6dp"
+		        android:text="first name"
+		        android:textAppearance="?android:attr/textAppearanceLarge" />
+		</RelativeLayout>    
+	
+		<LinearLayout
+		    android:id="@+id/profile_badges_container"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_gravity="center_vertical|center_horizontal"
+		    android:orientation="horizontal" >
+
+            	<TextView
+            	    style="@style/Text"
+            	    android:layout_width="wrap_content"
+            	    android:layout_height="wrap_content"
+            	    android:layout_gravity="center_vertical|center_horizontal"
+            	    android:padding="6dp"
+            	    android:text="@string/no_badges"
+            	    android:textAppearance="?android:attr/textAppearanceLarge" />
+
+		</LinearLayout>
+		
+	</LinearLayout>
+</LinearLayout>

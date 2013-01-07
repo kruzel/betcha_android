@@ -27,6 +27,7 @@ import com.betcha.R;
 import com.betcha.activity.BetDetailsActivity;
 import com.betcha.activity.CreateBetActivity;
 import com.betcha.activity.LoginActivity;
+import com.betcha.activity.ProfileActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
@@ -130,8 +131,12 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		
 		Intent intent;
 		switch (item.getItemId()) {
-	        case R.id.menu_create_bet:
-	             //intent = new Intent(getActivity(), CreateBetActivity.class);
+			case R.id.menu_profile:
+	        	intent = new Intent(getActivity(), ProfileActivity.class);
+	            startActivity(intent);
+	            return true;
+			case R.id.menu_create_bet:
+	            //intent = new Intent(getActivity(), ProfileActivity.class);
 	        	intent = new Intent(getActivity(), CreateBetActivity.class);
 	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);

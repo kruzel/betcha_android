@@ -2,6 +2,8 @@ package com.betcha.model;
 
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -200,6 +202,34 @@ public class User extends ModelCache<User,String> {
 
 	public Long getContact_photo_id() {
 		return contact_photo_id;
+	}
+	
+	public List<Badge> getBadges() {
+		if(badges==null)
+			return null;
+		
+		List<Badge> list = new ArrayList<Badge>(badges);
+		return list;
+	}
+	
+	public List<Friend> getFriends() {
+		if(friends==null)
+			return null;
+		
+		List<Friend> list = new ArrayList<Friend>(friends);
+		return list;
+	}
+	
+	public User getFriend(String friendId){
+		User res = null;
+		Iterator<Friend> iterator = getFriends().iterator();
+		while(iterator.hasNext()){
+			Friend friend = iterator.next();
+			res = friend.getFriend();
+			if (res.getUid().equals(friendId))
+				return res;
+		}
+		return null;
 	}
 
 	public void setContact_photo_id(Long contact_photo_id) {

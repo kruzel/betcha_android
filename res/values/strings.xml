@@ -61,6 +61,7 @@
 	
 	<string name="settings">Settings</string>
 	<string name="refresh">Refresh</string>
+	<string name="profile">Profile</string>
 	
 	<string name="invite">Invite</string>
 	<string name="close">Close</string>
@@ -71,6 +72,13 @@
 	<string name="bets_feed">Activity</string>
 	<string name="new_bets">New bets</string>
 	<string name="my_bets">My bets</string>
+	
+	<string name="more_info">MORE INFO</string>
+	<string name="badges">BADGES</string>
+	<string name="coins">COINS</string>
+	<string name="friends">FRIENDS</string>
+	<string name="loading">loading</string>
+	<string name="no_badges">No Badges yet</string>
 	
 	<!-- messages -->
 	<string name="msg_bet_accepted">Bet accepted</string>
@@ -106,6 +114,7 @@
     <string name="betdetails">betdetails</string>
     <string name="settingsactivity">settings</string>
     <string name="betcategoryactivity">categories</string>
+    <string name="profileactivity">profile</string>
     
     <!-- file names -->
     <string name="prefs_name">betcha_prefs_name</string>

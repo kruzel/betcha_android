@@ -41,6 +41,7 @@
         <activity android:name=".activity.LoginActivity" android:label="@string/settingsactivity"></activity>
         <activity android:name=".activity.LoginEmailActivity" android:label="@string/settingsactivity"></activity>
         <activity android:name=".activity.CreateBetActivity" android:label="@string/betcategoryactivity"></activity>
+        <activity android:name=".activity.ProfileActivity" android:label="@string/profileactivity"></activity>
         
         <receiver android:name="com.google.android.gcm.GCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 		  <intent-filter>
