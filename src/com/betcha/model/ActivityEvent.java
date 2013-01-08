@@ -50,6 +50,10 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 	public void setObj(String objId) {
 		this.object_id = objId;
 	}
+	
+	public String getObjId() {
+		return object_id;
+	}
 
 	public Type getType() {
 		return Type.values()[type];
@@ -369,7 +373,7 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 
 		try {
 			jsonEventContent.put("id", getId());
-			jsonEventContent.put("obj_id", getObj());
+			jsonEventContent.put("obj_id", getObjId());
 			jsonEventContent.put("description", getDescription());
 			switch (getType()) {
 			case BET_CREATE:

@@ -304,7 +304,7 @@ public class User extends ModelCache<User,String> {
 		if (provider.equals("email")) {
 			jsonUser = getUserClient().create(getId(), name, email, password, getProfilePhotoBitmap());
 		} else if (provider.equals("facebook")) {
-			jsonUser = getUserClient().createOAuth(getId(), provider, uid, access_token);
+			jsonUser = getUserClient().createOAuth(getId(), provider, uid, access_token, name);
 		}
 		
 		if(jsonUser==null)
@@ -685,7 +685,6 @@ public class User extends ModelCache<User,String> {
 		try {
 			badgesArray = json.getJSONArray("badges");
 		} catch (JSONException e) {
-			e.printStackTrace();
 		}
 		
 		if(badgesArray!=null && badgesArray.length()>0) {

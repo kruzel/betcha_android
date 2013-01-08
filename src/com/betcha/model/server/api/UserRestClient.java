@@ -188,7 +188,7 @@ public class UserRestClient extends RestClient {
 		return json;
 	}
 	
-	public JSONObject createOAuth(String id, String provider, String uid, String access_token )   {
+	public JSONObject createOAuth(String id, String provider, String uid, String access_token, String name )   {
 		setLastRestErrorCode(HttpStatus.CREATED);
 		
 		JSONObject jsonContent = new JSONObject();
@@ -199,7 +199,9 @@ public class UserRestClient extends RestClient {
 			jsonContent.put("is_app_installed", true);
 			jsonContent.put("provider", provider);
 			jsonContent.put("uid", uid);
-			jsonContent.put("access_token", access_token);
+			if(access_token!=null)
+				jsonContent.put("access_token", access_token);
+			jsonContent.put("full_name", name);
 			jsonParent.put("user", jsonContent);
 		} catch (JSONException e1) {
 			e1.printStackTrace();
