@@ -10,19 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.betcha.BetchaApp;
 import com.betcha.R;
-
 import com.betcha.fragment.ProfileDetailsFragment;
-import com.betcha.model.Friend;
+import com.betcha.model.User;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-public class FriendProfileAdapter extends ArrayAdapter<Friend>{
+public class FriendProfileAdapter extends ArrayAdapter<User>{
 
 	
 	private BetchaApp app;
@@ -31,7 +29,7 @@ public class FriendProfileAdapter extends ArrayAdapter<Friend>{
 	private static DisplayImageOptions defaultOptions;
 	
 	public FriendProfileAdapter(FragmentActivity context, int textViewResourceId,
-			List<Friend> friends) {
+			List<User> friends) {
 		super(context, textViewResourceId, friends);
 		
 		app = (BetchaApp) context.getApplicationContext();
@@ -55,17 +53,17 @@ public class FriendProfileAdapter extends ArrayAdapter<Friend>{
 			v = vi.inflate((R.layout.badge_list_item), null);
 		}
 		
-		Friend friend = getItem(position);
+		User friend = getItem(position);
 				
 		TextView tvFriendName	= (TextView) v.findViewById(R.id.iv_profile_pic);
 		ImageView ivFriendPic	= (ImageView) v.findViewById(R.id.tv_profile_name);
 		LinearLayout llBadgesContainer = (LinearLayout) v.findViewById(R.id.profile_badges_container);
 		
-		tvFriendName.setText(friend.getFriend().getName());
-		friend.getFriend().setProfilePhoto(ivFriendPic);
+		tvFriendName.setText(friend.getName());
+		friend.setProfilePhoto(ivFriendPic);
 		
 		ProfileDetailsFragment.injectBadgesToView(imageLoader, defaultOptions, llBadgesContainer, 
-				friend.getFriend().getBadges(), thisActivity, 3);
+				friend.getBadges(), thisActivity, 3);
 		return v;
 	}
 }

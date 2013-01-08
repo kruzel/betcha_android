@@ -59,7 +59,7 @@ public class User extends ModelCache<User,String> {
 	private Long contact_photo_id;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Bet>  bets;
-	@ForeignCollectionField(eager = false)
+	@ForeignCollectionField(eager = true)
 	private ForeignCollection<Friend>  friends;
 	@ForeignCollectionField(eager = false)
 	private ForeignCollection<Badge>  badges;
@@ -212,23 +212,29 @@ public class User extends ModelCache<User,String> {
 		return list;
 	}
 	
-	public List<Friend> getFriends() {
-		if(friends==null)
-			return null;
+	public List<User> getFriends() {
+		List<User> list = null;
+		try {
+			list = User.getModelDao().queryBuilder()
+					.orderBy("name", true).where()
+					.ne("id", getId()).query();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		
-		List<Friend> list = new ArrayList<Friend>(friends);
 		return list;
 	}
 	
 	public User getFriend(String friendId){
-		User res = null;
-		Iterator<Friend> iterator = getFriends().iterator();
-		while(iterator.hasNext()){
-			Friend friend = iterator.next();
-			res = friend.getFriend();
-			if (res.getUid().equals(friendId))
-				return res;
+	
+		List<User> list = getFriends();
+		for (User user : list) {
+			if (user.getId().equals(friendId))
+				return user;
 		}
+		
 		return null;
 	}
 
@@ -420,7 +426,7 @@ public class User extends ModelCache<User,String> {
 			
 		TokenRestClient tokenClient = new TokenRestClient();
 		String jsonToken = null;
-		if (provider.equals("email")) {
+		if (provider==null || provider.equals("email")) {
 			jsonToken = tokenClient.create(email, password);
 		} else if (provider.equals("facebook")) {
 			jsonToken = tokenClient.createOAuth(provider, uid, access_token);

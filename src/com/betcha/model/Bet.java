@@ -57,7 +57,7 @@ public class Bet extends ModelCache<Bet, String> {
 	@ForeignCollectionField(eager = true)
 	private ForeignCollection<Prediction>  predictions;
 	@ForeignCollectionField(eager = false)
-	private ForeignCollection<ChatMessage>  chatMessages;
+	private ForeignCollection<ChatMessage> chatMessages;
 	
 	private Prediction ownerPrediction;
 	private List<User> participants;

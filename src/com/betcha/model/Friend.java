@@ -158,21 +158,7 @@ public class Friend extends ModelCache<Friend, String> {
 			JSONObject friendsObj = restClient.show_for_user();
 			
 			if(friendsObj==null || friendsObj.length()==0) {
-				if(retries<3) {
-					retries++;
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					Log.i("Friend.onRestGetAllForCurUser()", "retrying to get friends");
-					Friend.this.onRestGetAllForCurUser();
-					return 0;
-				}	
-				else {
-					return 0;
-				}
+				return 0;
 			} 
 			
 			JSONArray friends = null;
@@ -223,10 +209,20 @@ public class Friend extends ModelCache<Friend, String> {
 				if(user.getId().equals(tmpNewUser.getId()))
 					continue;
 				
-				Friend friend = new Friend(user);
-				friend.setFriend(tmpNewUser);
+				List<Friend> tmpFriends = null;
+				Friend tmpFriend = null;
+				try {
+					tmpFriends = Friend.getModelDao().queryForEq("friend_id", tmpNewUser.getId());
+					if(tmpFriends!=null && tmpFriends.size()>0)
+						tmpFriend = tmpFriends.get(0);
+				} catch (SQLException e) {
+				}
 				
-				res += friend.onLocalCreate();
+				if(tmpFriend==null) {
+					Friend friend = new Friend(user);
+					friend.setFriend(tmpNewUser);
+					res += friend.onLocalCreate();
+				}
 			}
 		
 			return res;

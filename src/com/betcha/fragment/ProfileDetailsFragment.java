@@ -91,8 +91,12 @@ public class ProfileDetailsFragment extends SherlockFragment{
 		String[] names =userToShow.getName().split(" ", 2);
 		
 		userToShow.setProfilePhoto(ivProfPic);
-		tvFirstName.setText(names[0]);
-		tvLastName.setText(names[1]);
+		if(names!=null && names.length>0 )
+			tvFirstName.setText(names[0]);
+		if(names!=null && names.length>1 )
+			tvLastName.setText(names[1]);
+		else
+			tvLastName.setText("");
 		tvStatus.setText("TODO: change this");//TODO: change this
 		tvCoins.setText(coinsFromUser(userToShow));
 		List<Badge> badgeList = userToShow.getBadges();

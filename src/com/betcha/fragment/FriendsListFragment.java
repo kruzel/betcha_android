@@ -12,9 +12,8 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-
 import com.betcha.adapter.FriendProfileAdapter;
-import com.betcha.model.Friend;
+import com.betcha.model.User;
 
 
 public class FriendsListFragment extends SherlockFragment{
@@ -53,7 +52,7 @@ public class FriendsListFragment extends SherlockFragment{
 	
 	protected void populate() {
 		
-		List<Friend> friends = app.getCurUser().getFriends();
+		List<User> friends = app.getCurUser().getFriends();
 		Integer size = 0;
 		if (friends != null)
 			size = friends.size();
