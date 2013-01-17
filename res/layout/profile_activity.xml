@@ -17,14 +17,14 @@
 	        android:layout_alignParentTop="true"
 	        android:layout_margin="4dp" />
  
- 	    <fragment
+  	    <fragment
 	        android:id="@+id/friends_list_fragment"
 	        android:name="com.betcha.fragment.FriendsListFragment"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/profile_details_fragment"
 	        android:layout_margin="4dp" />
-	     
+	      
 	</RelativeLayout>
 	
 </ScrollView>

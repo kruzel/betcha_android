@@ -50,16 +50,17 @@ public class FriendProfileAdapter extends ArrayAdapter<User>{
 		View v = convertView;
 		if (v == null) {
 			LayoutInflater vi = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			v = vi.inflate((R.layout.badge_list_item), null);
+			v = vi.inflate((R.layout.friends_list_item), null);
 		}
 		
 		User friend = getItem(position);
 				
-		TextView tvFriendName	= (TextView) v.findViewById(R.id.iv_profile_pic);
-		ImageView ivFriendPic	= (ImageView) v.findViewById(R.id.tv_profile_name);
+		TextView tvFriendName	= (TextView) v.findViewById(R.id.tv_profile_name);
+		ImageView ivFriendPic	= (ImageView) v.findViewById(R.id.iv_profile_pic);
 		LinearLayout llBadgesContainer = (LinearLayout) v.findViewById(R.id.profile_badges_container);
 		
-		tvFriendName.setText(friend.getName());
+		String name = friend.getName();
+		tvFriendName.setText(name);
 		friend.setProfilePhoto(ivFriendPic);
 		
 		ProfileDetailsFragment.injectBadgesToView(imageLoader, defaultOptions, llBadgesContainer, 

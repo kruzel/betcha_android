@@ -29,7 +29,9 @@ import com.betcha.activity.ProfileActivity;
 import com.betcha.adapter.ActivityFeedAdapter;
 import com.betcha.model.ActivityEvent;
 import com.betcha.model.Bet;
+import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.ModelCache;
 import com.betcha.model.cache.SyncTask;
 
 import eu.erikw.PullToRefreshListView;
@@ -123,6 +125,12 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 		
 		Intent intent;
 		switch (item.getItemId()) {
+			case R.id.menu_log_out:
+				//ModelCache.getDbHelper().drop();
+				//app.getPrefs().edit().clear();
+				intent = new Intent(getActivity(), LoginActivity.class);
+	            startActivity(intent);
+	            return true;
 			case R.id.menu_profile:
 	        	intent = new Intent(getActivity(), ProfileActivity.class);
 	            startActivity(intent);

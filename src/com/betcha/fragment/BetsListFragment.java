@@ -31,7 +31,9 @@ import com.betcha.activity.ProfileActivity;
 import com.betcha.adapter.BetAdapter;
 import com.betcha.model.Bet;
 import com.betcha.model.Prediction;
+import com.betcha.model.User;
 import com.betcha.model.cache.IModelListener;
+import com.betcha.model.cache.ModelCache;
 import com.betcha.model.cache.SyncTask;
 import com.betcha.utils.Filter;
 import com.j256.ormlite.stmt.PreparedQuery;
@@ -131,6 +133,12 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 		
 		Intent intent;
 		switch (item.getItemId()) {
+			
+			case R.id.menu_log_out:
+	        	//ModelCache.getDbHelper().drop();
+				intent = new Intent(getActivity(), LoginActivity.class);
+	            startActivity(intent);
+	            return true;
 			case R.id.menu_profile:
 	        	intent = new Intent(getActivity(), ProfileActivity.class);
 	            startActivity(intent);
