@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.adapter.ProfileAdapter;
+import com.betcha.adapter.LeadersBoardAdapter;
 import com.betcha.model.User;
 
 
@@ -21,7 +21,7 @@ public class LeadersBoardFragment extends SherlockFragment{
 	private BetchaApp app;
 	private TextView tvNumOfFriends;
 	private ListView lvFriendsList;
-	private ProfileAdapter friendAdapter;
+	private LeadersBoardAdapter friendAdapter;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,7 +62,7 @@ public class LeadersBoardFragment extends SherlockFragment{
 		msgFramelayoutParams.height = size*110;
 		lvFriendsList.setLayoutParams(msgFramelayoutParams);
 		
-		friendAdapter = new ProfileAdapter(getActivity(), R.layout.friends_list_item, friends);
+		friendAdapter = new LeadersBoardAdapter(getActivity(), R.layout.friends_list_item, friends);
 		lvFriendsList.setAdapter(friendAdapter);
 	}
 	
