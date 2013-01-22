@@ -19,7 +19,7 @@
  
   	    <fragment
 	        android:id="@+id/friends_list_fragment"
-	        android:name="com.betcha.fragment.FriendsListFragment"
+	        android:name="com.betcha.fragment.LeadersBoardFragment"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@+id/profile_details_fragment"

@@ -6,21 +6,22 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.betcha.BetchaApp;
 import com.betcha.R;
-import com.betcha.adapter.FriendProfileAdapter;
+import com.betcha.adapter.ProfileAdapter;
 import com.betcha.model.User;
 
 
-public class FriendsListFragment extends SherlockFragment{
+public class LeadersBoardFragment extends SherlockFragment{
 	private BetchaApp app;
 	private TextView tvNumOfFriends;
 	private ListView lvFriendsList;
-	private FriendProfileAdapter friendAdapter;
+	private ProfileAdapter friendAdapter;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,15 +51,18 @@ public class FriendsListFragment extends SherlockFragment{
 		populate();
 	}
 	
-	protected void populate() {
-		
+	protected void populate() {		
 		List<User> friends = app.getCurUser().getFriends();
 		Integer size = 0;
 		if (friends != null)
 			size = friends.size();
 		tvNumOfFriends.setText(size.toString());
 		
-		friendAdapter = new FriendProfileAdapter(getActivity(), R.layout.friends_list_item, friends);
+		LayoutParams msgFramelayoutParams = lvFriendsList.getLayoutParams();
+		msgFramelayoutParams.height = size*110;
+		lvFriendsList.setLayoutParams(msgFramelayoutParams);
+		
+		friendAdapter = new ProfileAdapter(getActivity(), R.layout.friends_list_item, friends);
 		lvFriendsList.setAdapter(friendAdapter);
 	}
 	

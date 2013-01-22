@@ -149,11 +149,11 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);
 	            return true;
-	        case R.id.menu_settings:
-	            intent = new Intent(getActivity(), LoginActivity.class);
-	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(intent);
-	            return true;
+//	        case R.id.menu_settings:
+//	            intent = new Intent(getActivity(), LoginActivity.class);
+//	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//	            startActivity(intent);
+//	            return true;
 	        case R.id.menu_refresh:
 	        	lvBets.setRefreshing();
 	        	SyncTask.run(this);

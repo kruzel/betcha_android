@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     
-    <item android:id="@+id/menu_log_out"
-          android:icon="@drawable/ic_menu_log_out"
-          android:title="@string/log_out"
+    <item android:id="@+id/menu_create_bet"
+          android:icon="@drawable/ic_menu_btn_add"
+          android:title="@string/createbet"
+          android:showAsAction="always" />
+    
+<!--     <item android:id="@+id/menu_settings" -->
+<!--           android:icon="@drawable/ic_menu_preferences" -->
+<!--           android:title="@string/settings" -->
+<!--           android:showAsAction="always" /> -->
+
+    <item android:id="@+id/menu_refresh"
+          android:icon="@drawable/ic_menu_refresh"
+          android:title="@string/refresh"
           android:showAsAction="always" />
     
     <item android:id="@+id/menu_profile"
@@ -11,18 +21,8 @@
           android:title="@string/profile"
           android:showAsAction="always" />
     
-    <item android:id="@+id/menu_create_bet"
-          android:icon="@drawable/ic_menu_btn_add"
-          android:title="@string/createbet"
-          android:showAsAction="always" />
-    
-    <item android:id="@+id/menu_settings"
-          android:icon="@drawable/ic_menu_preferences"
-          android:title="@string/settings"
-          android:showAsAction="always" />
-
-    <item android:id="@+id/menu_refresh"
-          android:icon="@drawable/ic_menu_refresh"
-          android:title="@string/refresh"
+    <item android:id="@+id/menu_log_out"
+          android:icon="@drawable/ic_menu_log_out"
+          android:title="@string/log_out"
           android:showAsAction="always" />
 </menu>

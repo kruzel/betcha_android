@@ -20,15 +20,14 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-public class FriendProfileAdapter extends ArrayAdapter<User>{
-
+public class ProfileAdapter extends ArrayAdapter<User>{
 	
 	private BetchaApp app;
 	private FragmentActivity thisActivity;
 	private static ImageLoader imageLoader;
 	private static DisplayImageOptions defaultOptions;
 	
-	public FriendProfileAdapter(FragmentActivity context, int textViewResourceId,
+	public ProfileAdapter(FragmentActivity context, int textViewResourceId,
 			List<User> friends) {
 		super(context, textViewResourceId, friends);
 		
@@ -44,7 +43,7 @@ public class FriendProfileAdapter extends ArrayAdapter<User>{
 	        .build();
 		}
 	}
-	
+
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
@@ -59,7 +58,11 @@ public class FriendProfileAdapter extends ArrayAdapter<User>{
 		ImageView ivFriendPic	= (ImageView) v.findViewById(R.id.iv_profile_pic);
 		LinearLayout llBadgesContainer = (LinearLayout) v.findViewById(R.id.profile_badges_container);
 		
-		String name = friend.getName();
+		String name = null;
+		if(friend.getName()!=null)
+			name = friend.getName();
+		else
+			name = "";
 		tvFriendName.setText(name);
 		friend.setProfilePhoto(ivFriendPic);
 		

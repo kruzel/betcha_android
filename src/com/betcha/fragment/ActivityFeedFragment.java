@@ -141,11 +141,11 @@ public class ActivityFeedFragment extends SherlockFragment  implements IModelLis
 	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            startActivity(intent);
 	            return true;
-	        case R.id.menu_settings:
-	            intent = new Intent(getActivity(), LoginActivity.class);
-	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	            startActivity(intent);
-	            return true;
+//	        case R.id.menu_settings:
+//	            intent = new Intent(getActivity(), LoginActivity.class);
+//	            //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//	            startActivity(intent);
+//	            return true;
 	        case R.id.menu_refresh:
 	        	lvActivities.setRefreshing();
 	        	SyncTask.run(this);
