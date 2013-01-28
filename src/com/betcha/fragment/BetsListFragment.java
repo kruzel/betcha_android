@@ -190,18 +190,18 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				bets = new ArrayList<Bet>();
 				for (Bet bet : tmpBets) {
 					for (Prediction prediction : bet.getPredictions()) {
-						if(prediction.getUser()==app.getCurUser() && prediction.equals("")) {
+						if(prediction.getUser().getId().equals(app.getCurUser().getId()) && (prediction.getPrediction().isEmpty() || prediction.getPrediction().equals(""))) {
 							bets.add(bet);
 						}
 					}
 				}
 				break;
 			case MY_BETS:	//bets I created
-				betsQueryBuilder.where().eq("user_id", app.getCurUser().getId());
-				betsQueryBuilder.orderBy("dueDate", false);
-	 			preparedQuery = betsQueryBuilder.prepare();
-				bets = Bet.getModelDao().query(preparedQuery);
-				break;
+//				betsQueryBuilder.where().eq("user_id", app.getCurUser().getId());
+//				betsQueryBuilder.orderBy("dueDate", false);
+//	 			preparedQuery = betsQueryBuilder.prepare();
+//				bets = Bet.getModelDao().query(preparedQuery);
+//				break;
 			case ALL_BETS:
 			default:
 				betsQueryBuilder = Bet.getModelDao().queryBuilder();

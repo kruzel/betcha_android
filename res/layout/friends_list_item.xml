@@ -37,7 +37,7 @@
 			    android:layout_alignParentTop="true"
 			    android:layout_alignParentLeft="true"
 			    android:layout_margin="4dp" 
-			    android:src="@drawable/bet_avatar_frame" />
+			    android:src="@drawable/bet_avatar_frame_white" />
 	
 		    <TextView
 		        android:id="@+id/tv_profile_name"

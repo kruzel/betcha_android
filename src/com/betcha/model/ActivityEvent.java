@@ -292,20 +292,20 @@ public class ActivityEvent  extends ModelCache<ActivityEvent, String> {
 
 			if (tmpEvent == null) {
 				tmpEvent = new ActivityEvent();
-			}
+				
+				if (!tmpEvent.setJson(jsonEvent))
+					continue;
 
-			if (!tmpEvent.setJson(jsonEvent))
-				continue;
-
-			tmpEvent.setServerCreated(true);
-			tmpEvent.setServerUpdated(true);
-			
-			try {
-				tmpEvent.createOrUpdateLocal();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				continue;
-			}
+				tmpEvent.setServerCreated(true);
+				tmpEvent.setServerUpdated(true);
+				
+				try {
+					tmpEvent.createOrUpdateLocal();
+				} catch (SQLException e) {
+					e.printStackTrace();
+					continue;
+				}
+			}		
 
 			events.add(tmpEvent);
 
