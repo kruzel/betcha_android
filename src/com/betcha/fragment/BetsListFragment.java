@@ -175,6 +175,8 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 
 	public void populate() {
 		// query for all of the bets objects in the database
+		List<Bet> tmpBets;
+		
  		try {
  			QueryBuilder<Bet, String> betsQueryBuilder = Bet.getModelDao().queryBuilder();
  			QueryBuilder<Prediction,String> predictionQueryBuilder = Prediction.getModelDao().queryBuilder();
@@ -186,7 +188,7 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 				betsQueryBuilder.join(predictionQueryBuilder);
 				betsQueryBuilder.orderBy("dueDate", false);
 	 			preparedQuery = betsQueryBuilder.prepare();
-				List<Bet> tmpBets = Bet.getModelDao().query(preparedQuery);
+				tmpBets = Bet.getModelDao().query(preparedQuery);
 				bets = new ArrayList<Bet>();
 				for (Bet bet : tmpBets) {
 					for (Prediction prediction : bet.getPredictions()) {
@@ -196,7 +198,21 @@ public class BetsListFragment extends SherlockFragment  implements IModelListene
 					}
 				}
 				break;
-			case MY_BETS:	//bets I created
+			case MY_BETS:	//bets I'm in
+				predictionQueryBuilder.where().eq("user_id",app.getCurUser().getId());
+				betsQueryBuilder.join(predictionQueryBuilder);
+				betsQueryBuilder.orderBy("dueDate", false);
+	 			preparedQuery = betsQueryBuilder.prepare();
+				tmpBets = Bet.getModelDao().query(preparedQuery);
+				bets = new ArrayList<Bet>();
+				for (Bet bet : tmpBets) {
+					for (Prediction prediction : bet.getPredictions()) {
+						if(prediction.getUser().getId().equals(app.getCurUser().getId()) && (!prediction.getPrediction().isEmpty())) {
+							bets.add(bet);
+						}
+					}
+				}
+				break;
 //				betsQueryBuilder.where().eq("user_id", app.getCurUser().getId());
 //				betsQueryBuilder.orderBy("dueDate", false);
 //	 			preparedQuery = betsQueryBuilder.prepare();
