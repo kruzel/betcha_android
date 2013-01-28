@@ -111,9 +111,12 @@ public class LeadersBoardAdapter extends ArrayAdapter<User>{
 				
 		if(badges.size()>0) {
 			setBadge(v, badges.get(0), R.id.iv_badge1);
-			setBadge(v, badges.get(1), R.id.iv_badge2);
-			setBadge(v, badges.get(2), R.id.iv_badge3);
-			setBadge(v, badges.get(3), R.id.iv_badge4);
+			if(badges.size()>1)
+				setBadge(v, badges.get(1), R.id.iv_badge2);
+			if(badges.size()>2)
+				setBadge(v, badges.get(2), R.id.iv_badge3);
+			if(badges.size()>3)
+				setBadge(v, badges.get(3), R.id.iv_badge4);
 			
 			TextView tvDots	= (TextView) v.findViewById(R.id.dots);
 			if(badges.size()>4)
